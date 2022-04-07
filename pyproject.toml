@@ -2,9 +2,9 @@
 name = "aspics"
 version = "0.1.0"
 # TODO Bring all of this from setup.py
-description = ""
+description = "Agent-based Simulation of ePIdemics at Country Scale"
 # TODO Many others
-authors = ["Dustin Carlino <dcarlino@turing.ac.uk>", "hsalat@turing.ac.uk", "fbenitez@turing.ac.uk"]
+authors = ["Dustin Carlino <dcarlino@turing.ac.uk>", "Hadrien Salat <hsalat@turing.ac.uk>", "Fernando Benitez <fbenitez@turing.ac.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
