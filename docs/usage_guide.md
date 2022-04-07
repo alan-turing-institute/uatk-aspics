@@ -20,8 +20,10 @@ git clone https://github.com/dabreegster/rampfs/
 cd rampfs
 # You only have to run this the first time, to install Python dependencies
 cd model
-poetry install
 # This will take a few minutes the first time you do it, to build external dependencies
+poetry install
+# This alters your shell environment (and prompt) to include all the python libs just installed
+poetry shell
 cd ../init
 cargo build --release
 ```

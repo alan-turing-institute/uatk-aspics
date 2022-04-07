@@ -8,19 +8,23 @@ authors = ["Dustin Carlino <dcarlino@turing.ac.uk>", "hsalat@turing.ac.uk", "fbe
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pandas = "=1.0.3"
+pandas = "^1.4"
 click = "^8.0.3"
 PyYAML = "^6.0"
 tqdm = "^4.62.3"
 glfw = "^2.4.0"
 imgui = "^1.4.1"
-PyOpenGL = "=3.1.5"
-pyopencl = "=2020.2.2"
+PyOpenGL = "^3.1.6"
+pyopencl = "^2022.1"
+numpy = "^1.22.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 black = "^22.1.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = [
+  "poetry-core>=1.0.0",
+  "cmake"
+]
 build-backend = "poetry.core.masonry.api"
