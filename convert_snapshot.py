@@ -3,6 +3,8 @@
 import click
 import numpy as np
 from aspics.params import Params
+from tqdm import tqdm
+from linetimer import CodeTimer
 import os
 import random
 import synthpop_pb2
@@ -30,10 +32,11 @@ def main(input_path, output_path):
         pass
 
     print(f"Reading {input_path}")
-    pop = synthpop_pb2.Population()
-    f = open(input_path, "rb")
-    pop.ParseFromString(f.read())
-    f.close()
+    with CodeTimer(unit="s"):
+        pop = synthpop_pb2.Population()
+        f = open(input_path, "rb")
+        pop.ParseFromString(f.read())
+        f.close()
 
     convert_to_npz(pop, output_path)
 
@@ -78,56 +81,59 @@ def convert_to_npz(pop, output_path):
     num_people = len(pop.people)
     num_places = id_mapping.total_places
 
-    people_place_ids, people_baseline_flows = get_baseline_flows(pop, id_mapping)
-    place_coords = get_place_coordinates(pop, id_mapping)
+    print(f"Collapsing flows for {len(pop.people)} people")
+    with CodeTimer(unit="s"):
+        people_place_ids, people_baseline_flows = get_baseline_flows(pop, id_mapping)
+    print("Finalizing all coordinates")
+    with CodeTimer(unit="s"):
+        place_coords = get_place_coordinates(pop, id_mapping)
 
     print("Creating snapshot")
-    np.savez(
-        output_path,
-        nplaces=np.uint32(num_places),
-        npeople=np.uint32(num_people),
-        nslots=np.uint32(SLOTS),
-        time=np.uint32(0),
-        not_home_probs=np.array([p.time_use.not_home for p in pop.people]),
-        # TODO Plumb along
-        lockdown_multipliers=np.ones(100, dtype=np.float32),
-        place_activities=id_mapping.place_activities,
-        place_coords=place_coords,
-        place_hazards=np.zeros(num_places, dtype=np.uint32),
-        place_counts=np.zeros(num_places, dtype=np.uint32),
-        people_ages=np.array([p.age_years for p in pop.people], dtype=np.uint16),
-        people_obesity=np.array(
-            [p.health.obesity for p in pop.people], dtype=np.uint16
-        ),
-        people_cvd=np.array(
-            [bool_to_int(p.health.has_cardiovascular_disease) for p in pop.people],
-            dtype=np.uint8,
-        ),
-        people_diabetes=np.array(
-            [bool_to_int(p.health.has_diabetes) for p in pop.people], dtype=np.uint8
-        ),
-        people_blood_pressure=np.array(
-            [bool_to_int(p.health.has_high_blood_pressure) for p in pop.people],
-            dtype=np.uint8,
-        ),
-        people_statuses=np.zeros(num_people, dtype=np.uint32),
-        people_transition_times=np.zeros(num_people, dtype=np.uint32),
-        people_place_ids=people_place_ids,
-        people_baseline_flows=people_baseline_flows,
-        people_flows=people_baseline_flows,
-        people_hazards=np.zeros(num_people, dtype=np.uint32),
-        people_prngs=np.random.randint(
-            np.uint32((1 << 32) - 1), size=num_people * 4, dtype=np.uint32
-        ),
-        area_codes=np.array([pop.households[p.household].msoa for p in pop.people]),
-        params=Params().asarray(),
-    )
+    with CodeTimer(unit="s"):
+        np.savez(
+            output_path,
+            nplaces=np.uint32(num_places),
+            npeople=np.uint32(num_people),
+            nslots=np.uint32(SLOTS),
+            time=np.uint32(0),
+            not_home_probs=np.array([p.time_use.not_home for p in pop.people]),
+            # TODO Plumb along
+            lockdown_multipliers=np.ones(100, dtype=np.float32),
+            place_activities=id_mapping.place_activities,
+            place_coords=place_coords,
+            place_hazards=np.zeros(num_places, dtype=np.uint32),
+            place_counts=np.zeros(num_places, dtype=np.uint32),
+            people_ages=np.array([p.age_years for p in pop.people], dtype=np.uint16),
+            people_obesity=np.array(
+                [p.health.obesity for p in pop.people], dtype=np.uint16
+            ),
+            people_cvd=np.array(
+                [bool_to_int(p.health.has_cardiovascular_disease) for p in pop.people],
+                dtype=np.uint8,
+            ),
+            people_diabetes=np.array(
+                [bool_to_int(p.health.has_diabetes) for p in pop.people], dtype=np.uint8
+            ),
+            people_blood_pressure=np.array(
+                [bool_to_int(p.health.has_high_blood_pressure) for p in pop.people],
+                dtype=np.uint8,
+            ),
+            people_statuses=np.zeros(num_people, dtype=np.uint32),
+            people_transition_times=np.zeros(num_people, dtype=np.uint32),
+            people_place_ids=people_place_ids,
+            people_baseline_flows=people_baseline_flows,
+            people_flows=people_baseline_flows,
+            people_hazards=np.zeros(num_people, dtype=np.uint32),
+            people_prngs=np.random.randint(
+                np.uint32((1 << 32) - 1), size=num_people * 4, dtype=np.uint32
+            ),
+            area_codes=np.array([pop.households[p.household].msoa for p in pop.people]),
+            params=Params().asarray(),
+        )
     print(f"Wrote {output_path}")
 
 
 def get_baseline_flows(pop, id_mapping):
-    print(f"Collapsing flows for {len(pop.people)} people")
-
     # We ultimately want a 1D array for flows and place IDs. It's a flattened list, with
     # places_to_keep_per_person entries per person.
     places_to_keep_per_person = SLOTS
@@ -140,7 +146,7 @@ def get_baseline_flows(pop, id_mapping):
         len(pop.people) * places_to_keep_per_person, dtype=np.float32
     )
 
-    for person in pop.people:
+    for person in tqdm(pop.people):
         idx = person.id * places_to_keep_per_person
         # Per person, flatten all the flows, regardless of activity
         for (activity, venue, weight) in get_baseline_flows_per_person(
@@ -169,7 +175,6 @@ def get_baseline_flows_per_person(person, places_to_keep_per_person):
 
 
 def get_place_coordinates(pop, id_mapping):
-    print("Finalizing all coordinates")
     result = np.zeros(id_mapping.total_places * 2, dtype=np.float32)
 
     for activity, venues in pop.venues_per_activity.items():

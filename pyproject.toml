@@ -17,6 +17,7 @@ imgui = "^1.4.1"
 PyOpenGL = "=3.1.5"
 pyopencl = "=2020.2.2"
 protobuf = "^3.20.0"
+linetimer = "^0.1.5"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

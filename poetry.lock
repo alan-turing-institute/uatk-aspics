@@ -107,6 +107,14 @@ pyglet = ["pyopengl", "pyglet", "pyglet (>=1.5.6)"]
 sdl2 = ["pyopengl", "pysdl2"]
 
 [[package]]
+name = "linetimer"
+version = "0.1.5"
+description = "A small Python class to quickly measure the time taken while executing a block of indented lines"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "more-itertools"
 version = "8.12.0"
 description = "More routines for operating on iterables, beyond itertools"
@@ -353,7 +361,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "b0909a452cc5a9913d6be5a93fd17af4f10c25ea7500e86cb2b6f095df07718f"
+content-hash = "5457df100bb40d978bb16e285b3cbf15a1fb923e19caface337c3b5a37fb5ec9"
 
 [metadata.files]
 appdirs = [
@@ -458,6 +466,10 @@ imgui = [
     {file = "imgui-1.4.1-pp37-pypy37_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:516e1e7cefa69a3568456e32eb3d536b7560cd29a59d16d9308cb4781b2e8350"},
     {file = "imgui-1.4.1-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:9b90c89f420eed37c09a618e9fe93066d1c4cbbd27da4da9095d1d3c98860d1f"},
     {file = "imgui-1.4.1.tar.gz", hash = "sha256:012fd8d581171bd04ebfa649ca92c7f382a2806c7027bc7c31c8b39899899e7d"},
+]
+linetimer = [
+    {file = "linetimer-0.1.5-py3-none-any.whl", hash = "sha256:18f917bf9c3afe2ba2375dbf97fd01189c1967fe4c49382036b03201e03c2889"},
+    {file = "linetimer-0.1.5.tar.gz", hash = "sha256:f9723860bbbeae05e4e1383b237e5b73f98c71b73e50dc8c2856a0580269752b"},
 ]
 more-itertools = [
     {file = "more-itertools-8.12.0.tar.gz", hash = "sha256:7dc6ad46f05f545f900dd59e8dfb4e84a4827b97b3cfecb175ea0c7d247f6064"},
