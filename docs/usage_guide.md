@@ -22,7 +22,7 @@ poetry install
 
 ## Running the simulation
 
-You first need to generate a synthetic population .pb file using [SPC](https://github.com/dabreegster/spc). Copy that into `data/processed_data/STUDY_AREA_NAME/synthpop.pb`.
+You first need to generate a synthetic population .pb file using [SPC](https://github.com/dabreegster/spc). Copy that into `data/processed_data/STUDY_AREA_NAME/synthpop.pb`. Note the naming scheme differs between the two projects -- `data/output/west_yorkshire_small.pb` from SPC should become `data/processed_data/WestYorkshireSmall/synthpop.pb`.
 
 Convert the synthetic population file to a snapshot:
 
