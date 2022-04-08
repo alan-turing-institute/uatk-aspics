@@ -6,6 +6,7 @@ from aspics.params import Params
 from tqdm import tqdm
 from linetimer import CodeTimer
 import os
+import pathlib
 import random
 import synthpop_pb2
 from collections import namedtuple
@@ -27,7 +28,7 @@ from collections import namedtuple
 )
 def main(input_path, output_path):
     try:
-        os.mkdir(os.path.dirname(output_path))
+        pathlib.Path(os.path.dirname(output_path)).mkdir(parents=True, exist_ok=True)
     except FileExistsError:
         pass
 
