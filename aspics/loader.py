@@ -34,11 +34,11 @@ def setup_sim(parameters_file):
             "iteration (output_every_iteration=True)"
         )
 
-    # Load the snapshot file, built by Rust
-    snapshot_path = f"data/processed_data/{study_area}/snapshot/cache.npz"
+    # Load the snapshot file
+    snapshot_path = f"data/snapshots/{study_area}/cache.npz"
     if not os.path.exists(snapshot_path):
         raise Exception(
-            f"Missing snapshot cache {snapshot_path}. Run the Rust pipeline first to generate it."
+            f"Missing snapshot cache {snapshot_path}. Run SPC and convert_snapshot.py first to generate it."
         )
     print(f"Loading snapshot from {snapshot_path}")
     snapshot = Snapshot.load_full_snapshot(path=snapshot_path)

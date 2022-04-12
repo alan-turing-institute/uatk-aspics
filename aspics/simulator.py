@@ -158,7 +158,6 @@ class Simulator:
         self.buffers = buffers
         self.kernels = kernels
 
-        # data_dir = os.path.join(opencl_dir, "data/")
         self.initial_cases = InitialCases(
             snapshot.area_codes, snapshot.not_home_probs, parameters_file
         )

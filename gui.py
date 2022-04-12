@@ -18,7 +18,7 @@ def main(parameters_file):
     inspector = Inspector(
         simulator,
         snapshot,
-        snapshot_folder=f"data/processed_data/{study_area}/snapshot/",
+        snapshot_folder=f"data/snapshots/{study_area}/",
         # Number of visualized connections per person
         nlines=4,
         window_name=study_area,

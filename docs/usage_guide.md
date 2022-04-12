@@ -22,12 +22,14 @@ poetry install
 
 ## Running the simulation
 
-You first need to generate a synthetic population .pb file using [SPC](https://github.com/dabreegster/spc). Copy that into `data/processed_data/STUDY_AREA_NAME/synthpop.pb`. Note the naming scheme differs between the two projects -- `data/output/west_yorkshire_small.pb` from SPC should become `data/processed_data/WestYorkshireSmall/synthpop.pb`.
+You first need to generate a synthetic population `.pb` file using [SPC](https://github.com/dabreegster/spc).
 
 Convert the synthetic population file to a snapshot:
 
 ```shell
-poetry run python convert_snapshot.py -i data/processed_data/WestYorkshireSmall/synthpop.pb -o data/processed_data/WestYorkshireSmall/snapshot/cache.npz
+# Assuming the spc repository has been cloned in the parent directory of ua-aspics
+# Note the naming scheme differs -- west_yorkshire_small becomes WestYorkshireSmall
+poetry run python convert_snapshot.py -i ../spc/data/output/west_yorkshire_small.pb -o data/snapshots/WestYorkshireSmall/cache.npz
 ```
 
 Then to run the snapshot file in the Python model:
