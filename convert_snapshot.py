@@ -106,7 +106,7 @@ def convert_to_npz(pop, output_path):
             place_counts=np.zeros(num_places, dtype=np.uint32),
             people_ages=np.array([p.age_years for p in pop.people], dtype=np.uint16),
             people_obesity=np.array(
-                [p.health.obesity for p in pop.people], dtype=np.uint16
+                [obesity_value(p.health.bmi) for p in pop.people], dtype=np.uint16
             ),
             people_cvd=np.array(
                 [bool_to_int(p.health.has_cardiovascular_disease) for p in pop.people],
@@ -205,6 +205,11 @@ def bool_to_int(x):
         return 1
     else:
         return 0
+
+
+def obesity_value(x):
+    # The protobuf enum defines NORMAL as 2. We want to treat NOT_APPLICABLE and UNDERWEIGHT as NORMAL.
+    return max(0, x - 2)
 
 
 if __name__ == "__main__":
