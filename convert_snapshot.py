@@ -104,7 +104,7 @@ def convert_to_npz(pop, output_path):
             place_coords=place_coords,
             place_hazards=np.zeros(num_places, dtype=np.uint32),
             place_counts=np.zeros(num_places, dtype=np.uint32),
-            people_ages=np.array([p.age_years for p in pop.people], dtype=np.uint16),
+            people_ages=np.array([p.demographics.age_years for p in pop.people], dtype=np.uint16),
             people_obesity=np.array(
                 [obesity_value(p.health.bmi) for p in pop.people], dtype=np.uint16
             ),
