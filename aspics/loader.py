@@ -20,7 +20,7 @@ def setup_sim(parameters_file):
             output = sim_params["output"]
             output_every_iteration = sim_params["output-every-iteration"]
             use_lockdown = sim_params["use-lockdown"]
-            startDate = sim_params["start-date"]
+            start_date = sim_params["start-date"]
     except Exception as error:
         print("Error in parameters file format")
         raise error
@@ -44,6 +44,14 @@ def setup_sim(parameters_file):
     snapshot = Snapshot.load_full_snapshot(path=snapshot_path)
     print(f"Snapshot is {int(snapshot.num_bytes() / 1000000)} MB")
 
+    # Apply lockdown values
+    if use_lockdown:
+        # Skip past the first entries
+        snapshot.lockdown_multipliers = snapshot.lockdown_multipliers[start_date:]
+    else:
+        # No lockdown
+        snapshot.lockdown_multipliers = np.ones(iterations + 1)
+
     # set the random seed of the model
     snapshot.seed_prngs(42)
 
@@ -62,7 +70,7 @@ def setup_sim(parameters_file):
     simulator.upload("people_statuses", people_statuses)
     simulator.upload("people_transition_times", people_transition_times)
 
-    return simulator, snapshot, study_area
+    return simulator, snapshot, study_area, iterations
 
 
 def create_params(calibration_params, disease_params):

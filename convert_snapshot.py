@@ -98,13 +98,14 @@ def convert_to_npz(pop, output_path):
             nslots=np.uint32(SLOTS),
             time=np.uint32(0),
             not_home_probs=np.array([p.time_use.not_home for p in pop.people]),
-            # TODO Plumb along
-            lockdown_multipliers=np.ones(100, dtype=np.float32),
+            lockdown_multipliers=np.array(pop.lockdown.per_day, dtype=np.float32),
             place_activities=id_mapping.place_activities,
             place_coords=place_coords,
             place_hazards=np.zeros(num_places, dtype=np.uint32),
             place_counts=np.zeros(num_places, dtype=np.uint32),
-            people_ages=np.array([p.demographics.age_years for p in pop.people], dtype=np.uint16),
+            people_ages=np.array(
+                [p.demographics.age_years for p in pop.people], dtype=np.uint16
+            ),
             people_obesity=np.array(
                 [obesity_value(p.health.bmi) for p in pop.people], dtype=np.uint16
             ),
@@ -192,7 +193,7 @@ def get_place_coordinates(pop, id_mapping):
     # critical.
     for household in pop.households:
         place = id_mapping.to_place(synthpop_pb2.Activity.HOME, household.id)
-        # TODO This should crash if we have no buildings in the MSOA
+        # Every MSOA is guaranteed to have buildings
         location = random.choice(pop.info_per_msoa[household.msoa].buildings)
         result[place * 2] = location.latitude
         result[place * 2 + 1] = location.longitude

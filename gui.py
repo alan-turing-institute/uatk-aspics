@@ -13,7 +13,7 @@ from aspics.inspector import Inspector
     help="Parameters file to use to configure the model. This must be located in the working directory.",
 )
 def main(parameters_file):
-    simulator, snapshot, study_area = setup_sim(parameters_file)
+    simulator, snapshot, study_area, _ = setup_sim(parameters_file)
 
     inspector = Inspector(
         simulator,
