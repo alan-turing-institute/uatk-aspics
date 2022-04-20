@@ -78,6 +78,8 @@ class IDMapping:
 
 
 def convert_to_npz(pop, output_path):
+    remove_large_households(pop)
+
     id_mapping = IDMapping(pop)
     num_people = len(pop.people)
     num_places = id_mapping.total_places
@@ -225,6 +227,44 @@ def bool_to_int(x):
 def obesity_value(x):
     # The protobuf enum defines NORMAL as 2. We want to treat NOT_APPLICABLE and UNDERWEIGHT as NORMAL.
     return max(0, x - 2)
+
+
+def remove_large_households(pop, max_people_per_household=10):
+    """
+    Removes people living in households with too many members.
+
+    Note this breaks some invariants of the Population data, because it does
+    not reassign household and person IDs. This is sufficient for this
+    particular script, but be careful if adapting this approach.
+    """
+
+    large_households = set()
+    people_removed = 0
+    for household in pop.households:
+        if len(household.members) > max_people_per_household:
+            large_households.add(household.id)
+            people_removed += len(household.members)
+
+    print(
+        f"Removing {people_removed} people from {len(large_households)} because the household has > {max_people_per_household} people"
+    )
+
+    # These aren't normal Python lists; see
+    # https://developers.google.com/protocol-buffers/docs/reference/python-generated#repeated-message-fields.
+    # It unfortunately copies the messages.
+    people = list(
+        filter(lambda person: person.household not in large_households, pop.people)
+    )
+    del pop.people[:]
+    pop.people.extend(people)
+
+    # Reassign people IDs, since we removed many entries from the middle of the list
+    for idx, person in enumerate(pop.people):
+        person.id = idx
+
+    # If we needed to, we could fix the IDs in household.members. We could also
+    # remove households and fix up person.household. But that's not necessary
+    # for this script.
 
 
 if __name__ == "__main__":
