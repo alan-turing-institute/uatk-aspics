@@ -152,7 +152,7 @@ def get_baseline_flows(pop, id_mapping):
         idx = person.id * places_to_keep_per_person
         # Per person, flatten all the flows, regardless of activity
         for (activity, venue, weight) in get_baseline_flows_per_person(
-            person, places_to_keep_per_person
+            pop, person, places_to_keep_per_person
         ):
             people_place_ids[idx] = id_mapping.to_place(activity, venue)
             people_baseline_flows[idx] = weight
@@ -161,12 +161,26 @@ def get_baseline_flows(pop, id_mapping):
     return (people_place_ids, people_baseline_flows)
 
 
-def get_baseline_flows_per_person(person, places_to_keep_per_person):
+def get_baseline_flows_per_person(pop, person, places_to_keep_per_person):
     result = []
-    for flows in person.flows_per_activity:
+
+    # Home and work are per-person
+    result.append((synthpop_pb2.Activity.HOME, person.household, 1.0))
+    if person.workplace != 2 ** 64 - 1:
+        result.append((synthpop_pb2.Activity.WORK, person.workplace, 1.0))
+
+    # Build a map from activity to duration
+    activity_durations = dict(
+        [(x.activity, x.duration) for x in person.activity_durations]
+    )
+
+    # The other flows are the same for everyone in the MSOA
+    msoa = pop.households[person.household].msoa
+    for flows in pop.info_per_msoa[msoa].flows_per_activity:
+        # Weight the per-activity flow by duration
+        activity_duration = activity_durations[flows.activity]
         for flow in flows.flows:
-            # Weight the per-activity flow by duration
-            weight = flows.activity_duration * flow.weight
+            weight = activity_duration * flow.weight
             result.append((flows.activity, flow.venue_id, weight))
 
     # Sort by flows, descending
