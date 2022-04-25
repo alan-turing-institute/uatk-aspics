@@ -13,8 +13,8 @@ The Agent-based Simulation of ePIdemics at Country Scale (ASPICS) models the spr
 
 We aim for this repository to provide an easy-to-use code base for building
 similar research, but this is still in progress. File an
-[issue](https://github.com/dabreegster/ua-aspics/issues) if you're interested in
-building off this work.
+[issue](https://github.com/alan-turing-institute/uatk-aspics/issues) if you're
+interested in building off this work.
 
 - [x] initialisation produces a snapshot for any study area
 - [x] basic simulation with the snapshot

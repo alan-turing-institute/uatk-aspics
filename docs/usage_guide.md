@@ -7,7 +7,7 @@
   standard commands like `unzip` and `python3` available
 
 ```shell
-git clone https://github.com/dabreegster/ua-aspics/
+git clone https://github.com/alan-turing-institute/uatk-aspics/
 cd ua-aspics
 # You only have to run this the first time, to install Python dependencies
 poetry install
@@ -15,7 +15,7 @@ poetry install
 
 ## Running the simulation
 
-You first need to generate a synthetic population `.pb` file using [SPC](https://github.com/dabreegster/spc).
+You first need to download or generate a synthetic population `.pb` file using [SPC](https://github.com/alan-turing-institute/uatk-spc).
 
 Convert the synthetic population file to a snapshot:
 
