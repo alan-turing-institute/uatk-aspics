@@ -20,9 +20,9 @@ You first need to download or generate a synthetic population `.pb` file using [
 Convert the synthetic population file to a snapshot:
 
 ```shell
-# Assuming the spc repository has been cloned in the parent directory of ua-aspics
+# Assuming the uatk-spc repository has been cloned in the parent directory of ua-aspics
 # Note the naming scheme differs -- west_yorkshire_small becomes WestYorkshireSmall
-poetry run python convert_snapshot.py -i ../spc/data/output/west_yorkshire_small.pb -o data/snapshots/WestYorkshireSmall/cache.npz
+poetry run python convert_snapshot.py -i ../uatk-spc/data/output/west_yorkshire.pb -o data/snapshots/WestYorkshireSmall/cache.npz
 ```
 
 Then to run the snapshot file in the Python model:

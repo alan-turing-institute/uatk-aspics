@@ -131,7 +131,9 @@ def convert_to_npz(pop, output_path):
             people_prngs=np.random.randint(
                 np.uint32((1 << 32) - 1), size=num_people * 4, dtype=np.uint32
             ),
-            area_codes=np.array([pop.households[p.household].msoa for p in pop.people]),
+            area_codes=np.array(
+                [pop.households[p.household].msoa11cd for p in pop.people]
+            ),
             params=Params().asarray(),
         )
     print(f"Wrote {output_path}")
@@ -168,7 +170,7 @@ def get_baseline_flows_per_person(pop, person, places_to_keep_per_person):
 
     # Home and work are per-person
     result.append((synthpop_pb2.Activity.HOME, person.household, 1.0))
-    if person.workplace != 2 ** 64 - 1:
+    if person.workplace != 2**64 - 1:
         result.append((synthpop_pb2.Activity.WORK, person.workplace, 1.0))
 
     # Build a map from activity to duration
@@ -177,7 +179,7 @@ def get_baseline_flows_per_person(pop, person, places_to_keep_per_person):
     )
 
     # The other flows are the same for everyone in the MSOA
-    msoa = pop.households[person.household].msoa
+    msoa = pop.households[person.household].msoa11cd
     for flows in pop.info_per_msoa[msoa].flows_per_activity:
         # Weight the per-activity flow by duration
         activity_duration = activity_durations[flows.activity]
@@ -210,7 +212,7 @@ def get_place_coordinates(pop, id_mapping):
     for household in pop.households:
         place = id_mapping.to_place(synthpop_pb2.Activity.HOME, household.id)
         # Every MSOA is guaranteed to have buildings
-        location = random.choice(pop.info_per_msoa[household.msoa].buildings)
+        location = random.choice(pop.info_per_msoa[household.msoa11cd].buildings)
         result[place * 2] = location.latitude
         result[place * 2 + 1] = location.longitude
 
@@ -246,7 +248,7 @@ def remove_large_households(pop, max_people_per_household=10):
             people_removed += len(household.members)
 
     print(
-        f"Removing {people_removed} people from {len(large_households)} because the household has > {max_people_per_household} people"
+        f"Removing {people_removed} people from {len(large_households)} households because the household has > {max_people_per_household} people"
     )
 
     # These aren't normal Python lists; see
