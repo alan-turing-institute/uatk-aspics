@@ -26,7 +26,12 @@ from collections import namedtuple
 @click.option(
     "-o", "--output_path", type=click.Path(), help="Write the snapshot file here"
 )
-def main(input_path, output_path):
+@click.option(
+    "--reduce_obesity",
+    is_flag=True,
+    help="Reduce the obesity level of each individual.",
+)
+def main(input_path, output_path, reduce_obesity):
     try:
         pathlib.Path(os.path.dirname(output_path)).mkdir(parents=True, exist_ok=True)
     except FileExistsError:
@@ -39,7 +44,7 @@ def main(input_path, output_path):
         pop.ParseFromString(f.read())
         f.close()
 
-    convert_to_npz(pop, output_path)
+    convert_to_npz(pop, output_path, reduce_obesity)
 
 
 # A slot is a place somebody could visit
@@ -77,7 +82,7 @@ class IDMapping:
         return self.id_offset_per_activity[activity] + venue
 
 
-def convert_to_npz(pop, output_path):
+def convert_to_npz(pop, output_path, reduce_obesity):
     remove_large_households(pop)
 
     id_mapping = IDMapping(pop)
@@ -109,7 +114,8 @@ def convert_to_npz(pop, output_path):
                 [p.demographics.age_years for p in pop.people], dtype=np.uint16
             ),
             people_obesity=np.array(
-                [obesity_value(p.health.bmi) for p in pop.people], dtype=np.uint16
+                [obesity_value(p.health.bmi, reduce_obesity) for p in pop.people],
+                dtype=np.uint16,
             ),
             people_cvd=np.array(
                 [bool_to_int(p.health.has_cardiovascular_disease) for p in pop.people],
@@ -226,9 +232,20 @@ def bool_to_int(x):
         return 0
 
 
-def obesity_value(x):
-    # The protobuf enum defines NORMAL as 2. We want to treat NOT_APPLICABLE and UNDERWEIGHT as NORMAL.
-    return max(0, x - 2)
+def obesity_value(x, reduce_obesity):
+    """
+    Transform the protobuf obesity enum values for the simulation.
+
+    Always transform NOT_APPLICABLE and UNDERWEIGHT into NORMAL. If
+    reduce_obesity is true, also move people in the obese 1, 2, or 3 categories
+    one level up. Do not transform OVERWEIGHT.
+    """
+    # The protobuf enum defines NORMAL as 2. We want to treat NOT_APPLICABLE
+    # and UNDERWEIGHT as NORMAL.
+    x = max(0, x - 2)
+    if reduce_obesity and x >= 2:
+        x -= 1
+    return x
 
 
 def remove_large_households(pop, max_people_per_household=10):

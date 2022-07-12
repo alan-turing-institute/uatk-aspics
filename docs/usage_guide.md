@@ -37,3 +37,8 @@ This should launch an interactive dashboard. Or you can run the simulation in
 ```shell
 poetry run python headless.py -p config/WestYorkshireSmall.yml
 ```
+
+### Extra options
+
+You can transform individuals to a lower level of obesity by running
+`convert_snapshot.py` with the `--reduce_obesity` flag.
