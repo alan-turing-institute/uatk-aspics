@@ -2,4 +2,12 @@
 target
 *.swp
 __pycache__
+# Mac crap 
 .DS_Store
+
+# Added after calibration notbeooks 
+.pytest_cache/
+/calibration/SPC_data
+
+# jupyter notebook stuff
+*.ipynb_checkpoints/
