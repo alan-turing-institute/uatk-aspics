@@ -1,4 +1,6 @@
+import csv
 import os
+import datetime
 from yaml import load, SafeLoader
 
 from aspics.simulator import Simulator
@@ -8,7 +10,7 @@ from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMul
 import synthpop_pb2
 
 
-def setup_sim(parameters_file, spc):
+def setup_sim(parameters_file, spc_path, events_path):
     print(f"Running a simulation based on {parameters_file}")
 
     try:
@@ -22,7 +24,11 @@ def setup_sim(parameters_file, spc):
             output = sim_params["output"]
             output_every_iteration = sim_params["output-every-iteration"]
             use_lockdown = sim_params["use-lockdown"]
-            start_date = sim_params["start-date"]
+            start_date_days = sim_params["start-date"]
+            # The configuration is defined relative to this
+            start_date = datetime.date(2020, 2, 15) + datetime.timedelta(
+                days=start_date_days
+            )
     except Exception as error:
         print("Error in parameters file format")
         raise error
@@ -49,7 +55,7 @@ def setup_sim(parameters_file, spc):
     # Apply lockdown values
     if use_lockdown:
         # Skip past the first entries
-        snapshot.lockdown_multipliers = snapshot.lockdown_multipliers[start_date:]
+        snapshot.lockdown_multipliers = snapshot.lockdown_multipliers[start_date_days:]
     else:
         # No lockdown
         snapshot.lockdown_multipliers = np.ones(iterations + 1)
@@ -66,18 +72,26 @@ def setup_sim(parameters_file, spc):
             snapshot.switch_to_healthier_population()
 
     # Load the original SPC protobuf if provided
-    if spc:
-        print(f"Loading SPC population data from {spc}")
+    if spc_path:
+        print(f"Loading SPC population data from {spc_path}")
         with CodeTimer(unit="s"):
             pop = synthpop_pb2.Population()
-            f = open(spc, "rb")
+            f = open(spc_path, "rb")
             pop.ParseFromString(f.read())
             f.close()
     else:
         pop = None
 
+    # Load large events if provided
+    if events_path:
+        print(f"Loading large events from {events_path}")
+        with open(events_path) as f:
+            events = list(csv.DictReader(f))
+    else:
+        events = []
+
     # Create a simulator and upload the snapshot data to the OpenCL device
-    simulator = Simulator(snapshot, parameters_file, pop, gpu=True)
+    simulator = Simulator(snapshot, parameters_file, pop, events, start_date, gpu=True)
     [people_statuses, people_transition_times] = simulator.seeding_base()
     simulator.upload_all(snapshot.buffers)
     simulator.upload("people_statuses", people_statuses)

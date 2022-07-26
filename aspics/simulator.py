@@ -1,4 +1,5 @@
 import numpy as np
+import datetime
 from numpy import random
 import pyopencl as cl
 import os
@@ -7,6 +8,7 @@ from aspics.buffers import Buffers
 from aspics.kernels import Kernels
 from aspics.params import Params
 from aspics.snapshot import Snapshot
+from aspics.events import simulateEvents
 from aspics.initial_cases import InitialCases
 
 
@@ -21,6 +23,8 @@ class Simulator:
         snapshot,
         parameters_file,
         population,
+        events,
+        start_date,
         gpu=False,
     ):
         """Initialise OpenCL context, kernels, and buffers for the simulator.
@@ -28,6 +32,8 @@ class Simulator:
         Args:
             snapshot (Snapshot): snapshot containing data and number of places, people and slots
             population (synthpop_pb2.Population): optionally, the original population data used to create the snapshot.
+            events: a list of large events to simulate.
+            start_date (datetime.date)
             gpu (bool): Whether to try to use a discrete GPU, set to false to use CPU.
 
         Raises:
@@ -166,6 +172,8 @@ class Simulator:
         self.num_seed_days = 0
 
         self.population = population
+        self.start_date = start_date
+        self.events = events
 
     def platform_name(self):
         """The name of the OpenCL platform being used for simulation."""
@@ -214,6 +222,10 @@ class Simulator:
             self.step_with_seeding()
         else:
             self.step_all_kernels()
+
+        # The above methods advance self.time, so finish the day by simulating large events
+        today = self.start_date + datetime.timedelta(days=int(self.time) - 1)
+        simulateEvents(today, self.events)
 
     def step_all_kernels(self):
         """Runs each kernel in order and updates the time. Blocks until complete."""

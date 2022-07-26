@@ -25,8 +25,16 @@ from aspics.loader import setup_sim
     type=click.Path(exists=True),
     help="The same SPC protobuf file used with convert_snapshot.py.",
 )
-def main(parameters_file, spc):
-    simulator, snapshot, study_area, iterations = setup_sim(parameters_file, spc)
+@click.option(
+    "--events",
+    type=click.Path(exists=True),
+    help="Simulate people attending these large events. Path to a CSV file.",
+    default=None,
+)
+def main(parameters_file, spc, events):
+    simulator, snapshot, study_area, iterations = setup_sim(
+        parameters_file, spc, events
+    )
 
     summary, final_state = run_headless(simulator, snapshot, iterations)
     store_summary_data(

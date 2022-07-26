@@ -28,16 +28,24 @@ poetry run python convert_snapshot.py -i ../uatk-spc/data/output/west_yorkshire.
 Then to run the snapshot file in the Python model:
 
 ```shell
-poetry run python gui.py -p config/WestYorkshireSmall.yml --spc ../uatk-spc/data/output/west_yorkshire.pb
+poetry run python gui.py -p config/WestYorkshireSmall.yml
 ```
 
 This should launch an interactive dashboard. Or you can run the simulation in
 "headless" mode and instead write summary output data:
 
 ```shell
-poetry run python headless.py -p config/WestYorkshireSmall.yml --spc ../uatk-spc/data/output/west_yorkshire.pb
+poetry run python headless.py -p config/WestYorkshireSmall.yml
 ```
 
-Note you provide the same `.pb` file that you used with `convert_snapshot.py`
-when running the simulation. This is optional for most simulations, but
-required to model large events.
+### Large events
+
+If you want to simulate large events, you must provide additional parameters
+pointing to the original SPC protobuf file and a definition of events. For
+example:
+
+```shell
+poetry run python gui.py -p config/WestYorkshireSmall.yml \
+  --spc ../uatk-spc/data/output/west_yorkshire.pb \
+  --events config/eventDataConcerts.csv
+```

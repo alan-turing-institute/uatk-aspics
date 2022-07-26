@@ -18,8 +18,14 @@ from aspics.inspector import Inspector
     help="The same SPC protobuf file used with convert_snapshot.py.",
     default=None,
 )
-def main(parameters_file, spc):
-    simulator, snapshot, study_area, _ = setup_sim(parameters_file, spc)
+@click.option(
+    "--events",
+    type=click.Path(exists=True),
+    help="Simulate people attending these large events. Path to a CSV file.",
+    default=None,
+)
+def main(parameters_file, spc, events):
+    simulator, snapshot, study_area, _ = setup_sim(parameters_file, spc, events)
 
     inspector = Inspector(
         simulator,
