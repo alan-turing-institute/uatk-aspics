@@ -18,9 +18,15 @@ from aspics.loader import setup_sim
     "--parameters-file",
     type=click.Path(exists=True),
     help="Parameters file to use to configure the model. This must be located in the working directory.",
+    default=None,
 )
-def main(parameters_file):
-    simulator, snapshot, study_area, iterations = setup_sim(parameters_file)
+@click.option(
+    "--spc",
+    type=click.Path(exists=True),
+    help="The same SPC protobuf file used with convert_snapshot.py.",
+)
+def main(parameters_file, spc):
+    simulator, snapshot, study_area, iterations = setup_sim(parameters_file, spc)
 
     summary, final_state = run_headless(simulator, snapshot, iterations)
     store_summary_data(

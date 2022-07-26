@@ -20,13 +20,14 @@ class Simulator:
         self,
         snapshot,
         parameters_file,
-        # selected_region_folder_full_path,
+        population,
         gpu=False,
     ):
         """Initialise OpenCL context, kernels, and buffers for the simulator.
 
         Args:
             snapshot (Snapshot): snapshot containing data and number of places, people and slots
+            population (synthpop_pb2.Population): optionally, the original population data used to create the snapshot.
             gpu (bool): Whether to try to use a discrete GPU, set to false to use CPU.
 
         Raises:
@@ -163,6 +164,8 @@ class Simulator:
         )
 
         self.num_seed_days = 0
+
+        self.population = population
 
     def platform_name(self):
         """The name of the OpenCL platform being used for simulation."""

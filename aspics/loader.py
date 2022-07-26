@@ -2,11 +2,13 @@ import os
 from yaml import load, SafeLoader
 
 from aspics.simulator import Simulator
+from linetimer import CodeTimer
 from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
+import synthpop_pb2
 
 
-def setup_sim(parameters_file):
+def setup_sim(parameters_file, spc):
     print(f"Running a simulation based on {parameters_file}")
 
     try:
@@ -63,8 +65,19 @@ def setup_sim(parameters_file):
             print("Switching to healthier population")
             snapshot.switch_to_healthier_population()
 
+    # Load the original SPC protobuf if provided
+    if spc:
+        print(f"Loading SPC population data from {spc}")
+        with CodeTimer(unit="s"):
+            pop = synthpop_pb2.Population()
+            f = open(spc, "rb")
+            pop.ParseFromString(f.read())
+            f.close()
+    else:
+        pop = None
+
     # Create a simulator and upload the snapshot data to the OpenCL device
-    simulator = Simulator(snapshot, parameters_file, gpu=True)
+    simulator = Simulator(snapshot, parameters_file, pop, gpu=True)
     [people_statuses, people_transition_times] = simulator.seeding_base()
     simulator.upload_all(snapshot.buffers)
     simulator.upload("people_statuses", people_statuses)

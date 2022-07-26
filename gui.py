@@ -12,8 +12,14 @@ from aspics.inspector import Inspector
     type=click.Path(exists=True),
     help="Parameters file to use to configure the model. This must be located in the working directory.",
 )
-def main(parameters_file):
-    simulator, snapshot, study_area, _ = setup_sim(parameters_file)
+@click.option(
+    "--spc",
+    type=click.Path(exists=True),
+    help="The same SPC protobuf file used with convert_snapshot.py.",
+    default=None,
+)
+def main(parameters_file, spc):
+    simulator, snapshot, study_area, _ = setup_sim(parameters_file, spc)
 
     inspector = Inspector(
         simulator,
