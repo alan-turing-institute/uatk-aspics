@@ -1,5 +1,5 @@
 microsim:
-  study-area: "Rutland"
+  study-area: "Rutland_calibration"
   iterations: 80 # Number of model iterations (days)
   use-lockdown: TRUE # Whether to preload the lockdown scenario
   start-date: 10 # Counted as number of days since 15/02/2020 (currently, max is 435)
@@ -16,6 +16,7 @@ microsim_calibration:
     asymptomatic: 0.75
     symptomatic: 1.0
   # Different locations can also have their own multipliers (e.g. to make it easier to pass the disease on to shops than schools)
+  # Relevant to calibration in a national modelling scenario
   hazard_location_multipliers:
     Retail: 1.0
     Nightclubs: 1.0

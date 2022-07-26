@@ -19,6 +19,10 @@ from aspics import params
 from aspics import disease_statuses
 from aspics import summary
 
+# TODO
+# 1. No need to the OPENCL_DIR variable, as all code is integrate in the ASPICS folder
+# 2. Fix the paths to OpenCL code folder as there is no need for that.
+
 class OpenCLRunner:
     """
     Includes useful functions for running the OpenCL model in notebooks
