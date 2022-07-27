@@ -10,18 +10,20 @@ import time
 import tqdm
 import pandas as pd
 import random
-
+import sys, os
+sys.path.append('../')
 import headless
 from typing import List
-from aspics import simulator
-from aspics import snapshot
-from aspics import params
-from aspics import disease_statuses
-from aspics import summary
+from aspics.simulator import Simulator
+from aspics.snapshot import Snapshot
+from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
+from aspics.disease_statuses import DiseaseStatus
+from aspics.summary import Summary
 
 # TODO
 # 1. No need to the OPENCL_DIR variable, as all code is integrate in the ASPICS folder
 # 2. Fix the paths to OpenCL code folder as there is no need for that.
+# 3. Ask Dustin the error I have in Code about the line 302.
 
 class OpenCLRunner:
     """
@@ -35,8 +37,15 @@ class OpenCLRunner:
     constants = {}
 
     @classmethod
-    def init(cls, iterations: int, repetitions: int, observations: pd.DataFrame, use_gpu: bool,
-             use_healthier_pop: bool, store_detailed_counts: bool, parameters_file: str, opencl_dir: str,
+    def init(cls,
+             iterations: int,
+             repetitions: int,
+             observations: pd.DataFrame,
+             use_gpu: bool,
+             use_healthier_pop: bool,
+             store_detailed_counts: bool,
+             parameters_file: str,
+             opencl_dir: str,
              snapshot_filepath: str):
         """
         The class variables determine how the model should run. They need to be class variables
@@ -154,10 +163,10 @@ class OpenCLRunner:
 
         :param summaries: A list of Summary objects created by running the OpenCL model
         """
-        iters = len(summaries[0].total_counts[disease_statuses.Exposed.value])  # Number of iterations for each repetition
+        iters = len(summaries[0].total_counts[DiseaseStatus.Exposed.value])  # Number of iterations for each repetition
         total_not_susceptible = np.zeros(iters)  # Total people not susceptible per iteration
-        for d, disease_status in enumerate(disease_statuses):
-            if disease_status != disease_statuses.Susceptible:
+        for d, disease_status in enumerate(DiseaseStatus):
+            if disease_status != DiseaseStatus.Susceptible:
                 mean = OpenCLRunner.get_mean_total_counts(summaries, d)  # Mean number of people with that disease
                 total_not_susceptible = total_not_susceptible + mean
         return total_not_susceptible
@@ -175,6 +184,7 @@ class OpenCLRunner:
                           secondary_school: float = None,
                           home: float = None,
                           work: float = None,
+                          nightclubs: float =None,
                           ):
         """Create a params object with the given arguments. This replicates the functionality in
         microsim.main.create_params() but rather than just reading parameters from the parameters
@@ -204,7 +214,7 @@ class OpenCLRunner:
         # Location hazard multipliers can be passed straight through to the LocationHazardMultipliers object.
         # If no argument was passed then the default in the parameters file is used. Note that they need to
         # be multiplied by the current_risk_beta
-        location_hazard_multipliers = params.LocationHazardMultipliers(
+        location_hazard_multipliers = LocationHazardMultipliers(
             retail=current_risk_beta * OpenCLRunner._check_if_none("retail",
                                                                    retail,
                                                                    calibration_params["hazard_location_multipliers"][
@@ -225,10 +235,14 @@ class OpenCLRunner:
                                                                  work,
                                                                  calibration_params["hazard_location_multipliers"][
                                                                      "Work"]),
+            nightclubs=current_risk_beta * OpenCLRunner._check_if_none("nightclubs",
+                                                                 nightclubs,
+                                                                 calibration_params["hazard_location_multipliers"][
+                                                                     "Nightclubs"]),
         )
 
         # Individual hazard multipliers can be passed straight through
-        individual_hazard_multipliers = params.IndividualHazardMultipliers(
+        individual_hazard_multipliers = IndividualHazardMultipliers(
             presymptomatic=OpenCLRunner._check_if_none("presymptomatic",
                                                        presymptomatic,
                                                        calibration_params["hazard_individual_multipliers"][
@@ -253,7 +267,7 @@ class OpenCLRunner:
         bloodpressure = disease_params["bloodpressure"]
         overweight_sympt_mplier = disease_params["overweight_sympt_mplier"]
 
-        p = params(
+        p = Params(
             location_hazard_multipliers=location_hazard_multipliers,
             individual_hazard_multipliers=individual_hazard_multipliers,
         )
@@ -292,7 +306,8 @@ class OpenCLRunner:
     def run_opencl_model(i: int, iterations: int, snapshot_filepath: str, params,
                          opencl_dir: str, use_gpu: bool,
                          use_healthier_pop: bool,
-                         store_detailed_counts: bool = True, quiet=False) -> tuple[np.ndarray, np.ndarray]:
+                         parameters_file,
+                         store_detailed_counts: bool = True, quiet=False) -> (np.ndarray, np.ndarray):
         """
         Run the OpenCL model.
 
@@ -310,7 +325,7 @@ class OpenCLRunner:
         """
 
         # load snapshot
-        snapshot = snapshot.load_full_snapshot(path=snapshot_filepath)
+        snapshot = Snapshot.load_full_snapshot(path=snapshot_filepath)
         prev_obesity = np.copy(snapshot.buffers.people_obesity)
         if use_healthier_pop:
             snapshot.switch_to_healthier_population()
@@ -328,7 +343,7 @@ class OpenCLRunner:
         snapshot.seed_prngs(i)
 
         # Create a simulator and upload the snapshot data to the OpenCL device
-        simulator = simulator(snapshot, opencl_dir=opencl_dir, gpu=use_gpu)
+        simulator = Simulator(snapshot, parameters_file, gpu=use_gpu)
         simulator.upload_all(snapshot.buffers)
 
         if not quiet:
@@ -346,10 +361,10 @@ class OpenCLRunner:
     #
     @staticmethod
     def run_opencl_model_multi(
-            repetitions: int, iterations: int, params: params,
+            repetitions: int, iterations: int, params: Params,
             use_gpu: bool = False, use_healthier_pop: bool = False, store_detailed_counts: bool = False,
-            opencl_dir=os.path.join(".", "microsim", "opencl"),
-            snapshot_filepath=os.path.join(".", "microsim", "opencl", "snapshots", "cache.npz"),
+            opencl_dir=os.path.join(".", "data"),
+            snapshot_filepath=os.path.join(".", "data", "snapshots","Rutland", "cache.npz"),
             multiprocess=False,
             random_ids=False):
         """Run a number of models and return a list of summaries.
@@ -584,7 +599,7 @@ class OpenCLWrapper(object):
             snapshot.seed_prngs(seed=None)
 
             # Create a simulator and upload the snapshot data to the OpenCL device
-            simulator = simulator(snapshot, opencl_dir=self.opencl_dir, gpu=self.use_gpu)
+            simulator = simulator.Simulator(snapshot, opencl_dir=self.opencl_dir, gpu=self.use_gpu)
             simulator.upload_all(snapshot.buffers)
 
             if not self.quiet:
@@ -593,7 +608,7 @@ class OpenCLWrapper(object):
 
             params = params.fromarray(snapshot.buffers.params)  # XX Why extract Params? Can't just use PARAMS?
 
-            summary = summary(snapshot,
+            summary = Summary(snapshot,
                               store_detailed_counts=self.store_detailed_counts,
                               max_time=self.run_length  # Total length of the simulation
                               )
