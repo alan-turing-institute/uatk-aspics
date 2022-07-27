@@ -14,7 +14,8 @@ import sys, os
 sys.path.append('../')
 import headless
 from typing import List
-from aspics.simulator import Simulator
+from simulator import Simulator # Not an elegant way to address path issues.
+#from aspics.simulator import Simulator 
 from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 from aspics.disease_statuses import DiseaseStatus
@@ -24,6 +25,7 @@ from aspics.summary import Summary
 # 1. No need to the OPENCL_DIR variable, as all code is integrate in the ASPICS folder
 # 2. Fix the paths to OpenCL code folder as there is no need for that.
 # 3. Ask Dustin the error I have in Code about the line 302.
+# 4. Find a more scalable solution for the import of the simulator library and not c&p into calibration folder.
 
 class OpenCLRunner:
     """
@@ -170,6 +172,56 @@ class OpenCLRunner:
                 mean = OpenCLRunner.get_mean_total_counts(summaries, d)  # Mean number of people with that disease
                 total_not_susceptible = total_not_susceptible + mean
         return total_not_susceptible
+
+    @staticmethod
+    def create_params(calibration_params, disease_params):
+
+        current_risk_beta = disease_params["current_risk_beta"]
+        # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
+        location_hazard_multipliers = LocationHazardMultipliers(
+            retail=calibration_params["hazard_location_multipliers"]["Retail"]
+            * current_risk_beta,
+            nightclubs=calibration_params["hazard_location_multipliers"]["Nightclubs"]
+            * current_risk_beta,
+            primary_school=calibration_params["hazard_location_multipliers"][
+                "PrimarySchool"
+            ]
+            * current_risk_beta,
+            secondary_school=calibration_params["hazard_location_multipliers"][
+                "SecondarySchool"
+            ]
+            * current_risk_beta,
+            home=calibration_params["hazard_location_multipliers"]["Home"]
+            * current_risk_beta,
+            work=calibration_params["hazard_location_multipliers"]["Work"]
+            * current_risk_beta,
+        )
+
+        individual_hazard_multipliers = IndividualHazardMultipliers(
+            presymptomatic=calibration_params["hazard_individual_multipliers"][
+                "presymptomatic"
+            ],
+            asymptomatic=calibration_params["hazard_individual_multipliers"][
+                "asymptomatic"
+            ],
+            symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
+        )
+
+        obesity_multipliers = [
+            disease_params["overweight"],
+            disease_params["obesity_30"],
+            disease_params["obesity_35"],
+            disease_params["obesity_40"],
+        ]
+
+        return Params(
+            location_hazard_multipliers=location_hazard_multipliers,
+            individual_hazard_multipliers=individual_hazard_multipliers,
+            obesity_multipliers=obesity_multipliers,
+            cvd_multiplier=disease_params["cvd"],
+            diabetes_multiplier=disease_params["diabetes"],
+            bloodpressure_multiplier=disease_params["bloodpressure"],
+        )
 
     @staticmethod
     def create_parameters(parameters_file: str = None,
