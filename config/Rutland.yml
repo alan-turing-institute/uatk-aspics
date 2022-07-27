@@ -1,5 +1,5 @@
 microsim:
-  study-area: "Rutland_calibration"
+  study-area: "Rutland"
   iterations: 80 # Number of model iterations (days)
   use-lockdown: TRUE # Whether to preload the lockdown scenario
   start-date: 10 # Counted as number of days since 15/02/2020 (currently, max is 435)
