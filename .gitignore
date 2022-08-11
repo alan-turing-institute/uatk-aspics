@@ -11,3 +11,5 @@ __pycache__
 
 # jupyter notebook stuff
 *.ipynb_checkpoints/
+
+.idea

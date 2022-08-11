@@ -10,44 +10,39 @@ import time
 import tqdm
 import pandas as pd
 import random
-import sys, os
+import sys
+import os
+
 sys.path.append('../')
-import headless
+from headless import run_headless
 from typing import List
-from simulator import Simulator # Not an elegant way to address path issues.
-#from aspics.simulator import Simulator 
+from simulator import Simulator  # Not an elegant way to address path issues.
 from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 from aspics.disease_statuses import DiseaseStatus
 from aspics.summary import Summary
 
+
 # TODO
-# 1. No need to the OPENCL_DIR variable, as all code is integrate in the ASPICS folder
+# 1. No need for the OPENCL_DIR variable, as all code is integrate in the ASPICS folder
 # 2. Fix the paths to OpenCL code folder as there is no need for that.
 # 3. Ask Dustin the error I have in Code about the line 302.
-# 4. Find a more scalable solution for the import of the simulator library and not c&p into calibration folder.
+# 4. Find a more scalable solution for the import of the simulator library and not Copy and Paste into calibration folder.
+
+# Generic functions that are used in the experiments notebooks
+# Useful to put them in here so that they can be shared across notebooks
+# and can be tested (see tests/experiements/opencl_runner_tests.py)
 
 class OpenCLRunner:
-    """
-    Includes useful functions for running the OpenCL model in notebooks
-    This has been adapted to run in the ASPICS model.
-    
-    """
+    """Includes useful functions for running the OpenCL model in notebooks"""
 
     # Need a list to optionally store additional constant parameter values that cannot
     # be passed through one of the run model functions.
     constants = {}
 
     @classmethod
-    def init(cls,
-             iterations: int,
-             repetitions: int,
-             observations: pd.DataFrame,
-             use_gpu: bool,
-             use_healthier_pop: bool,
-             store_detailed_counts: bool,
-             parameters_file: str,
-             opencl_dir: str,
+    def init(cls, iterations: int, repetitions: int, observations: pd.DataFrame, use_gpu: bool,
+             use_healthier_pop: bool, store_detailed_counts: bool, parameters_file: str, opencl_dir: str,
              snapshot_filepath: str):
         """
         The class variables determine how the model should run. They need to be class variables
@@ -118,7 +113,7 @@ class OpenCLRunner:
     @staticmethod
     def fit_l2(obs: np.ndarray, sim: np.ndarray):
         """Calculate the fitness of a model.
-        
+
          Parameters
         ----------
         obs : array_like
@@ -174,56 +169,6 @@ class OpenCLRunner:
         return total_not_susceptible
 
     @staticmethod
-    def create_params(calibration_params, disease_params):
-
-        current_risk_beta = disease_params["current_risk_beta"]
-        # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
-        location_hazard_multipliers = LocationHazardMultipliers(
-            retail=calibration_params["hazard_location_multipliers"]["Retail"]
-            * current_risk_beta,
-            nightclubs=calibration_params["hazard_location_multipliers"]["Nightclubs"]
-            * current_risk_beta,
-            primary_school=calibration_params["hazard_location_multipliers"][
-                "PrimarySchool"
-            ]
-            * current_risk_beta,
-            secondary_school=calibration_params["hazard_location_multipliers"][
-                "SecondarySchool"
-            ]
-            * current_risk_beta,
-            home=calibration_params["hazard_location_multipliers"]["Home"]
-            * current_risk_beta,
-            work=calibration_params["hazard_location_multipliers"]["Work"]
-            * current_risk_beta,
-        )
-
-        individual_hazard_multipliers = IndividualHazardMultipliers(
-            presymptomatic=calibration_params["hazard_individual_multipliers"][
-                "presymptomatic"
-            ],
-            asymptomatic=calibration_params["hazard_individual_multipliers"][
-                "asymptomatic"
-            ],
-            symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
-        )
-
-        obesity_multipliers = [
-            disease_params["overweight"],
-            disease_params["obesity_30"],
-            disease_params["obesity_35"],
-            disease_params["obesity_40"],
-        ]
-
-        return Params(
-            location_hazard_multipliers=location_hazard_multipliers,
-            individual_hazard_multipliers=individual_hazard_multipliers,
-            obesity_multipliers=obesity_multipliers,
-            cvd_multiplier=disease_params["cvd"],
-            diabetes_multiplier=disease_params["diabetes"],
-            bloodpressure_multiplier=disease_params["bloodpressure"],
-        )
-
-    @staticmethod
     def create_parameters(parameters_file: str = None,
                           current_risk_beta: float = None,
                           infection_log_scale: float = None,
@@ -236,7 +181,6 @@ class OpenCLRunner:
                           secondary_school: float = None,
                           home: float = None,
                           work: float = None,
-                          nightclubs: float =None,
                           ):
         """Create a params object with the given arguments. This replicates the functionality in
         microsim.main.create_params() but rather than just reading parameters from the parameters
@@ -287,10 +231,6 @@ class OpenCLRunner:
                                                                  work,
                                                                  calibration_params["hazard_location_multipliers"][
                                                                      "Work"]),
-            nightclubs=current_risk_beta * OpenCLRunner._check_if_none("nightclubs",
-                                                                 nightclubs,
-                                                                 calibration_params["hazard_location_multipliers"][
-                                                                     "Nightclubs"]),
         )
 
         # Individual hazard multipliers can be passed straight through
@@ -355,11 +295,15 @@ class OpenCLRunner:
                 return default_value
 
     @staticmethod
-    def run_opencl_model(i: int, iterations: int, snapshot_filepath: str, params,
-                         opencl_dir: str, use_gpu: bool,
+    def run_opencl_model(i: int,
+                         iterations: int,
+                         snapshot_filepath: str,
+                         params,
+                         opencl_dir: str,
+                         use_gpu: bool,
                          use_healthier_pop: bool,
-                         parameters_file,
-                         store_detailed_counts: bool = True, quiet=False) -> (np.ndarray, np.ndarray):
+                         store_detailed_counts: bool = True,
+                         quiet=False) -> (np.ndarray, np.ndarray):
         """
         Run the OpenCL model.
 
@@ -395,12 +339,15 @@ class OpenCLRunner:
         snapshot.seed_prngs(i)
 
         # Create a simulator and upload the snapshot data to the OpenCL device
-        simulator = Simulator(snapshot, parameters_file, gpu=use_gpu)
+        simulator = Simulator(snapshot, opencl_dir=opencl_dir, gpu=use_gpu)
         simulator.upload_all(snapshot.buffers)
 
         if not quiet:
             print(f"Running simulation {i + 1}.")
-        summary, final_state = headless(simulator, snapshot, iterations, quiet=True,
+        summary, final_state = run_headless(simulator,
+                                            snapshot,
+                                            iterations,
+                                            quiet=True,
                                             store_detailed_counts=store_detailed_counts)
         return summary, final_state
 
@@ -415,8 +362,8 @@ class OpenCLRunner:
     def run_opencl_model_multi(
             repetitions: int, iterations: int, params: Params,
             use_gpu: bool = False, use_healthier_pop: bool = False, store_detailed_counts: bool = False,
-            opencl_dir=os.path.join(".", "data"),
-            snapshot_filepath=os.path.join(".", "data", "snapshots","Rutland", "cache.npz"),
+            opencl_dir=os.path.join(".", "microsim", "opencl"),
+            snapshot_filepath=os.path.join(".", "microsim", "opencl", "snapshots", "cache.npz"),
             multiprocess=False,
             random_ids=False):
         """Run a number of models and return a list of summaries.
@@ -532,7 +479,7 @@ class OpenCLRunner:
 
         # Check if there are any constants that should
 
-        # Splat the input_params_dict to automatically set any parameters that have been inlcluded
+        # Splat the input_params_dict to automatically set any parameters that have been included
         params = OpenCLRunner.create_parameters(
             parameters_file=cls.PARAMETERS_FILE,
             **input_params_dict
@@ -644,21 +591,21 @@ class OpenCLWrapper(object):
         if self.start_day == 0:
             assert self.current_particle_pop_df is None  # Shouldn't have any preivously-created particles
             # load snapshot
-            snapshot = snapshot.load_full_snapshot(path=self.snapshot_file)
+            snapshot = Snapshot.load_full_snapshot(path=self.snapshot_file)
             # set params
             snapshot.update_params(self.params)
             # Can set the random seed to make it deterministic (None means np will choose one randomly)
             snapshot.seed_prngs(seed=None)
 
             # Create a simulator and upload the snapshot data to the OpenCL device
-            simulator = simulator.Simulator(snapshot, opencl_dir=self.opencl_dir, gpu=self.use_gpu)
+            simulator = Simulator(snapshot, opencl_dir=self.opencl_dir, gpu=self.use_gpu)
             simulator.upload_all(snapshot.buffers)
 
             if not self.quiet:
                 # print(f"Running simulation {sim_number + 1}.")
                 print(f"Running simulation")
 
-            params = params.fromarray(snapshot.buffers.params)  # XX Why extract Params? Can't just use PARAMS?
+            params = Params.fromarray(snapshot.buffers.params)  # XX Why extract Params? Can't just use PARAMS?
 
             summary = Summary(snapshot,
                               store_detailed_counts=self.store_detailed_counts,

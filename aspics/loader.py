@@ -80,8 +80,6 @@ def create_params(calibration_params, disease_params):
     location_hazard_multipliers = LocationHazardMultipliers(
         retail=calibration_params["hazard_location_multipliers"]["Retail"]
         * current_risk_beta,
-        nightclubs=calibration_params["hazard_location_multipliers"]["Nightclubs"]
-        * current_risk_beta,
         primary_school=calibration_params["hazard_location_multipliers"][
             "PrimarySchool"
         ]

@@ -6,6 +6,7 @@ microsim:
   output: TRUE # Whether to generate output or not
   output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
   opencl-model: TRUE # Run the OpenCL model
+  repetitions: 1 # How many times to run the model
 
 
 # Parameters that are used to calibrate the model.
@@ -19,7 +20,6 @@ microsim_calibration:
   # Relevant to calibration in a national modelling scenario
   hazard_location_multipliers:
     Retail: 1.0
-    Nightclubs: 1.0
     PrimarySchool: 1.0
     SecondarySchool: 1.0
     Home: 1.0
