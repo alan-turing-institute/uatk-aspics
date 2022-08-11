@@ -6,24 +6,23 @@ from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 
 
-def setup_sim(parameters_file):
+def setup_sim_from_file(parameters_file):
     print(f"Running a simulation based on {parameters_file}")
+    with open(parameters_file, "r") as f:
+        parameters = load(f, Loader=SafeLoader)
+        return setup_sim(parameters)
 
-    try:
-        with open(parameters_file, "r") as f:
-            parameters = load(f, Loader=SafeLoader)
-            sim_params = parameters["microsim"]
-            calibration_params = parameters["microsim_calibration"]
-            disease_params = parameters["disease"]
-            iterations = sim_params["iterations"]
-            study_area = sim_params["study-area"]
-            output = sim_params["output"]
-            output_every_iteration = sim_params["output-every-iteration"]
-            use_lockdown = sim_params["use-lockdown"]
-            start_date = sim_params["start-date"]
-    except Exception as error:
-        print("Error in parameters file format")
-        raise error
+
+def setup_sim(parameters):
+    sim_params = parameters["microsim"]
+    calibration_params = parameters["microsim_calibration"]
+    disease_params = parameters["disease"]
+    iterations = sim_params["iterations"]
+    study_area = sim_params["study-area"]
+    output = sim_params["output"]
+    output_every_iteration = sim_params["output-every-iteration"]
+    use_lockdown = sim_params["use-lockdown"]
+    start_date = sim_params["start-date"]
 
     # Check the parameters are sensible
     if iterations < 1:
