@@ -4,7 +4,7 @@ from collections import namedtuple
 
 LocationHazardMultipliers = namedtuple(
     "LocationHazardMultipliers",
-    ["retail", "nightclubs", "primary_school", "secondary_school", "home", "work"],
+    ["retail", "primary_school", "secondary_school", "home", "work"],
 )
 
 IndividualHazardMultipliers = namedtuple(
@@ -19,7 +19,7 @@ class Params:
         self,
         location_hazard_multipliers=LocationHazardMultipliers(
             retail=0.0165,
-            nightclubs=0.0165,
+            #nightclubs=0.0165,
             primary_school=0.0165,
             secondary_school=0.0165,
             home=0.0165,
@@ -48,7 +48,7 @@ class Params:
         self.place_hazard_multipliers = np.array(
             [
                 location_hazard_multipliers.retail,
-                location_hazard_multipliers.nightclubs,
+                #location_hazard_multipliers.nightclubs,
                 location_hazard_multipliers.primary_school,
                 location_hazard_multipliers.secondary_school,
                 location_hazard_multipliers.home,
@@ -137,16 +137,16 @@ class Params:
     def fromarray(cls, params_array):
         location_hazard_multipliers = LocationHazardMultipliers(
             retail=params_array[8],
-            nightclubs=params_array[9],
-            primary_school=params_array[10],
-            secondary_school=params_array[11],
-            home=params_array[12],
-            work=params_array[13],
+            #nightclubs=params_array[9],
+            primary_school=params_array[9],
+            secondary_school=params_array[10],
+            home=params_array[11],
+            work=params_array[12],
         )
         individual_hazard_multipliers = IndividualHazardMultipliers(
-            presymptomatic=params_array[14],
-            asymptomatic=params_array[15],
-            symptomatic=params_array[16],
+            presymptomatic=params_array[13],
+            asymptomatic=params_array[14],
+            symptomatic=params_array[15],
         )
         p = cls(location_hazard_multipliers, individual_hazard_multipliers)
         p.symptomatic_multiplier = params_array[0]
