@@ -19,8 +19,7 @@ class Simulator:
     def __init__(
         self,
         snapshot,
-        parameters_file,
-        # selected_region_folder_full_path,
+        study_area,
         gpu=False,
     ):
         """Initialise OpenCL context, kernels, and buffers for the simulator.
@@ -159,7 +158,7 @@ class Simulator:
         self.kernels = kernels
 
         self.initial_cases = InitialCases(
-            snapshot.area_codes, snapshot.not_home_probs, parameters_file
+            snapshot.area_codes, snapshot.not_home_probs, study_area
         )
 
         self.num_seed_days = 0

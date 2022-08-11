@@ -64,7 +64,7 @@ def setup_sim(parameters_file):
             snapshot.switch_to_healthier_population()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
-    simulator = Simulator(snapshot, parameters_file, gpu=True)
+    simulator = Simulator(snapshot, study_area, gpu=True)
     [people_statuses, people_transition_times] = simulator.seeding_base()
     simulator.upload_all(snapshot.buffers)
     simulator.upload("people_statuses", people_statuses)
