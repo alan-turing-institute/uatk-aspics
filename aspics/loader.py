@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from yaml import load, SafeLoader
 
 from aspics.simulator import Simulator
@@ -6,24 +7,25 @@ from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 
 
-def setup_sim(parameters_file):
+def setup_sim_from_file(parameters_file):
     print(f"Running a simulation based on {parameters_file}")
+    with open(parameters_file, "r") as f:
+        parameters = load(f, Loader=SafeLoader)
+        return setup_sim(parameters)
 
-    try:
-        with open(parameters_file, "r") as f:
-            parameters = load(f, Loader=SafeLoader)
-            sim_params = parameters["microsim"]
-            calibration_params = parameters["microsim_calibration"]
-            disease_params = parameters["disease"]
-            iterations = sim_params["iterations"]
-            study_area = sim_params["study-area"]
-            output = sim_params["output"]
-            output_every_iteration = sim_params["output-every-iteration"]
-            use_lockdown = sim_params["use-lockdown"]
-            start_date = sim_params["start-date"]
-    except Exception as error:
-        print("Error in parameters file format")
-        raise error
+
+def setup_sim(parameters):
+    print(f"Running a manually added parameters simulation based on {parameters}")
+
+    sim_params = parameters["microsim"]
+    calibration_params = parameters["microsim_calibration"]
+    disease_params = parameters["disease"]
+    iterations = sim_params["iterations"]
+    study_area = sim_params["study-area"]
+    output = sim_params["output"]
+    output_every_iteration = sim_params["output-every-iteration"]
+    use_lockdown = sim_params["use-lockdown"]
+    start_date = sim_params["start-date"]
 
     # Check the parameters are sensible
     if iterations < 1:
@@ -64,7 +66,7 @@ def setup_sim(parameters_file):
             snapshot.switch_to_healthier_population()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
-    simulator = Simulator(snapshot, parameters_file, gpu=True)
+    simulator = Simulator(snapshot, study_area, gpu=True)
     [people_statuses, people_transition_times] = simulator.seeding_base()
     simulator.upload_all(snapshot.buffers)
     simulator.upload("people_statuses", people_statuses)
@@ -74,24 +76,24 @@ def setup_sim(parameters_file):
 
 
 def create_params(calibration_params, disease_params):
-    current_risk_beta = disease_params["current_risk_beta"]
 
+    current_risk_beta = disease_params["current_risk_beta"]
     # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
     location_hazard_multipliers = LocationHazardMultipliers(
         retail=calibration_params["hazard_location_multipliers"]["Retail"]
-        * current_risk_beta,
+               * current_risk_beta,
         primary_school=calibration_params["hazard_location_multipliers"][
-            "PrimarySchool"
-        ]
-        * current_risk_beta,
+                           "PrimarySchool"
+                       ]
+                       * current_risk_beta,
         secondary_school=calibration_params["hazard_location_multipliers"][
-            "SecondarySchool"
-        ]
-        * current_risk_beta,
+                             "SecondarySchool"
+                         ]
+                         * current_risk_beta,
         home=calibration_params["hazard_location_multipliers"]["Home"]
-        * current_risk_beta,
+             * current_risk_beta,
         work=calibration_params["hazard_location_multipliers"]["Work"]
-        * current_risk_beta,
+             * current_risk_beta,
     )
 
     individual_hazard_multipliers = IndividualHazardMultipliers(

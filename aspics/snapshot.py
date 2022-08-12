@@ -42,7 +42,7 @@ class Snapshot:
             print(
                 f"Snapshot.py caused an exception '{str(e)}'. This can happen if the parameters in the model "
                 f"have changed after a snapshot has been created. Try deleting the snapshot file "
-                f"'microsim/opencl/snapshots/{self.name}.npz' and re-running the model."
+                f"'data/config/snapshots/{self.name}.npz' and re-running the model."
             )
             raise e
 
