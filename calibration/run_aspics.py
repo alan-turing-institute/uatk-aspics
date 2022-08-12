@@ -20,6 +20,7 @@ from headless import run_headless
 from typing import List
 from simulator import Simulator  # Not an elegant way to address path issues.
 from aspics.snapshot import Snapshot
+from aspics.loader import create_params
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 from aspics.disease_statuses import DiseaseStatus
 from aspics.summary import Summary
@@ -32,6 +33,7 @@ class OpenCLRunner:
     def init(cls,
              iterations: int,
              repetitions: int,
+             study_area: str,
              observations: pd.DataFrame,
              use_gpu: bool,
              use_healthier_pop: bool,
@@ -41,6 +43,7 @@ class OpenCLRunner:
 
         cls.ITERATIONS = iterations
         cls.REPETITIONS = repetitions
+        cls.STUDY_AREA = study_area
         cls.OBSERVATIONS = observations
         cls.USE_GPU = use_gpu
         cls.USE_HEALTHIER_POP = use_healthier_pop
@@ -53,6 +56,7 @@ class OpenCLRunner:
     def update(cls,
                iterations: int = None,
                repetitions: int = None,
+               study_area: str = None,
                observations: pd.DataFrame = None,
                use_gpu: bool = None,
                use_healthier_pop=None,
@@ -68,6 +72,8 @@ class OpenCLRunner:
             cls.ITERATIONS = iterations
         if repetitions is not None:
             cls.REPETITIONS = repetitions
+        if study_area is not None:
+            cls.STUDY_AREA = study_area
         if observations is not None:
             cls.OBSERVATIONS = observations
         if use_gpu is not None:
@@ -81,14 +87,14 @@ class OpenCLRunner:
         if snapshot_filepath is not None:
             cls.SNAPSHOT_FILEPATH = snapshot_filepath
 
-    @classmethod  ### I dont know why do we need this class.
+    @classmethod  ### To ask Nick.
     def set_constants(cls, constants):
         """Set any constant variables (parameters) that override the defaults.
         :param constants: This should be a dist of parameter_nam -> value
         """
         cls.constants = constants
 
-    @classmethod  ### Again I dont know why do we need this.
+    @classmethod  ### Ask Nick about the use of this.
     def clear_constants(cls):
         cls.constants = {}
 
@@ -155,9 +161,9 @@ class OpenCLRunner:
     @staticmethod
     def create_params(calibration_params, disease_params):
 
-        # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
         current_risk_beta = disease_params["current_risk_beta"]
 
+        # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
         location_hazard_multipliers = LocationHazardMultipliers(
             retail=calibration_params["hazard_location_multipliers"]["Retail"]
                    * current_risk_beta,
@@ -218,19 +224,25 @@ class OpenCLRunner:
             work: float = None,
             ):
 
-        print(f"Creating parameters manually based on {parameters_file}")
+        print(f"Creating parameters manually based on values from Notebook")
 
-        try:
-            with open(parameters_file, "r") as f:
-                parameters = load(f, Loader=SafeLoader)
-                sim_params = parameters["microsim"]
-                calibration_params = parameters["microsim_calibration"]
-                disease_params = parameters["disease"]
-                iterations = sim_params["iterations"]
-                study_area = sim_params["study-area"]
-        except Exception as error:
-            print("Error in parameters file format")
-            raise error
+        # Read the default parameters from a yml file, then override with any provided
+        if parameters_file is None:
+            parameters_file = f"../config/{study_area}.yml"
+        elif not os.path.isfile(parameters_file):
+            raise Exception(f"The given parameters file '{parameters_file} is not a file, check the /config folder")
+
+        with open(parameters_file) as f:
+            parameters = yaml.load(f, Loader=yaml.SafeLoader)
+
+        ################
+        ### Check_None function to validate the parameters, based on Nick's work
+        ##################
+
+        sim_params = parameters["microsim"]  # Parameters for the dynamic microsim (python)
+        calibration_params = parameters["microsim_calibration"]
+        disease_params = parameters["disease"]  # Parameters for the disease model (r)
+
 
         # current_risk_beta needs to be set first  as the OpenCL model pre-multiplies the hazard multipliers by it
         current_risk_beta = OpenCLRunner._check_if_none("current_risk_beta",
@@ -330,7 +342,67 @@ class OpenCLRunner:
                 return default_value
 
     @staticmethod
-    def run_aspics_opencl(i: int,
+    def setup_sim_notebook(parameters):
+
+        sim_params = parameters["microsim"]
+        calibration_params = parameters["microsim_calibration"]
+        disease_params = parameters["disease"]
+        iterations = sim_params["iterations"]
+        study_area = sim_params["study-area"]
+        output = sim_params["output"]
+        output_every_iteration = sim_params["output-every-iteration"]
+        use_lockdown = sim_params["use-lockdown"]
+        start_date = sim_params["start-date"]
+
+        # Check the parameters are sensible
+        if iterations < 1:
+            raise ValueError("Iterations must be > 1")
+        if (not output) and output_every_iteration:
+            raise ValueError(
+                "Can't choose to not output any data (output=False) but also write the data at every "
+                "iteration (output_every_iteration=True)"
+            )
+
+        # Load the snapshot file
+        snapshot_path = f"../data/snapshots/{study_area}/cache.npz"
+        if not os.path.exists(snapshot_path):
+            raise Exception(
+                f"Missing snapshot cache {snapshot_path}. Run SPC and convert_snapshot.py first to generate it."
+            )
+        print(f"Loading snapshot from {snapshot_path}")
+        snapshot = Snapshot.load_full_snapshot(path=snapshot_path)
+        print(f"Snapshot is {int(snapshot.num_bytes() / 1000000)} MB")
+
+        # Apply lockdown values
+        if use_lockdown:
+            # Skip past the first entries
+            snapshot.lockdown_multipliers = snapshot.lockdown_multipliers[start_date:]
+        else:
+            # No lockdown
+            snapshot.lockdown_multipliers = np.ones(iterations + 1)
+
+        # set the random seed of the model
+        snapshot.seed_prngs(42)
+
+        # set params
+        if calibration_params is not None and disease_params is not None:
+            snapshot.update_params(create_params(calibration_params, disease_params))
+
+            if disease_params["improve_health"]:
+                print("Switching to healthier population")
+                snapshot.switch_to_healthier_population()
+
+        # Create a simulator and upload the snapshot data to the OpenCL device
+        simulator = Simulator(snapshot, study_area, gpu=True)
+        [people_statuses, people_transition_times] = simulator.seeding_base()
+        simulator.upload_all(snapshot.buffers)
+        simulator.upload("people_statuses", people_statuses)
+        simulator.upload("people_transition_times", people_transition_times)
+
+        return simulator, snapshot, study_area, iterations
+
+    @staticmethod
+    def run_aspics_opencl(self: int,
                           parameters_file,
                           iterations: int,
                           params,
@@ -376,7 +448,7 @@ class OpenCLRunner:
         simulator.upload("people_transition_times", people_transition_times)
 
         if not quiet:
-            print(f"Running simulation {i + 1}.")
+            print(f"Running simulation {self + 1}.")
         summary, final_state = run_headless(simulator, snapshot, iterations, quiet=True,
                                             store_detailed_counts=store_detailed_counts)
         return summary, final_state

@@ -9,7 +9,7 @@ import os
 from aspics.params import Params
 from aspics.summary import Summary
 from aspics.disease_statuses import DiseaseStatus
-from aspics.loader import setup_sim
+from aspics.loader import setup_sim_from_file
 
 
 @click.command()
@@ -20,7 +20,7 @@ from aspics.loader import setup_sim
     help="Parameters file to use to configure the model. This must be located in the working directory.",
 )
 def main(parameters_file):
-    simulator, snapshot, study_area, iterations = setup_sim(parameters_file)
+    simulator, snapshot, study_area, iterations = setup_sim_from_file(parameters_file)
 
     summary, final_state = run_headless(simulator, snapshot, iterations)
     store_summary_data(

@@ -1,5 +1,4 @@
 import numpy as np
-import numpy as np
 from collections import namedtuple
 
 LocationHazardMultipliers = namedtuple(
@@ -157,13 +156,13 @@ class Params:
         p.infection_log_scale = params_array[5]
         p.infection_mode = params_array[6]
         p.lockdown_multiplier = params_array[7]
-        p.mortality_probs = params_array[17:36]
-        p.obesity_multipliers = params_array[36:40]
-        p.symptomatic_probs = params_array[40:49]
-        p.cvd_multiplier = params_array[40]
-        p.diabetes_multiplier = params_array[50]
-        p.bloodpressure_multiplier = params_array[51]
-        p.overweight_sympt_mplier = params_array[52]
+        p.mortality_probs = params_array[16:35]
+        p.obesity_multipliers = params_array[35:39]
+        p.symptomatic_probs = params_array[39:49]
+        p.cvd_multiplier = params_array[39]
+        p.diabetes_multiplier = params_array[49]
+        p.bloodpressure_multiplier = params_array[50]
+        p.overweight_sympt_mplier = params_array[51]
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):
