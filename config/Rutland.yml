@@ -1,13 +1,12 @@
 microsim:
   study-area: "Rutland"
   iterations: 80 # Number of model iterations (days)
-  use-lockdown: TRUE # Whether to preload the lockdown scenario
+  use-lockdown: FALSE # Whether to preload the lockdown scenario
   start-date: 10 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not
   output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
   opencl-model: TRUE # Run the OpenCL model
   repetitions: 1 # How many times to run the model
-
 
 # Parameters that are used to calibrate the model.
 microsim_calibration:
@@ -26,7 +25,6 @@ microsim_calibration:
     Work: 1.0
   # This multiplies the risk received as individuals visit shops etc.
   risk_multiplier: 1.0
-
 
 disease: # This is where the parameter for the disease model (the R part) can go (same format the 'microsim_calibration' above)
   current_risk_beta: 0.003
