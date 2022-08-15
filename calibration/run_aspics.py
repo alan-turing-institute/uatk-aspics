@@ -31,36 +31,46 @@ class OpenCLRunner:
 
     @classmethod
     def init(cls,
-             study_area: str,
-             iterations: int,
-             use_lockdown: bool,
-             start_date: str,
              repetitions: int,
+             iterations: int,
+             study_area: str,
+             output: bool,
+             output_every_iteration: bool,
+             use_lockdown: bool,
+             start_date: int,
              observations: pd.DataFrame,
              use_gpu: bool,
-             use_healthier_pop: bool,
+             # use_healthier_pop: bool,
              store_detailed_counts: bool,
              parameters_file: str,
              ):
 
-        cls.STUDY_AREA = study_area
-        cls.ITERATIONS = iterations
         cls.REPETITIONS = repetitions
+        cls.ITERATIONS = iterations
+        cls.STUDY_AREA = study_area
+        cls.OUTPUT = output
+        cls.OUTPUT_EVERY_ITERATION = output_every_iteration
+        cls.USE_LOCKDOWN = use_lockdown
+        cls.START_DATE = start_date
         cls.OBSERVATIONS = observations
         cls.USE_GPU = use_gpu
-        cls.USE_HEALTHIER_POP = use_healthier_pop
+        # cls.USE_HEALTHIER_POP = use_healthier_pop
         cls.STORE_DETAILED_COUNTS = store_detailed_counts
         cls.PARAMETERS_FILE = parameters_file
         cls.initialised = True
 
     @classmethod
     def update(cls,
-               iterations: int = None,
                repetitions: int = None,
+               iterations: int = None,
                study_area: str = None,
+               output: bool = None,
+               output_every_iteration: bool = None,
+               use_lockdown: bool = None,
+               start_date: int = None,
                observations: pd.DataFrame = None,
                use_gpu: bool = None,
-               use_healthier_pop=None,
+               # se_healthier_pop=None,
                store_detailed_counts: bool = None,
                parameters_file: str = None,
                ):
@@ -75,12 +85,20 @@ class OpenCLRunner:
             cls.REPETITIONS = repetitions
         if study_area is not None:
             cls.STUDY_AREA = study_area
+        if output is not None:
+            cls.OUTPUT = output
+        if output_every_iteration is not None:
+            cls.OUTPUT_EVERY_ITERATION = output_every_iteration
+        if use_lockdown is not None:
+            cls.USE_LOCKDOWN = use_lockdown
+        if start_date is not None:
+            cls.START_DATE = start_date
         if observations is not None:
             cls.OBSERVATIONS = observations
         if use_gpu is not None:
             cls.USE_GPU = use_gpu
-        if use_healthier_pop is not None:
-            cls.USE_HEALTHIER_POP = use_healthier_pop
+        # if use_healthier_pop is not None:
+        # cls.USE_HEALTHIER_POP = use_healthier_pop
         if store_detailed_counts is not None:
             cls.STORE_DETAILED_COUNTS = store_detailed_counts
         if parameters_file is not None:
@@ -157,54 +175,54 @@ class OpenCLRunner:
                 total_not_susceptible = total_not_susceptible + mean
         return total_not_susceptible
 
-    @staticmethod
-    def create_params(calibration_params, disease_params):
-
-        current_risk_beta = disease_params["current_risk_beta"]
-
-        # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
-        location_hazard_multipliers = LocationHazardMultipliers(
-            retail=calibration_params["hazard_location_multipliers"]["Retail"]
-                   * current_risk_beta,
-            primary_school=calibration_params["hazard_location_multipliers"][
-                               "PrimarySchool"
-                           ]
-                           * current_risk_beta,
-            secondary_school=calibration_params["hazard_location_multipliers"][
-                                 "SecondarySchool"
-                             ]
-                             * current_risk_beta,
-            home=calibration_params["hazard_location_multipliers"]["Home"]
-                 * current_risk_beta,
-            work=calibration_params["hazard_location_multipliers"]["Work"]
-                 * current_risk_beta,
-        )
-
-        individual_hazard_multipliers = IndividualHazardMultipliers(
-            presymptomatic=calibration_params["hazard_individual_multipliers"][
-                "presymptomatic"
-            ],
-            asymptomatic=calibration_params["hazard_individual_multipliers"][
-                "asymptomatic"
-            ],
-            symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
-        )
-
-        obesity_multipliers = [
-            disease_params["overweight"],
-            disease_params["obesity_30"],
-            disease_params["obesity_35"],
-            disease_params["obesity_40"],
-        ]
-
-        return Params(
-            location_hazard_multipliers=location_hazard_multipliers,
-            individual_hazard_multipliers=individual_hazard_multipliers,
-            obesity_multipliers=obesity_multipliers,
-            cvd_multiplier=disease_params["cvd"],
-            diabetes_multiplier=disease_params["diabetes"],
-            bloodpressure_multiplier=disease_params["bloodpressure"],
-        )
+    # @staticmethod
+    # def create_params(calibration_params, disease_params):
+    #
+    #     current_risk_beta = disease_params["current_risk_beta"]
+    #
+    #     # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
+    #     location_hazard_multipliers = LocationHazardMultipliers(
+    #         retail=calibration_params["hazard_location_multipliers"]["Retail"]
+    #                * current_risk_beta,
+    #         primary_school=calibration_params["hazard_location_multipliers"][
+    #                            "PrimarySchool"
+    #                        ]
+    #                        * current_risk_beta,
+    #         secondary_school=calibration_params["hazard_location_multipliers"][
+    #                              "SecondarySchool"
+    #                          ]
+    #                          * current_risk_beta,
+    #         home=calibration_params["hazard_location_multipliers"]["Home"]
+    #              * current_risk_beta,
+    #         work=calibration_params["hazard_location_multipliers"]["Work"]
+    #              * current_risk_beta,
+    #     )
+    #
+    #     individual_hazard_multipliers = IndividualHazardMultipliers(
+    #         presymptomatic=calibration_params["hazard_individual_multipliers"][
+    #             "presymptomatic"
+    #         ],
+    #         asymptomatic=calibration_params["hazard_individual_multipliers"][
+    #             "asymptomatic"
+    #         ],
+    #         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
+    #     )
+    #
+    #     obesity_multipliers = [
+    #         disease_params["overweight"],
+    #         disease_params["obesity_30"],
+    #         disease_params["obesity_35"],
+    #         disease_params["obesity_40"],
+    #     ]
+    #
+    #     return Params(
+    #         location_hazard_multipliers=location_hazard_multipliers,
+    #         individual_hazard_multipliers=individual_hazard_multipliers,
+    #         obesity_multipliers=obesity_multipliers,
+    #         cvd_multiplier=disease_params["cvd"],
+    #         diabetes_multiplier=disease_params["diabetes"],
+    #         bloodpressure_multiplier=disease_params["bloodpressure"],
+    #     )
 
     @staticmethod
     def create_params_manually(
@@ -341,66 +359,6 @@ class OpenCLRunner:
                 return default_value
 
     @staticmethod
-    def setup_sim_notebook(parameters):
-
-        sim_params = parameters["microsim"]
-        calibration_params = parameters["microsim_calibration"]
-        disease_params = parameters["disease"]
-        iterations = sim_params["iterations"]
-        study_area = sim_params["study-area"]
-        output = sim_params["output"]
-        output_every_iteration = sim_params["output-every-iteration"]
-        use_lockdown = sim_params["use-lockdown"]
-        start_date = sim_params["start-date"]
-
-        # Check the parameters are sensible
-        if iterations < 1:
-            raise ValueError("Iterations must be > 1")
-        if (not output) and output_every_iteration:
-            raise ValueError(
-                "Can't choose to not output any data (output=False) but also write the data at every "
-                "iteration (output_every_iteration=True)"
-            )
-
-        # Load the snapshot file
-        snapshot_path = f"../data/snapshots/{study_area}/cache.npz"
-        if not os.path.exists(snapshot_path):
-            raise Exception(
-                f"Missing snapshot cache {snapshot_path}. Run SPC and convert_snapshot.py first to generate it."
-            )
-        print(f"Loading snapshot from {snapshot_path}")
-        snapshot = Snapshot.load_full_snapshot(path=snapshot_path)
-        print(f"Snapshot is {int(snapshot.num_bytes() / 1000000)} MB")
-
-        # Apply lockdown values
-        if use_lockdown:
-            # Skip past the first entries
-            snapshot.lockdown_multipliers = snapshot.lockdown_multipliers[start_date:]
-        else:
-            # No lockdown
-            snapshot.lockdown_multipliers = np.ones(iterations + 1)
-
-        # set the random seed of the model
-        snapshot.seed_prngs(42)
-
-        # set params
-        if calibration_params is not None and disease_params is not None:
-            snapshot.update_params(create_params(calibration_params, disease_params))
-
-            if disease_params["improve_health"]:
-                print("Switching to healthier population")
-                snapshot.switch_to_healthier_population()
-
-        # Create a simulator and upload the snapshot data to the OpenCL device
-        simulator = Simulator(snapshot, study_area, gpu=True)
-        [people_statuses, people_transition_times] = simulator.seeding_base()
-        simulator.upload_all(snapshot.buffers)
-        simulator.upload("people_statuses", people_statuses)
-        simulator.upload("people_transition_times", people_transition_times)
-
-        return simulator, snapshot, study_area, iterations
-
-    @staticmethod
     def run_aspics(i: int,
                    iterations: int,
                    study_area: str,
@@ -525,7 +483,7 @@ class OpenCLRunner:
         return to_return
 
     @classmethod
-    def run_aspics_with_params_abc(cls, input_params_dict: dict, return_full_details=False, quiet=True):
+    def run_aspics_with_params_abc(cls, input_params_dict: dict, parameter_file, return_full_details=False, quiet=True):
 
         # print("opencl_runner.py -- run_model_with_params_abc")
         if not cls.initialised:
@@ -538,66 +496,38 @@ class OpenCLRunner:
                 raise Exception(f"The parameter {k}={v} < 0. "
                                 f"All parameters: {input_params_dict}")
 
+        # Get help from Dustin I think this is not right.
+        with open(parameter_file, "r") as f:
+            parameters = load(f, Loader=SafeLoader)
+        calibration_params = parameters["microsim_calibration"]
+        disease_params = parameters["disease"]
+
         # Splat the input_params_dict to automatically set any parameters that have been inlcluded
         params = OpenCLRunner.create_params_manually(parameters_file=cls.PARAMETERS_FILE, **input_params_dict)
 
-        # Run the model
-        results = OpenCLRunner.OpenCLRunner.run_aspics_multi(
-            repetitions=cls.REPETITIONS, iterations=cls.ITERATIONS, params=params, start_date=cls.START_DAY,
-            quiet=quiet , use_gpu=cls.USE_GPU,
+        # Run the `model`
+        results = OpenCLRunner.run_aspics_multi(
+            repetitions=cls.REPETITIONS, iterations=cls.ITERATIONS, study_area=cls.STUDY_AREA, params=params,
+            output=cls.OUTPUT,
+            output_every_iteration=cls.OUTPUT_EVERY_ITERATION, use_lockdown=cls.USE_LOCKDOWN, start_date=cls.START_DATE,
+            calibration_params=calibration_params, disease_params=disease_params, quiet=quiet, use_gpu=cls.USE_GPU,
             store_detailed_counts=cls.STORE_DETAILED_COUNTS, multiprocess=False, random_ids=True)
 
         # Create summary objects containing the model results
         summaries = [x[0] for x in results]
 
-        ########################################################################
-        ########################################################################
-        # Create arrays containing the modelled number of cases on each day/week
-        ########################################################################
-        ########################################################################
-        # Get the cumulative number of infections per day (i.e. simulated results)
-        # i.e the total number of cases there has been up to this point, for each day
-        model_daily_cumulative_infections = OpenCLRunner.get_cumulative_daily_infections(summaries)
+        # Get the cumulative number of new infections per day (i.e. simulated results)
+        sim = OpenCLRunner.get_cumulative_new_infections(summaries)
+        print(f"Ran Model with {str(input_params_dict)}")
 
-        ##### Convert this to the cumulative number of infections at the end of each week
-        # Get the number of days the model was ran for
-        n_days = len(summaries[0].total_counts[DiseaseStatus.Exposed.value])
-        # List the index matching the end day of each week (e.g. 7, 14, 21 etc (minus 1 for indexing starting at 0)
-        week_end_days = list(range(6,n_days+1,7))
-        # Get the weekly cumulative total
-        model_weekly_cumulative_infections = model_daily_cumulative_infections[week_end_days]
-
-        ########################################################################
-        ########################################################################
-        # Create array containing the cumulatuve number of positive test
-        # results there have been so far observed on each day
-        ########################################################################
-        ########################################################################
-        # Get the observations
-        obs_weekly_cumulative_infections = cls.OBSERVATIONS
-
-        # Keep only as many weeks of data as are in the model results
-        n_weeks = int(n_days / 7)
-        obs_weekly_cumulative_infections = obs_weekly_cumulative_infections[0:n_weeks]
-
-        # find the distance between the vector of weekly values
-        distance = OpenCLRunner.fit_l2(obs_weekly_cumulative_infections, model_weekly_cumulative_infections)
-
-        ########################################################################
-        ########################################################################
-        # Return model results
-        ########################################################################
-        ########################################################################
         if return_full_details:
-            # check same length (but obviously will be now as set length based on model)
-            assert len(model_weekly_cumulative_infections) == len(obs_weekly_cumulative_infections)
             # Can compare these to the observations to get a fitness
-            return distance, model_weekly_cumulative_infections, obs_weekly_cumulative_infections, params, summaries
+            obs = cls.OBSERVATIONS.loc[:cls.ITERATIONS - 1, "Cases"].values
+            assert len(sim) == len(obs)
+            fitness = OpenCLRunner.fit_l2(sim, obs)
+            return fitness, sim, obs, params, summaries
         else:  # Return the expected counts in a dictionary
-            return {"data": model_weekly_cumulative_infections, "data_daily":model_daily_cumulative_infections, 'distance':distance,
-                    'params': params}
-
-
+            return {"data": sim}
 
     """
     Functions from opencl_runner from
