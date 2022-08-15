@@ -18,7 +18,6 @@ class Params:
         self,
         location_hazard_multipliers=LocationHazardMultipliers(
             retail=0.0165,
-            #nightclubs=0.0165,
             primary_school=0.0165,
             secondary_school=0.0165,
             home=0.0165,
@@ -47,7 +46,6 @@ class Params:
         self.place_hazard_multipliers = np.array(
             [
                 location_hazard_multipliers.retail,
-                #location_hazard_multipliers.nightclubs,
                 location_hazard_multipliers.primary_school,
                 location_hazard_multipliers.secondary_school,
                 location_hazard_multipliers.home,
@@ -136,7 +134,6 @@ class Params:
     def fromarray(cls, params_array):
         location_hazard_multipliers = LocationHazardMultipliers(
             retail=params_array[8],
-            #nightclubs=params_array[9],
             primary_school=params_array[9],
             secondary_school=params_array[10],
             home=params_array[11],
@@ -158,8 +155,8 @@ class Params:
         p.lockdown_multiplier = params_array[7]
         p.mortality_probs = params_array[16:35]
         p.obesity_multipliers = params_array[35:39]
-        p.symptomatic_probs = params_array[39:49]
-        p.cvd_multiplier = params_array[39]
+        p.symptomatic_probs = params_array[39:48]
+        p.cvd_multiplier = params_array[48]
         p.diabetes_multiplier = params_array[49]
         p.bloodpressure_multiplier = params_array[50]
         p.overweight_sympt_mplier = params_array[51]
