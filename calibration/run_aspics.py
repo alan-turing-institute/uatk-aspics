@@ -319,8 +319,8 @@ class OpenCLRunner:
                    use_gpu: bool,
                    use_lockdown: bool,
                    start_date: int,
-                   calibration_params,
-                   disease_params,
+                   #calibration_params,
+                   #disease_params,
                    use_healthier_pop: bool,
                    store_detailed_counts: bool = True,
                    quiet=False) -> (np.ndarray, np.ndarray):
@@ -363,14 +363,15 @@ class OpenCLRunner:
 
         # set the random seed of the model
         snapshot.seed_prngs(i)
+        snapshot.update_params(params)
 
-        # set params
-        if calibration_params is not None and disease_params is not None:
-            snapshot.update_params(params)
-
-            if disease_params["improve_health"]:
-                print("Switching to healthier population")
-                snapshot.switch_to_healthier_population()
+        # # set params
+        # if calibration_params is not None and disease_params is not None:
+        #     snapshot.update_params(params)
+        #
+        #     if disease_params["improve_health"]:
+        #         print("Switching to healthier population")
+        #         snapshot.switch_to_healthier_population()
 
         # Create a simulator and upload the snapshot data to the OpenCL device
         simulator = Simulator(snapshot, study_area, gpu=True)
@@ -398,8 +399,8 @@ class OpenCLRunner:
             use_healthier_pop: bool,
             use_lockdown: bool,
             start_date: int,
-            calibration_params,
-            disease_params,
+            #calibration_params,
+            #disease_params,
             store_detailed_counts: bool = False,
             multiprocess=False,
             random_ids=False
@@ -416,14 +417,17 @@ class OpenCLRunner:
         l_use_gpu = [use_gpu] * repetitions
         l_use_lockdown = [use_lockdown] * repetitions
         l_start_date = [start_date] * repetitions
-        l_calibration_params = [calibration_params] * repetitions
-        l_disease_params = [disease_params] * repetitions
+        #l_calibration_params = [calibration_params] * repetitions
+        #l_disease_params = [disease_params] * repetitions
         l_use_healthier_pop = [use_healthier_pop] * repetitions
         l_store_detailed_counts = [store_detailed_counts] * repetitions
         l_quiet = [False] * repetitions  # Don't print info
 
+        # args = zip(l_i, l_iterations, l_study_area, l_params, l_output, l_output_every_iteration, l_use_gpu,
+        #            l_use_lockdown, l_start_date, l_calibration_params, l_disease_params, l_use_healthier_pop,
+        #            l_store_detailed_counts, l_quiet)
         args = zip(l_i, l_iterations, l_study_area, l_params, l_output, l_output_every_iteration, l_use_gpu,
-                   l_use_lockdown, l_start_date, l_calibration_params, l_disease_params, l_use_healthier_pop,
+                   l_use_lockdown, l_start_date, l_use_healthier_pop,
                    l_store_detailed_counts, l_quiet)
         to_return = None
         start_time = time.time()
@@ -446,7 +450,7 @@ class OpenCLRunner:
         return to_return
 
     @classmethod
-    def run_aspics_with_params_abc(cls, input_params_dict: dict, parameter_file, return_full_details=False):
+    def run_aspics_with_params_abc(cls, input_params_dict: dict, return_full_details=False):
 
         # print("opencl_runner.py -- run_model_with_params_abc")
         if not cls.initialised:
@@ -460,19 +464,26 @@ class OpenCLRunner:
                                 f"All parameters: {input_params_dict}")
 
         # Get help from Dustin I think this is not right.
-        with open(parameter_file, "r") as f:
-            parameters = load(f, Loader=SafeLoader)
-        calibration_params = parameters["microsim_calibration"]
-        disease_params = parameters["disease"]
+        # with open(parameter_file, "r") as f:
+        #     parameters = load(f, Loader=SafeLoader)
+        # calibration_params = parameters["microsim_calibration"]
+        # disease_params = parameters["disease"]
 
         # Splat the input_params_dict to automatically set any parameters that have been inlcluded
         params = OpenCLRunner.create_params_manually(parameters_file=cls.PARAMETERS_FILE, **input_params_dict)
 
         # Run the `model`
+        # results = OpenCLRunner.run_aspics_multi(
+        #     repetitions=cls.REPETITIONS, iterations=cls.ITERATIONS, study_area=cls.STUDY_AREA, params=params,
+        #     output=cls.OUTPUT, output_every_iteration=cls.OUTPUT_EVERY_ITERATION, use_lockdown=cls.USE_LOCKDOWN,
+        #     start_date=cls.START_DATE, calibration_params=calibration_params, disease_params=disease_params,
+        #     use_gpu=cls.USE_GPU, use_healthier_pop=cls.USE_HEALTHIER_POP, store_detailed_counts=cls.STORE_DETAILED_COUNTS, multiprocess=False,
+        #     random_ids=True)
+
         results = OpenCLRunner.run_aspics_multi(
             repetitions=cls.REPETITIONS, iterations=cls.ITERATIONS, study_area=cls.STUDY_AREA, params=params,
             output=cls.OUTPUT, output_every_iteration=cls.OUTPUT_EVERY_ITERATION, use_lockdown=cls.USE_LOCKDOWN,
-            start_date=cls.START_DATE, calibration_params=calibration_params, disease_params=disease_params,
+            start_date=cls.START_DATE,
             use_gpu=cls.USE_GPU, use_healthier_pop=cls.USE_HEALTHIER_POP, store_detailed_counts=cls.STORE_DETAILED_COUNTS, multiprocess=False,
             random_ids=True)
 
