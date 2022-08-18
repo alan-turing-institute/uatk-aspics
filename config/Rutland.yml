@@ -5,7 +5,7 @@ microsim:
   start-date: 10 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not
   output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
-  opencl-model: TRUE # Run the OpenCL model
+  #opencl-model: TRUE # Run the OpenCL model
   repetitions: 1 # How many times to run the model
 
 # Parameters that are used to calibrate the model.

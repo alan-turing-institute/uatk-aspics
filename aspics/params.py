@@ -15,33 +15,48 @@ class Params:
     """Convenience class for setting simulator parameters. Also holds the default values."""
 
     def __init__(
-        self,
-        location_hazard_multipliers=LocationHazardMultipliers(
-            retail=0.0165,
-            primary_school=0.0165,
-            secondary_school=0.0165,
-            home=0.0165,
-            work=0.0,
-        ),
-        individual_hazard_multipliers=IndividualHazardMultipliers(
-            presymptomatic=1.0, asymptomatic=0.75, symptomatic=1.0
-        ),
-        obesity_multipliers=[1, 1, 1, 1],
-        cvd_multiplier=1,
-        diabetes_multiplier=1,
-        bloodpressure_multiplier=1,
-        overweight_sympt_mplier=1.46,
+            self,
+            ### PLACES#######
+            location_hazard_multipliers=LocationHazardMultipliers(
+                retail=0.0165,
+                primary_school=0.0165,
+                secondary_school=0.0165,
+                home=0.0165,
+                work=0.0,
+            ),
+            ### DISEASE STATUS##########
+            individual_hazard_multipliers=IndividualHazardMultipliers(
+                presymptomatic=1.0, asymptomatic=0.75, symptomatic=1.0
+            ),
+            ###########################################
+            #####Health Conditions (Type, BMI) ########
+            ###########################################
+
+            bmi_multipliers=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            obesity_multipliers=[1, 1, 1, 1],
+            cvd_multiplier=1,
+            diabetes_multiplier=1,
+            bloodpressure_multiplier=1,
+            overweight_sympt_mplier=1.46,
     ):
         """Create a simulator with the default parameters."""
+        if bmi_multipliers is None:
+            bmi_multipliers = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
         if obesity_multipliers is None:
             obesity_multipliers = [1, 1, 1, 1]
+
         self.symptomatic_multiplier = 0.5
+
         self.exposed_scale = 2.82
         self.exposed_shape = 3.99
+
         self.presymptomatic_scale = 2.45
         self.presymptomatic_shape = 7.79
+
         self.infection_log_scale = 0.35
         self.infection_mode = 7.0
+
         self.lockdown_multiplier = 1.0
         self.place_hazard_multipliers = np.array(
             [
@@ -87,6 +102,7 @@ class Params:
             ],
             dtype=np.float32,
         )
+        self.bmi_multipliers = np.array(bmi_multipliers, dtype=np.float32)
         self.obesity_multipliers = np.array(obesity_multipliers, dtype=np.float32)
         self.symptomatic_probs = np.array(
             [0.21, 0.21, 0.45, 0.45, 0.45, 0.45, 0.45, 0.69, 0.69], dtype=np.float32
@@ -116,6 +132,7 @@ class Params:
                 self.place_hazard_multipliers,
                 self.individual_hazard_multipliers,
                 self.mortality_probs,
+                self.bmi_multipliers,
                 self.obesity_multipliers,
                 self.symptomatic_probs,
                 np.array(
@@ -160,6 +177,7 @@ class Params:
         p.diabetes_multiplier = params_array[49]
         p.bloodpressure_multiplier = params_array[50]
         p.overweight_sympt_mplier = params_array[51]
+        p.bmi_multipliers = params_array[51:64]
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):
