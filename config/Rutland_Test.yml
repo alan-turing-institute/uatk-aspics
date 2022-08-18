@@ -1,0 +1,77 @@
+#########################
+### ASPICS SIMULATION ###
+#########################
+microsim:
+  study-area: "Manchester"
+  iterations: 80 # Number of model iterations (days)
+  use-lockdown: FALSE # Whether to preload the lockdown scenario
+  start-date: 10 # Counted as number of days since 15/02/2020 (currently, max is 435)
+  output: TRUE # Whether to generate output or not
+  output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
+  repetitions: 1 # How many times to run the model
+# Parameters that are used to calibrate the model.
+
+microsim_calibration:
+  # These multiply the amount of hazard that individuals pass on to shops etc:
+  hazard_individual_multipliers:
+    presymptomatic: 1
+    asymptomatic: 0.75
+    symptomatic: 1.0
+
+  ### PLACES ###
+
+  # Different locations can also have their own multipliers (e.g. to make it easier to pass the disease on to shops than schools)
+  # Relevant to calibration in a national modelling scenario
+  hazard_location_multipliers:
+    Retail: 1.0
+    PrimarySchool: 1.0
+    SecondarySchool: 1.0
+    Home: 1.0
+    Work: 1.0
+
+disease:
+  #### DISEASE Parameter #########
+  # This multiplies the risk received as individuals visit shops etc.
+  current_risk_beta: 0.003
+
+#### INDIVIDUAL Health Conditions Parameters #########
+health_conditions:
+
+  type:
+    cvd: 1
+    diabetes: 1
+    bloodpressure: 1
+    improve_health: FALSE
+
+  BMI:
+    global_bmi: 1.0 # this one is the one to calibrate.
+    white_Ethni_coff1: 5.74780886945662
+    white_Ethni_coff2: -0.34646046221112
+    white_Ethni_coff3: 0.00617314178638354
+
+    black_Ethni_coff1: 2.34094066208621
+    black_Ethni_coff2: -0.138082823235478
+    black_Ethni_coff3: 0.00390081199250469
+
+    asian_Ethni_coff1: 9.40716926920683
+    asian_Ethni_coff2: -0.674559525296695
+    asian_Ethni_coff3: 0.0142113678950657
+
+    other_Ethni_coff1: 9.21864084946916
+    other_Ethni_coff2: -0.646585509056844
+    other_Ethni_coff3: 0.0128312304809495
+
+    overweight: 1
+    obesity_40: 1.48
+    obesity_35: 1.48
+    obesity_30: 1.48
+#############################
+#### Vaccination Status######
+#############################
+
+#vaccine:
+#  not_vaccine:
+#  first_shot:
+#  second_shot:
+#  third_shot:
+

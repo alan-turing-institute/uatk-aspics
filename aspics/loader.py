@@ -17,9 +17,10 @@ def setup_sim_from_file(parameters_file):
 def setup_sim(parameters):
     print(f"Running a manually added parameters simulation based on {parameters}")
 
-    sim_params = parameters["microsim"]
-    calibration_params = parameters["microsim_calibration"]
+    sim_params = parameters["microsim"] ## Set of Parameters for the ASPCIS microsim
+    calibration_params = parameters["microsim_calibration"] ## Calibration paramaters
     disease_params = parameters["disease"]
+    health_conditions = parameters["health_conditions"]
     iterations = sim_params["iterations"]
     study_area = sim_params["study-area"]
     output = sim_params["output"]
@@ -54,16 +55,20 @@ def setup_sim(parameters):
         # No lockdown
         snapshot.lockdown_multipliers = np.ones(iterations + 1)
 
-    # set the random seed of the model
+    # TODO set the random seed of the model. Why do we still have this very random number
     snapshot.seed_prngs(42)
 
     # set params
     if calibration_params is not None and disease_params is not None:
-        snapshot.update_params(create_params(calibration_params, disease_params))
-
-        if disease_params["improve_health"]:
+        snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
+        health_type = health_conditions["type"]
+        if health_type["improve_health"]:
             print("Switching to healthier population")
             snapshot.switch_to_healthier_population()
+
+    # Add the new function to compute individual risks
+    # new_params = NewParamsters( Old_paramaters_that_changed()) # The function
+
 
     # Create a simulator and upload the snapshot data to the OpenCL device
     simulator = Simulator(snapshot, study_area, gpu=True)
@@ -75,7 +80,7 @@ def setup_sim(parameters):
     return simulator, snapshot, study_area, iterations
 
 
-def create_params(calibration_params, disease_params):
+def create_params(calibration_params, disease_params, health_conditions):
 
     current_risk_beta = disease_params["current_risk_beta"]
     # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
@@ -105,19 +110,36 @@ def create_params(calibration_params, disease_params):
         ],
         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
     )
-
+    BMI_params = health_conditions["BMI"]
+    health_type_params = health_conditions["type"]
+    bmi_multipliers = BMI_params[
+        BMI_params["white_Ethni_coff1"],
+        BMI_params["white_Ethni_coff2"],
+        BMI_params["white_Ethni_coff3"],
+        BMI_params["black_Ethni_coff1"],
+        BMI_params["black_Ethni_coff2"],
+        BMI_params["black_Ethni_coff3"],
+        BMI_params["asian_Ethni_coff1"],
+        BMI_params["asian_Ethni_coff2"],
+        BMI_params["asian_Ethni_coff3"],
+        BMI_params["other_Ethni_coff1"],
+        BMI_params["other_Ethni_coff2"],
+        BMI_params["other_Ethni_coff3"],
+    ]
+    health_type = health_conditions["type"]
     obesity_multipliers = [
-        disease_params["overweight"],
-        disease_params["obesity_30"],
-        disease_params["obesity_35"],
-        disease_params["obesity_40"],
+        health_type_params["global_bmi"],
+        health_type_params["overweight"],
+        health_type_params["obesity_30"],
+        health_type_params["obesity_35"],
+        health_type_params["obesity_40"],
     ]
 
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
         obesity_multipliers=obesity_multipliers,
-        cvd_multiplier=disease_params["cvd"],
-        diabetes_multiplier=disease_params["diabetes"],
-        bloodpressure_multiplier=disease_params["bloodpressure"],
+        cvd_multiplier=health_type["cvd"],
+        diabetes_multiplier=health_type["diabetes"],
+        bloodpressure_multiplier=health_type["bloodpressure"],
     )
