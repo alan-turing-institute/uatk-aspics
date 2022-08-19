@@ -19,8 +19,8 @@ def setup_sim(parameters):
 
     sim_params = parameters["microsim"] ## Set of Parameters for the ASPCIS microsim
     calibration_params = parameters["microsim_calibration"] ## Calibration paramaters
-    disease_params = parameters["disease"]
-    health_conditions = parameters["health_conditions"]
+    disease_params = parameters["disease"] # Disease paramaters for the moment only beta_risk included.
+    health_conditions = parameters["health_conditions"] # individual health conditions
     iterations = sim_params["iterations"]
     study_area = sim_params["study-area"]
     output = sim_params["output"]
@@ -59,7 +59,7 @@ def setup_sim(parameters):
     snapshot.seed_prngs(42)
 
     # set params
-    if calibration_params is not None and disease_params is not None:
+    if calibration_params is not None and disease_params is not None and health_conditions is not None:
         snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
         health_type = health_conditions["type"]
         if health_type["improve_health"]:
@@ -110,9 +110,13 @@ def create_params(calibration_params, disease_params, health_conditions):
         ],
         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
     )
-    BMI_params = health_conditions["BMI"]
+
     health_type_params = health_conditions["type"]
-    bmi_multipliers = BMI_params[
+    health_obesity = health_conditions["obesity"]
+    BMI_params = health_conditions["BMI"]
+
+    bmi_multipliers = [
+        BMI_params["global_bmi"],
         BMI_params["white_Ethni_coff1"],
         BMI_params["white_Ethni_coff2"],
         BMI_params["white_Ethni_coff3"],
@@ -126,20 +130,19 @@ def create_params(calibration_params, disease_params, health_conditions):
         BMI_params["other_Ethni_coff2"],
         BMI_params["other_Ethni_coff3"],
     ]
-    health_type = health_conditions["type"]
     obesity_multipliers = [
-        health_type_params["global_bmi"],
-        health_type_params["overweight"],
-        health_type_params["obesity_30"],
-        health_type_params["obesity_35"],
-        health_type_params["obesity_40"],
+        health_obesity["overweight"],
+        health_obesity["obesity_30"],
+        health_obesity["obesity_35"],
+        health_obesity["obesity_40"],
     ]
 
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
+        bmi_multipliers=bmi_multipliers,
         obesity_multipliers=obesity_multipliers,
-        cvd_multiplier=health_type["cvd"],
-        diabetes_multiplier=health_type["diabetes"],
-        bloodpressure_multiplier=health_type["bloodpressure"],
+        cvd_multiplier=health_type_params["cvd"],
+        diabetes_multiplier=health_type_params["diabetes"],
+        bloodpressure_multiplier=health_type_params["bloodpressure"],
     )
