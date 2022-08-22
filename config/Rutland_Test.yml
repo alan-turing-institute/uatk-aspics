@@ -26,7 +26,7 @@ microsim_calibration:
     PrimarySchool: 1.0
     SecondarySchool: 1.0
     Home: 1.0
-    Work: 1.0 # TODO implement?
+    Work: 1.0 # TODO implement
 
 disease:
   #### DISEASE Parameter #########
@@ -76,11 +76,11 @@ health_conditions:
     max_bin_idx: 18 #Largest bin index covers 80+
   # TODO symptomatic_probs
 
-#  obesity: # TODO remove this category.
-#    overweight: 1
-#    obesity_40: 1.48
-#    obesity_35: 1.48
-#    obesity_30: 1.48
+  obesity: # TODO remove this category.
+    overweight: 1
+    obesity_40: 1.48
+    obesity_35: 1.48
+    obesity_30: 1.48
 
 
 
