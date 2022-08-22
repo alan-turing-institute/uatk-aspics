@@ -41,9 +41,9 @@ health_conditions:
 
   sex:
     male_mortality: 216.0
-    male_symptomatic: 1.0 # <--------  /!\/!\/!\ MISSING /!\/!\/!\
+    male_symptomatic: 0.55 # doi: 10.1136/bmjopen-2020-040129
     female_mortality: 181.3
-    female_symptomatic: 1.0 # <--------  /!\/!\/!\ MISSING /!\/!\/!\
+    female_symptomatic: 0.45 # doi: 10.1136/bmjopen-2020-040129
 
   ethnicity:
     white_mortality: 146.0
@@ -74,9 +74,9 @@ health_conditions:
 
 
   type:
-    cvd_mortality: 1 # <--------  /!\/!\/!\ MISSING /!\/!\/!\
-    diabetes_mortality: 1 # <--------  /!\/!\/!\ MISSING /!\/!\/!\
-    bloodpressure_mortality: 1 # <--------  /!\/!\/!\ MISSING /!\/!\/!\
+    cvd_mortality: 1 # unresolved debate: independent factor or a simple consequence of age
+    diabetes_mortality: 1.47 # doi: 10.1002/edm2.338
+    bloodpressure_mortality: 1 # doi: 10.1038/s41440-022-00893-5
     improve_health: FALSE # TODO (later): can be removed after BMI works
 
   BMI:
