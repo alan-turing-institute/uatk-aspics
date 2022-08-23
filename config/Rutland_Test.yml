@@ -50,23 +50,23 @@ health_conditions:
     bloodpressure: 1
     improve_health: FALSE # TODO can be removed after BMI works
 
+  global:
+    morbidity: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    mortality: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+
   BMI:
-#    global_bmi: 1.0 # this one is the one to calibrate.
-#    white_Ethni_coff1: 5.7
-#    white_Ethni_coff2: -0.3
-#    white_Ethni_coff3: 0.0061
-#
-#    black_Ethni_coff1: 2.340
-#    black_Ethni_coff2: -0.13
-#    black_Ethni_coff3: 0.003
-#
-#    asian_Ethni_coff1: 9.407
-#    asian_Ethni_coff2: -0.67
-#    asian_Ethni_coff3: 0.014
-#
-#    other_Ethni_coff1: 9.21
-#    other_Ethni_coff2: -0.646
-#    other_Ethni_coff3: 0.012
+    white_Ethni_coef0: 5.7
+    white_Ethni_coef1: -0.3
+    white_Ethni_coef2: 0.0061
+    black_Ethni_coef0: 2.340
+    black_Ethni_coef1: -0.13
+    black_Ethni_coef2: 0.003
+    asian_Ethni_coef0: 9.407
+    asian_Ethni_coef1: -0.67
+    asian_Ethni_coef2: 0.014
+    other_Ethni_coef0: 9.21
+    other_Ethni_coef1: -0.646
+    other_Ethni_coef2: 0.012
 
 
 #  mortality_age:
