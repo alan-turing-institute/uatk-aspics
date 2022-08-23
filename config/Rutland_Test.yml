@@ -38,6 +38,11 @@ disease:
 #### INDIVIDUAL Health Conditions Parameters #########
 health_conditions:
 
+  global:
+    morbidity: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    mortality: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+
+
   sex: # Not need to be calibrated, comes from the literature.
     male_mortality: 1.0
     male_symptomatic: 1.0
@@ -50,9 +55,6 @@ health_conditions:
     bloodpressure: 1
     improve_health: FALSE # TODO can be removed after BMI works
 
-  global:
-    morbidity: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
-    mortality: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
 
   BMI:
     white_Ethni_coef0: 5.7
@@ -68,8 +70,35 @@ health_conditions:
     other_Ethni_coef1: -0.646
     other_Ethni_coef2: 0.012
 
+  ethnicity:
+    white_mortality: 146.0
+    black_mortality: 254.0
+    asian_mortality: 372.0
+    other_mortality: 432.0
 
-#  mortality_age:
+  age:
+    a0-9_mortality: 0.2
+    a10-19_mortality: 0.5
+    a20-29_mortality: 2.1
+    a30-39_mortality: 7.4
+    a40-49_mortality: 22.8
+    a50-59_mortality: 65.9
+    a60-69_mortality: 192.9
+    a70-79_mortality: 553.9
+    a80plus_mortality: 2376.4
+
+    a0-9_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a10-19_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a20-29_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a30-39_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a40-49_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a50-59_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a60-69_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a70-79_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a80plus_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+
+
+  #  mortality_age:
 #  # TODO add this categories
 #  # mortality_probs from params
 #
