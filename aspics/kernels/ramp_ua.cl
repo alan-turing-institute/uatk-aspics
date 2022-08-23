@@ -126,7 +126,9 @@ typedef struct Params {
   float cvd_multiplier; // mortality multipliers for cardiovascular disease
   float diabetes_multiplier; // mortality multipliers for diabetes
   float bloodpressure_multiplier; // mortality multipliers for high blood pressure
-  float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic 
+  float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
+  float health_risk_multipliers;
+  float bmi_multipliers;
 } Params;
 
 

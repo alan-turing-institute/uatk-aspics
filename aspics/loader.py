@@ -114,23 +114,29 @@ def create_params(calibration_params, disease_params, health_conditions):
 
     health_type_params = health_conditions["type"]
     health_obesity = health_conditions["obesity"]
-    #BMI_params = health_conditions["BMI"]
+    health_global = health_conditions["global"]
+    BMI_params = health_conditions["BMI"]
 
-    # bmi_multipliers = [
-    #     BMI_params["global_bmi"],
-    #     BMI_params["white_Ethni_coff1"],
-    #     BMI_params["white_Ethni_coff2"],
-    #     BMI_params["white_Ethni_coff3"],
-    #     BMI_params["black_Ethni_coff1"],
-    #     BMI_params["black_Ethni_coff2"],
-    #     BMI_params["black_Ethni_coff3"],
-    #     BMI_params["asian_Ethni_coff1"],
-    #     BMI_params["asian_Ethni_coff2"],
-    #     BMI_params["asian_Ethni_coff3"],
-    #     BMI_params["other_Ethni_coff1"],
-    #     BMI_params["other_Ethni_coff2"],
-    #     BMI_params["other_Ethni_coff3"],
-    # ]
+    health_risk_multipliers = [
+        health_global["morbidity"],
+        health_global["mortality"]
+    ]
+
+    bmi_multipliers = [
+        BMI_params["white_Ethni_coef0"],
+        BMI_params["white_Ethni_coef1"],
+        BMI_params["white_Ethni_coef2"],
+        BMI_params["black_Ethni_coef0"],
+        BMI_params["black_Ethni_coef1"],
+        BMI_params["black_Ethni_coef2"],
+        BMI_params["asian_Ethni_coef0"],
+        BMI_params["asian_Ethni_coef1"],
+        BMI_params["asian_Ethni_coef2"],
+        BMI_params["other_Ethni_coef0"],
+        BMI_params["other_Ethni_coef1"],
+        BMI_params["other_Ethni_coef2"],
+    ]
+
     obesity_multipliers = [
         health_obesity["overweight"],
         health_obesity["obesity_30"],
@@ -141,7 +147,8 @@ def create_params(calibration_params, disease_params, health_conditions):
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
-        #bmi_multipliers=bmi_multipliers,
+        health_risk_multipliers = health_risk_multipliers,
+        bmi_multipliers=bmi_multipliers,
         obesity_multipliers=obesity_multipliers,
         cvd_multiplier=health_type_params["cvd"],
         diabetes_multiplier=health_type_params["diabetes"],
