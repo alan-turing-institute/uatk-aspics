@@ -211,7 +211,7 @@ class OpenCLRunner:
         # sim_params = parameters["microsim"]  # Parameters for the dynamic microsim (python)
         calibration_params = parameters["microsim_calibration"]
         disease_params = parameters["disease"]  # Parameters for the disease model (r)
-
+        health_conditions = parameters["health_conditions"]
         # current_risk_beta needs to be set first  as the OpenCL model pre-multiplies the hazard multipliers by it
         current_risk_beta = OpenCLRunner._check_if_none("current_risk_beta",
                                                         current_risk_beta,
@@ -259,17 +259,18 @@ class OpenCLRunner:
 
         # Some parameters are set in the default.yml file and can be overridden
         pass  # None here yet
-
+        obesity_types = health_conditions["obesity"]
+        health_type = health_conditions["type"]
         obesity_multipliers = np.array(
-            [disease_params["overweight"],
-             disease_params["obesity_30"],
-             disease_params["obesity_35"],
-             disease_params["obesity_40"]])
+            [obesity_types["overweight"],
+             obesity_types["obesity_30"],
+             obesity_types["obesity_35"],
+             obesity_types["obesity_40"]])
 
-        cvd = disease_params["cvd"]
-        diabetes = disease_params["diabetes"]
-        bloodpressure = disease_params["bloodpressure"]
-        overweight_sympt_mplier = disease_params["overweight_sympt_mplier"]
+        cvd = health_type["cvd"]
+        diabetes = health_type["diabetes"]
+        bloodpressure = health_type["bloodpressure"]
+        #overweight_sympt_mplier = disease_params["overweight_sympt_mplier"]
 
         p = Params(
             location_hazard_multipliers=location_hazard_multipliers,
@@ -286,7 +287,7 @@ class OpenCLRunner:
         p.cvd_multiplier = cvd
         p.diabetes_multiplier = diabetes
         p.bloodpressure_multiplier = bloodpressure
-        p.overweight_sympt_mplier = overweight_sympt_mplier
+        #p.overweight_sympt_mplier = overweight_sympt_mplier
 
         return p
 
