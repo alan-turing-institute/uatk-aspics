@@ -32,12 +32,14 @@ class Params:
             #####Health Conditions (Type, BMI) ########
             ###########################################
             obesity_multipliers=[1, 1, 1, 1],
+            sex_multipliers = [1,1,1,1],
             cvd_multiplier=1,
             diabetes_multiplier=1,
             bloodpressure_multiplier=1,
             overweight_sympt_mplier=1.46,
             health_risk_multipliers=[1, 1],
             bmi_multipliers=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+
     ):
         """Create a simulator with the default parameters."""
         if health_risk_multipliers is None:
@@ -48,6 +50,9 @@ class Params:
 
         if obesity_multipliers is None:
             obesity_multipliers = [1, 1, 1, 1]
+
+        if sex_multipliers is None:
+            sex_multipliers = [1,1,1,1]
 
         self.symptomatic_multiplier = 0.5
 
@@ -128,6 +133,9 @@ class Params:
             ],
             dtype=np.float32,
         )
+        self.sex_multipliers = np.array(
+            [1,1,1,1],dtype=np.float32,
+        )
     def asarray(self):
         """Pack the parameters into a flat array for uploading."""
         return np.concatenate(
@@ -161,6 +169,7 @@ class Params:
                 ),
                 self.health_risk_multipliers,
                 self.bmi_multipliers,
+                self.sex_multipliers,
             ]
         )
 
@@ -196,6 +205,7 @@ class Params:
         p.overweight_sympt_mplier = params_array[51]
         p.health_risk_multipliers = params_array[52:53]
         p.bmi_multipliers = params_array[54:65]
+        p.sex_multipliers = params_array[66:70]
         # p.symptomatic_multiplier = params_array[0]
         # p.exposed_scale = params_array[1]
         # p.exposed_shape = params_array[2]

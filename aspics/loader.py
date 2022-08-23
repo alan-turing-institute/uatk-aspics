@@ -116,6 +116,14 @@ def create_params(calibration_params, disease_params, health_conditions):
     health_obesity = health_conditions["obesity"]
     health_global = health_conditions["global"]
     BMI_params = health_conditions["BMI"]
+    sex_params = health_conditions["sex"]
+
+    sex_multipliers =[
+        sex_params["male_mortality"],
+        sex_params["male_symptomatic"],
+        sex_params["female_mortality"],
+        sex_params["female_symptomatic"]
+    ]
 
     health_risk_multipliers = [
         health_global["morbidity"],
@@ -144,9 +152,12 @@ def create_params(calibration_params, disease_params, health_conditions):
         health_obesity["obesity_40"],
     ]
 
+
+
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
+        sex_multipliers = sex_multipliers,
         health_risk_multipliers = health_risk_multipliers,
         bmi_multipliers=bmi_multipliers,
         obesity_multipliers=obesity_multipliers,
