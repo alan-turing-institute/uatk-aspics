@@ -60,6 +60,7 @@ def setup_sim(parameters):
 
     # set params
     if calibration_params is not None and disease_params is not None and health_conditions is not None:
+        #snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
         snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
         health_type = health_conditions["type"]
         if health_type["improve_health"]:
@@ -113,23 +114,23 @@ def create_params(calibration_params, disease_params, health_conditions):
 
     health_type_params = health_conditions["type"]
     health_obesity = health_conditions["obesity"]
-    BMI_params = health_conditions["BMI"]
+    #BMI_params = health_conditions["BMI"]
 
-    bmi_multipliers = [
-        BMI_params["global_bmi"],
-        BMI_params["white_Ethni_coff1"],
-        BMI_params["white_Ethni_coff2"],
-        BMI_params["white_Ethni_coff3"],
-        BMI_params["black_Ethni_coff1"],
-        BMI_params["black_Ethni_coff2"],
-        BMI_params["black_Ethni_coff3"],
-        BMI_params["asian_Ethni_coff1"],
-        BMI_params["asian_Ethni_coff2"],
-        BMI_params["asian_Ethni_coff3"],
-        BMI_params["other_Ethni_coff1"],
-        BMI_params["other_Ethni_coff2"],
-        BMI_params["other_Ethni_coff3"],
-    ]
+    # bmi_multipliers = [
+    #     BMI_params["global_bmi"],
+    #     BMI_params["white_Ethni_coff1"],
+    #     BMI_params["white_Ethni_coff2"],
+    #     BMI_params["white_Ethni_coff3"],
+    #     BMI_params["black_Ethni_coff1"],
+    #     BMI_params["black_Ethni_coff2"],
+    #     BMI_params["black_Ethni_coff3"],
+    #     BMI_params["asian_Ethni_coff1"],
+    #     BMI_params["asian_Ethni_coff2"],
+    #     BMI_params["asian_Ethni_coff3"],
+    #     BMI_params["other_Ethni_coff1"],
+    #     BMI_params["other_Ethni_coff2"],
+    #     BMI_params["other_Ethni_coff3"],
+    # ]
     obesity_multipliers = [
         health_obesity["overweight"],
         health_obesity["obesity_30"],
@@ -140,7 +141,7 @@ def create_params(calibration_params, disease_params, health_conditions):
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
-        bmi_multipliers=bmi_multipliers,
+        #bmi_multipliers=bmi_multipliers,
         obesity_multipliers=obesity_multipliers,
         cvd_multiplier=health_type_params["cvd"],
         diabetes_multiplier=health_type_params["diabetes"],

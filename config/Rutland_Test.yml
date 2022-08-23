@@ -1,3 +1,5 @@
+### USE ONLY TO CALIBrate
+
 #########################
 ### ASPICS SIMULATION ###
 #########################
@@ -49,32 +51,32 @@ health_conditions:
     improve_health: FALSE # TODO can be removed after BMI works
 
   BMI:
-    global_bmi: 1.0 # this one is the one to calibrate.
-    white_Ethni_coff1: 5.7
-    white_Ethni_coff2: -0.3
-    white_Ethni_coff3: 0.0061
+#    global_bmi: 1.0 # this one is the one to calibrate.
+#    white_Ethni_coff1: 5.7
+#    white_Ethni_coff2: -0.3
+#    white_Ethni_coff3: 0.0061
+#
+#    black_Ethni_coff1: 2.340
+#    black_Ethni_coff2: -0.13
+#    black_Ethni_coff3: 0.003
+#
+#    asian_Ethni_coff1: 9.407
+#    asian_Ethni_coff2: -0.67
+#    asian_Ethni_coff3: 0.014
+#
+#    other_Ethni_coff1: 9.21
+#    other_Ethni_coff2: -0.646
+#    other_Ethni_coff3: 0.012
 
-    black_Ethni_coff1: 2.340
-    black_Ethni_coff2: -0.13
-    black_Ethni_coff3: 0.003
 
-    asian_Ethni_coff1: 9.407
-    asian_Ethni_coff2: -0.67
-    asian_Ethni_coff3: 0.014
-
-    other_Ethni_coff1: 9.21
-    other_Ethni_coff2: -0.646
-    other_Ethni_coff3: 0.012
-
-
-  mortality_age:
-  # TODO add this categories
-  # mortality_probs from params
-
-  symptomatic_age:
-    bin_size: 5 #Years per bin
-    max_bin_idx: 18 #Largest bin index covers 80+
-  # TODO symptomatic_probs
+#  mortality_age:
+#  # TODO add this categories
+#  # mortality_probs from params
+#
+#  symptomatic_age:
+#    bin_size: 5 #Years per bin
+#    max_bin_idx: 18 #Largest bin index covers 80+
+#  # TODO symptomatic_probs
 
   obesity: # TODO remove this category.
     overweight: 1

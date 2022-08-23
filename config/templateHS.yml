@@ -72,7 +72,6 @@ health_conditions:
     a70-79_morbidity:	1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
     a80plus_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
 
-
   type:
     cvd_mortality: 1 # unresolved debate: independent factor or a simple consequence of age
     diabetes_mortality: 1.47 # doi: 10.1002/edm2.338
@@ -99,11 +98,7 @@ health_conditions:
   #  max_bin_idx: 18 #Largest bin index covers 80+
   # TODO symptomatic_probs
 
-
-
-
-
-###########################################
+#####################################
 ##### Vaccination Status and variants #####
 ###########################################
 
