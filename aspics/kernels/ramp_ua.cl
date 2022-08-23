@@ -130,6 +130,8 @@ typedef struct Params {
   float health_risk_multipliers[2];
   float bmi_multipliers[12];
   float sex_multipliers[4];
+  float ethnicity_multipliers[4];
+  float age_multipliers[18];
 } Params;
 
 

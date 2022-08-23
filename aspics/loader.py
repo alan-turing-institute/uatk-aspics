@@ -117,17 +117,48 @@ def create_params(calibration_params, disease_params, health_conditions):
     health_global = health_conditions["global"]
     BMI_params = health_conditions["BMI"]
     sex_params = health_conditions["sex"]
+    ethnicity_params = health_conditions["ethnicity"]
+    age_params = health_conditions["age"]
+
+    age_multipliers =[
+        age_params["a0-9_mortality"],
+        age_params["a10-19_mortality"],
+        age_params["a20-29_mortality"],
+        age_params["a30-39_mortality"],
+        age_params["a40-49_mortality"],
+        age_params["a50-59_mortality"],
+        age_params["a60-69_mortality"],
+        age_params["a70-79_mortality"],
+        age_params["a80plus_mortality"],
+
+        age_params["a0-9_morbidity"],
+        age_params["a10-19_morbidity"],
+        age_params["a20-29_morbidity"],
+        age_params["a30-39_morbidity"],
+        age_params["a40-49_morbidity"],
+        age_params["a50-59_morbidity"],
+        age_params["a60-69_morbidity"],
+        age_params["a70-79_morbidity"],
+        age_params["a80plus_morbidity"],
+    ]
+
+    ethnicity_multipliers =[
+        ethnicity_params["white_mortality"],
+        ethnicity_params["black_mortality"],
+        ethnicity_params["asian_mortality"],
+        ethnicity_params["other_mortality"],
+    ]
 
     sex_multipliers =[
         sex_params["male_mortality"],
         sex_params["male_symptomatic"],
         sex_params["female_mortality"],
-        sex_params["female_symptomatic"]
+        sex_params["female_symptomatic"],
     ]
 
     health_risk_multipliers = [
         health_global["morbidity"],
-        health_global["mortality"]
+        health_global["mortality"],
     ]
 
     bmi_multipliers = [
@@ -153,10 +184,11 @@ def create_params(calibration_params, disease_params, health_conditions):
     ]
 
 
-
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
+        age_multipliers=age_multipliers,
+        ethnicity_multipliers = ethnicity_multipliers,
         sex_multipliers = sex_multipliers,
         health_risk_multipliers = health_risk_multipliers,
         bmi_multipliers=bmi_multipliers,
