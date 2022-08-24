@@ -107,11 +107,11 @@ health_conditions:
 #    max_bin_idx: 18 #Largest bin index covers 80+
 #  # TODO symptomatic_probs
 
-  obesity: # TODO remove this category.
+  obesity: # TODO remove this category., now it is just a 1 values.
     overweight: 1
-    obesity_40: 1.48
-    obesity_35: 1.48
-    obesity_30: 1.48
+    obesity_40: 1
+    obesity_35: 1
+    obesity_30: 1
 
 
 
