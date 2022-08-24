@@ -60,7 +60,6 @@ def setup_sim(parameters):
 
     # set params
     if calibration_params is not None and disease_params is not None and health_conditions is not None:
-        #snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
         snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
         health_type = health_conditions["type"]
         if health_type["improve_health"]:
