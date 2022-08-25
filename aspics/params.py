@@ -33,8 +33,10 @@ class Params:
             ###########################################
             obesity_multipliers=[1, 1, 1, 1],
             sex_multipliers = [1,1,1,1],
+
             ethnicity_multipliers =[1,1,1,1],
-            age_multipliers = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+            age_morbidity_multipliers = [1,1,1,1,1,1,1,1,1],
+            age_mortality_multipliers = [1,1,1,1,1,1,1,1,1],
             cvd_multiplier=1,
             diabetes_multiplier=1,
             bloodpressure_multiplier=1,
@@ -141,8 +143,11 @@ class Params:
         self.ethnicity_multipliers = np.array(
             [1,1,1,1],dtype=np.float32,
         )
-        self.age_multipliers = np.array(
-            [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],dtype=np.float32,
+        self.age_mortality_multipliers = np.array(
+            [1,1,1,1,1,1,1,1,1],dtype=np.float32,
+        )
+        self.age_morbidity_multipliers = np.array(
+            [1,1,1,1,1,1,1,1,1],dtype=np.float32,
         )
 
     def asarray(self):
@@ -180,6 +185,8 @@ class Params:
                 self.bmi_multipliers,
                 self.sex_multipliers,
                 self.ethnicity_multipliers,
+                self.age_morbidity_multipliers,
+                self.age_mortality_multipliers
             ]
         )
 
@@ -217,7 +224,8 @@ class Params:
         p.bmi_multipliers = params_array[54:65]
         p.sex_multipliers = params_array[66:70]
         p.ethnicity_multipliers = params_array[71:74]
-        p.age_multipliers=params_array[75:93]
+        p.age_mortality_multipliers=params_array[75:84]
+        p.age_morbidity_multipliers=params_array[85:93]
         # p.symptomatic_multiplier = params_array[0]
         # p.exposed_scale = params_array[1]
         # p.exposed_shape = params_array[2]

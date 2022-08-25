@@ -54,7 +54,7 @@ health_conditions:
     asian_mortality: 2.55
     other_mortality: 2.97
 
-  age:
+  age_mortality:
     a0-9_mortality: 0.0088
     a10-19_mortality: 0.0219
     a20-29_mortality: 0.0921
@@ -64,6 +64,8 @@ health_conditions:
     a60-69_mortality: 8.4749
     a70-79_mortality: 24.4236
     a80plus_mortality: 106.7409
+
+  age_morbidity:
     a0-9_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
     a10-19_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
     a20-29_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
