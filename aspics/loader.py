@@ -117,28 +117,30 @@ def create_params(calibration_params, disease_params, health_conditions):
     BMI_params = health_conditions["BMI"]
     sex_params = health_conditions["sex"]
     ethnicity_params = health_conditions["ethnicity"]
-    age_params = health_conditions["age"]
+    age_mortality_params = health_conditions["age_mortality"]
+    age_morbidity_params = health_conditions["age_morbidity"]
 
-    age_multipliers =[
-        age_params["a0-9_mortality"],
-        age_params["a10-19_mortality"],
-        age_params["a20-29_mortality"],
-        age_params["a30-39_mortality"],
-        age_params["a40-49_mortality"],
-        age_params["a50-59_mortality"],
-        age_params["a60-69_mortality"],
-        age_params["a70-79_mortality"],
-        age_params["a80plus_mortality"],
-
-        age_params["a0-9_morbidity"],
-        age_params["a10-19_morbidity"],
-        age_params["a20-29_morbidity"],
-        age_params["a30-39_morbidity"],
-        age_params["a40-49_morbidity"],
-        age_params["a50-59_morbidity"],
-        age_params["a60-69_morbidity"],
-        age_params["a70-79_morbidity"],
-        age_params["a80plus_morbidity"],
+    age_mortality_multipliers =[
+        age_mortality_params["a0-9_mortality"],
+        age_mortality_params["a10-19_mortality"],
+        age_mortality_params["a20-29_mortality"],
+        age_mortality_params["a30-39_mortality"],
+        age_mortality_params["a40-49_mortality"],
+        age_mortality_params["a50-59_mortality"],
+        age_mortality_params["a60-69_mortality"],
+        age_mortality_params["a70-79_mortality"],
+        age_mortality_params["a80plus_mortality"],
+        ]
+    age_morbidity_multipliers = [
+        age_morbidity_params["a0-9_morbidity"],
+        age_morbidity_params["a10-19_morbidity"],
+        age_morbidity_params["a20-29_morbidity"],
+        age_morbidity_params["a30-39_morbidity"],
+        age_morbidity_params["a40-49_morbidity"],
+        age_morbidity_params["a50-59_morbidity"],
+        age_morbidity_params["a60-69_morbidity"],
+        age_morbidity_params["a70-79_morbidity"],
+        age_morbidity_params["a80plus_morbidity"],
     ]
 
     ethnicity_multipliers =[
@@ -186,7 +188,8 @@ def create_params(calibration_params, disease_params, health_conditions):
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
-        age_multipliers=age_multipliers,
+        age_morbidity_multipliers = age_morbidity_multipliers,
+        age_mortality_multipliers = age_mortality_multipliers,
         ethnicity_multipliers = ethnicity_multipliers,
         sex_multipliers = sex_multipliers,
         health_risk_multipliers = health_risk_multipliers,
