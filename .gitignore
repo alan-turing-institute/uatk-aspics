@@ -17,3 +17,6 @@ __pycache__
 #ABC files
 *.pkl
 *.db
+
+# IMGUI dashboard
+imgui.ini
