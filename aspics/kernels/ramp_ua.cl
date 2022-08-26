@@ -120,17 +120,18 @@ typedef struct Params {
   float lockdown_multiplier; // Increase in time at home due to lockdown
   float place_hazard_multipliers[6]; // Hazard multipliers by activity
   float individual_hazard_multipliers[3]; // Hazard multipliers by activity
-  float mortality_probs[19]; // mortality probabilities by age group
-  float obesity_multipliers[4]; // mortality multipliers for obesity levels
+  float mortality_probs[19]; // mortality probabilities by age group, later will be replace by age_mortality_multipliers
+  float obesity_multipliers[4]; // mortality multipliers for obesity levels, later will be replace by age_morbidity_multipliers
   float symptomatic_probs[9]; // symptomatic probs by age group
   float cvd_multiplier; // mortality multipliers for cardiovascular disease
   float diabetes_multiplier; // mortality multipliers for diabetes
   float bloodpressure_multiplier; // mortality multipliers for high blood pressure
   float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
-  float health_risk_multipliers[2];
-  float bmi_multipliers[12];
-  float sex_multipliers[4];
-  float ethnicity_multipliers[4];
+
+  float health_risk_multipliers[2];// multipliers for probability in health conditions global morbidity and mortality
+  float bmi_multipliers[12]; // multipliers for probability in health conditions for BMI
+  float sex_multipliers[4]; // multipliers for sex multipliers in health conditions
+  float ethnicity_multipliers[4]; 
   float age_mortality_multipliers[9];
   float age_morbidity_multipliers[9];
 } Params;
@@ -167,16 +168,62 @@ uint sample_infection_duration(global uint4* rng, global const Params* params){
   return (uint)lognormal(rng, meanlog, sdlog);
 }
 
+//This one can be replaced by personal_mortality function.
 float get_mortality_prob_for_age(ushort age, global const Params* params){
   uint bin_size = 5; // Years per bin
   uint max_bin_idx = 18; // Largest bin index covers 80+
   return params->mortality_probs[min(age/bin_size, max_bin_idx)];
 }
 
+float get_mortality_prob_for_age (){
+  
+  float oddSex = (1 - sex) * params["female_mortality"] + sex * params["male_mortality"];
+  float probaSex = odd_ratio_to_proba(oddSex,param_mortality);
+    oddAge = param_age_mortality[min(math.floor(age/10),8)]
+    probaAge = odd_ratio_to_proba(oddAge,probaSex)
+    oddCVD = max(cvd * params["cvd_mortality"], 1.0)
+    probaCVD = odd_ratio_to_proba(oddCVD,probaAge)
+    oddDiabetes = max(diabetes * params["diabetes_mortality"], 1.0)
+    probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD)
+    oddHypertension = max(bloodpressure * params["bloodpresure_mortality"], 1.0)
+    probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes)
+    oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]]
+    originNew = min(origin, 4)  # BMI data 4 and 5 get merged
+    probaOrigin = odd_ratio_to_proba(oddOrigin[originNew - 1],probaHypertension)
+    oddBMI = param_bmi_mortality[(originNew - 1) * 3] + param_bmi_mortality[(originNew - 1) * 3 + 1] * bmiNew + param_bmi_mortality[(originNew - 1) * 3 + 2]* bmiNew ^ 2
+    personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin)
+    return personal_mortality_final
+
+
+
+
+}
+
+
 float get_obesity_multiplier(ushort obesity, global const Params* params){
     // obesity value of 0 corresponds to normal, so there is no multiplier for that
     int multiplier_idx = (int)obesity - 1;
     return params->obesity_multipliers[multiplier_idx];
+}
+
+//second function to compute the personal_risk <personal_mortality per age >
+float get_symptomatic_prob_for_age(ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort new_bmi, global const Params* params){
+  int oddSex = (1 - sex) * params["female_mortality"] + sex * params["male_mortality"];
+  probaSex = odd_ratio_to_proba(oddSex,param_mortality);
+  oddAge = param_age_mortality[min(math.floor(age/10),8)];
+  probaAge = odd_ratio_to_proba(oddAge,probaSex);
+  oddCVD = max(cvd * params["cvd_mortality"], 1.0);
+  probaCVD = odd_ratio_to_proba(oddCVD,probaAge);
+  oddDiabetes = max(diabetes * params["diabetes_mortality"], 1.0);
+  probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
+  oddHypertension = max(bloodpressure * params["bloodpresure_mortality"], 1.0);
+  probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
+  oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]];
+  originNew = min(origin, 4)  # BMI data 4 and 5 get merged;
+  probaOrigin = odd_ratio_to_proba(oddOrigin[originNew - 1],probaHypertension);
+  oddBMI = param_bmi_mortality[(originNew - 1) * 3] + param_bmi_mortality[(originNew - 1) * 3 + 1] * bmiNew + param_bmi_mortality[(originNew - 1) * 3 + 2]* bmiNew ^ 2;
+  personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  return  personal_mortality_final;
 }
 
 float get_symptomatic_prob_for_age(ushort age, global const Params* params){
@@ -337,7 +384,7 @@ kernel void people_recv_hazards(uint npeople,
 // Disease model: given their current disease status and hazard, determine if a person is due to transition to the next
 // state, and if so apply that transition.
 kernel void people_update_statuses(uint npeople,
-                                   global const ushort* people_ages,
+                                   global const ushort* people_ages, 
                                    global const ushort* people_obesity,
                                    global const uchar* people_cvd,
                                    global const uchar* people_diabetes,
@@ -405,6 +452,7 @@ kernel void people_update_statuses(uint npeople,
         }
         case Symptomatic:
         {
+        
           // Calculate recovered prob based on age
           ushort person_age = people_ages[person_id];
           float mortality_prob = get_mortality_prob_for_age(person_age, params);

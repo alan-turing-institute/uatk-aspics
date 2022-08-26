@@ -28,25 +28,6 @@ param_bmi_mortality = [params["white_Ethni_coef0"],params["white_Ethni_coef1"],p
                        params["black_Ethni_coef1"],params["black_Ethni_coef2"],params["asian_Ethni_coef0"],params["asian_Ethni_coef1"],
                        params["asian_Ethni_coef2"],params["other_Ethni_coef0"],params["other_Ethni_coef1"],params["other_Ethni_coef2"]
                       ]
-def personal_morbidity_risk (paramaters):
-    print(f"Reading the Parameters file {paramaters}")
-    health_conditions_params = paramaters["health_conditions"]
-    params_age_morbidity = health_conditions_params["age"]
-    param_age_mortality = health_conditions_params[""]
-
-
-
-    sim_params = parameters["microsim"] ## Set of Parameters for the ASPCIS microsim
-    calibration_params = parameters["microsim_calibration"] ## Calibration paramaters
-    disease_params = parameters["disease"] # Disease paramaters for the moment only beta_risk included.
-    health_conditions = parameters["health_conditions"] # individual health conditions
-    iterations = sim_params["iterations"]
-    study_area = sim_params["study-area"]
-    output = sim_params["output"]
-    output_every_iteration = sim_params["output-every-iteration"]
-    use_lockdown = sim_params["use-lockdown"]
-    start_date = sim_params["start-date"]
-
 
 def odd_ratio_to_proba(oddRatio,knownProb):
     return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb)
