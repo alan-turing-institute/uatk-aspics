@@ -207,7 +207,7 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
 }
 
 //second function to compute the personal_risk <personal_mortality per age >
-float get_symptomatic_prob_for_age(ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort new_bmi, global const Params* params){
+float get_personal_mortality_for_age(ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort new_bmi, global const Params* params){
   int oddSex = (1 - sex) * params["female_mortality"] + sex * params["male_mortality"];
   probaSex = odd_ratio_to_proba(oddSex,param_mortality);
   oddAge = param_age_mortality[min(math.floor(age/10),8)];
@@ -389,6 +389,10 @@ kernel void people_update_statuses(uint npeople,
                                    global const uchar* people_cvd,
                                    global const uchar* people_diabetes,
                                    global const uchar* people_bloodpressure,
+
+                                   global const uchar* people_sex,
+                                   global const uchar* people_origin,
+                                   
                                    global const float* people_hazards,
                                    global uint* people_statuses,
                                    global uint* people_transition_times,
@@ -424,10 +428,19 @@ kernel void people_update_statuses(uint npeople,
         case Exposed:
         {
           ushort person_age = people_ages[person_id];
+          ushort person_sex = people_sex[person_id];
+          ushort person_origin = people_origin[person_id];
+          ushort person_cvd = people_cvd[person_id];
+          ushort person_bloodpressure = people_bloodpressure[person_id];
+          ushort person_diabetes = people_diabetes[person_id];
+          
+          //this one on the way to be replaced by get_personal_mortality_for_age/////
           float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
 
           ushort person_obesity = people_obesity[person_id];
 
+          float personal_risk_mortality = get_personal_mortality_for_age(person_age, person_sex, person_origin, person_cvd, person_diabetes, person_bloodpressure, person_obesity, params);
+          
           // being overweight increases chances of being symptomatic
           if (is_obese(people_obesity[person_id])){
               symptomatic_prob *= params->overweight_sympt_mplier;
