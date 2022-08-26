@@ -199,6 +199,8 @@ float get_mortality_prob_for_age(ushort age, ushort sex, ushort origin, ushort c
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   //float  oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]]
   float originNew = min(origin, 4); //BMI data 4 and 5 get merged
+  //Maybe @dabreegster can find a better way to this comparison, I will do it old school.
+  if origin = 0:
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew - 1],probaHypertension);
     oddBMI = param_bmi_mortality[(originNew - 1) * 3] + param_bmi_mortality[(originNew - 1) * 3 + 1] * bmiNew + param_bmi_mortality[(originNew - 1) * 3 + 2]* bmiNew ^ 2
     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin)
