@@ -179,7 +179,6 @@ float odd_ratio_to_proba (oddRatio, knownProb){
 }
 
 //This one can be replaced by personal_mortality function.
-
 /* float get_mortality_prob_for_age(ushort age, global const Params* params){
   uint bin_size = 5; // Years per bin
   uint max_bin_idx = 18; // Largest bin index covers 80+
@@ -197,23 +196,18 @@ float get_mortality_prob_for_age(ushort age, ushort sex, ushort origin, ushort c
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
   float oddHypertension = max((bloodpressure * params->bloodpressure_multiplier), 1.0);
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
-  //float  oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]]
+  //Maybe @dabreegster can find a better way to this comparison, I will do througth a nested if.  
+  int oddOrigin_idx = (int)origin;
   float originNew = min(origin, 4); //BMI data 4 and 5 get merged
-  //Maybe @dabreegster can find a better way to this comparison, I will do it old school.
-  if origin = 0:
-  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew - 1],probaHypertension);
-    oddBMI = param_bmi_mortality[(originNew - 1) * 3] + param_bmi_mortality[(originNew - 1) * 3 + 1] * bmiNew + param_bmi_mortality[(originNew - 1) * 3 + 2]* bmiNew ^ 2
-    personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin)
-    return personal_mortality_final
-
-
-
-  uint bin_size = 5; // Years per bin
-  uint max_bin_idx = 18; // Largest bin index covers 80+
-  return params->mortality_probs[min(age/bin_size, max_bin_idx)];
+  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[oddOrigin_idx][originNew - 1],probaHypertension)
+  //float  oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]]
+  
+  float probaOrigin = odd_ratio_to_proba(oddOrigin,probaHypertension);
+  float age_muliplier = params->age_mortality_multipliers[person_id];
+  float oddBMI = params->age_mortality_multipliers[(originNew - 1) * 3] + params->age_mortality_multipliers[(originNew - 1) * 3 + 1] * obesity + params->age_mortality_multipliers[(originNew - 1) * 3 + 2]* obesity ^ 2;
+  float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  return personal_mortality_final;
 }          
-
-
 
 float get_obesity_multiplier(ushort obesity, global const Params* params){
     // obesity value of 0 corresponds to normal, so there is no multiplier for that
@@ -221,7 +215,6 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
     return params->obesity_multipliers[multiplier_idx];
 }
 
- 
 
 /// will be replace by the function above, KEPP THE SAME NAME TO AVOID MORE ISSUES.
 /* float get_symptomatic_prob_for_age(ushort age,  global const Params* params){

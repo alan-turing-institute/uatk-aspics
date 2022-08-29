@@ -126,7 +126,7 @@ def convert_to_npz(pop, output_path):
             people_sex=np.array(
                 [p.demographics.sex for p in pop.people], dtype=np.uint16
             ),
-            ### TODO does not read new_bmi, ask Dustin.
+            ### TODO does not read new_bmi, ask @dustin. for now is using the obesity value people_obesity ( wich refers to bmi)
             # people_new_bmi=np.array(
             #     [p.health.bmi_new for p in pop.people], dtype=np.float
             # ),
