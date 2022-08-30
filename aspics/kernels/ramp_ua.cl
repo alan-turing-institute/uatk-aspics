@@ -132,6 +132,11 @@ typedef struct Params {
   float sex_multipliers[4];
   float ethnicity_multipliers[4];
   float age_multipliers[18];
+  float male_symptomatic; //Came from Health_Conditions-->Sex
+  float female_symptomatic; //Came from Health_Conditions-->Sex
+  float morbidity; //Came from Health_Conditions-->global
+  float age_morbidity_multipliers[9]; 
+
 } Params;
 
 
@@ -178,10 +183,24 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
     return params->obesity_multipliers[multiplier_idx];
 }
 
-float get_symptomatic_prob_for_age(ushort age, global const Params* params){
+// OLD FUNCTION///
+/*float get_symptomatic_prob_for_age(ushort age, global const Params* params){
   uint bin_size = 10; // Years per bin
   uint max_bin_idx = 8; // Largest bin index covers 80+
   return params->symptomatic_probs[min(age/bin_size, max_bin_idx)];
+}*/
+
+//NEW FUNCTION NO 1, from ratio to Prob.
+float odd_ratio_to_proba (float oddRatio, float knownProb){
+  return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
+}
+
+float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
+  float oddSex = (1 - sex) * params->female_symptomatic + sex * params->male_symptomatic;
+  float probaSex = odd_ratio_to_proba(oddSex,params->morbidity);
+  float oddAge = params->age_morbidity_multipliers[min(age/10,8)];
+  float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
+  return personal_morbidity_final;
 }
 
 bool is_obese(ushort obesity){
@@ -378,10 +397,12 @@ kernel void people_update_statuses(uint npeople,
         case Exposed:
         {
           ushort person_age = people_ages[person_id];
-          float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
-
+          ushort person_sex = people_sex[person_id];
           ushort person_obesity = people_obesity[person_id];
 
+          //float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
+          float symptomatic_prob = get_symptomatic_prob_for_age(person_age, person_sex, params);
+          
           // being overweight increases chances of being symptomatic
           if (is_obese(people_obesity[person_id])){
               symptomatic_prob *= params->overweight_sympt_mplier;
