@@ -197,14 +197,9 @@ float get_mortality_prob_for_age(ushort age, ushort sex, ushort origin, ushort c
   float oddHypertension = max((bloodpressure * params->bloodpressure_multiplier), 1.0);
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   //Maybe @dabreegster can find a better way to this comparison, I will do througth a nested if.  
-  int oddOrigin_idx = (int)origin;
-  float originNew = min(origin, 4); //BMI data 4 and 5 get merged
-  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[oddOrigin_idx][originNew - 1],probaHypertension)
-  //float  oddOrigin = [params["white_mortality"],params["black_mortality"],params["asian_mortality"],params["other_mortality"]]
-  
-  float probaOrigin = odd_ratio_to_proba(oddOrigin,probaHypertension);
-  float age_muliplier = params->age_mortality_multipliers[person_id];
-  float oddBMI = params->age_mortality_multipliers[(originNew - 1) * 3] + params->age_mortality_multipliers[(originNew - 1) * 3 + 1] * obesity + params->age_mortality_multipliers[(originNew - 1) * 3 + 2]* obesity ^ 2;
+  int originNew = min(origin, 4); //BMI data 4 and 5 get merged
+  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * obesity + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (obesity^2);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
 }          
@@ -222,7 +217,6 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
   uint max_bin_idx = 8; // Largest bin index covers 80+
   return params->symptomatic_probs[min(age/bin_size, max_bin_idx)];
 } */
-
 
 
 // THIS ONE IMPLIMENT personal_morbidity using sex, age and param_morbidity, param_age_morbidity (symptomatic_probs)
