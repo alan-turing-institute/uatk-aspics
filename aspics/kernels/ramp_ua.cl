@@ -127,14 +127,16 @@ typedef struct Params {
   float diabetes_multiplier; // mortality multipliers for diabetes
   float bloodpressure_multiplier; // mortality multipliers for high blood pressure
   float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
-  float health_risk_multipliers[2];
+  float health_morbidity_mutiplier;
+  float health_mortality_multiplier;
+  //float health_risk_multipliers[2];
   float bmi_multipliers[12];
   float sex_multipliers[4];
   float ethnicity_multipliers[4];
   float age_multipliers[18];
   float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
-  float morbidity; //Came from Health_Conditions-->global
+  float morbidity_mutiplier; //Came from Health_Conditions-->global
   float age_morbidity_multipliers[9]; 
 
 } Params;
@@ -197,7 +199,7 @@ float odd_ratio_to_proba (float oddRatio, float knownProb){
 //NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
   float oddSex = (1 - sex) * params->female_symptomatic_multiplier + sex * params->male_symptomatic_multiplier;
-  float probaSex = odd_ratio_to_proba(oddSex,params->morbidity);
+  float probaSex = odd_ratio_to_proba(oddSex,params->health_morbidity_mutiplier);
   float oddAge = params->age_morbidity_multipliers[min(age/10,8)];
   float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
   return personal_morbidity_final;
