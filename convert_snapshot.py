@@ -123,16 +123,16 @@ def convert_to_npz(pop, output_path):
                 [bool_to_int(p.health.has_high_blood_pressure) for p in pop.people],
                 dtype=np.uint8,
             ),
-            people_sex=np.array(
-                [p.demographics.sex for p in pop.people], dtype=np.uint16
-            ),
+            #people_sex=np.array(
+                #[p.demographics.sex for p in pop.people], dtype=np.uint16
+            #),
             ### TODO does not read new_bmi, ask @dustin. for now is using the obesity value people_obesity ( wich refers to bmi)
             # people_new_bmi=np.array(
             #     [p.health.bmi_new for p in pop.people], dtype=np.float
             # ),
-            people_origin=np.array(
-                [p.demographics.origin for p in pop.people], dtype=np.uint16
-            ),
+            #people_origin=np.array(
+                #[p.demographics.origin for p in pop.people], dtype=np.uint16
+            #),
             people_statuses=np.zeros(num_people, dtype=np.uint32),
             people_transition_times=np.zeros(num_people, dtype=np.uint32),
             people_place_ids=people_place_ids,

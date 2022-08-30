@@ -62,8 +62,8 @@ class Simulator:
             people_diabetes=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_blood_pressure=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
 
-            people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
-            people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople),
+            #people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
+            #people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople),
             
             people_statuses=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
             people_personal_risk=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2),
@@ -142,10 +142,6 @@ class Simulator:
             buffers.people_cvd,
             buffers.people_diabetes,
             buffers.people_blood_pressure,
-
-            buffers.people_origin,
-            buffers.people_sex,
-            
             buffers.people_hazards,
             buffers.people_statuses,
             buffers.people_transition_times,
