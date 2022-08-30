@@ -56,7 +56,7 @@ class Params:
             obesity_multipliers = [1, 1, 1, 1]
 
         if sex_multipliers is None:
-            sex_multipliers = [1,1,1,1]
+            sex_multipliers = [1,1.34,1,1.0]
 
         self.symptomatic_multiplier = 0.5
 
@@ -220,7 +220,9 @@ class Params:
         p.diabetes_multiplier = params_array[49]
         p.bloodpressure_multiplier = params_array[50]
         p.overweight_sympt_mplier = params_array[51]
-        p.health_risk_multipliers = params_array[52:53]
+        p.health_morbidity_mutiplier = params_array[52]
+        p.health_mortality_multiplier = params_array[53]
+        #p.health_risk_multipliers = params_array[52:53]
         p.bmi_multipliers = params_array[54:65]
         p.male_mortality_multiplier = params_array[66]
         p.male_symptomatic_multiplier = params_array[67]
