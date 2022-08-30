@@ -52,8 +52,8 @@ class Params:
         if bmi_multipliers is None:
             bmi_multipliers = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
-        #if obesity_multipliers is None:
-            #obesity_multipliers = [1, 1, 1, 1]
+        if obesity_multipliers is None:
+            obesity_multipliers = [1, 1, 1, 1]
 
         if sex_multipliers is None:
             sex_multipliers = [1,1.34,1,1.0]
@@ -91,63 +91,63 @@ class Params:
             dtype=np.float32,
         )
 
-        # self.mortality_probs = np.array(
-        #     [
-        #         0.00,
-        #         0.0001,
-        #         0.0001,
-        #         0.0002,
-        #         0.0003,
-        #         0.0004,
-        #         0.0006,
-        #         0.0010,
-        #         0.0016,
-        #         0.0024,
-        #         0.0038,
-        #         0.0060,
-        #         0.0094,
-        #         0.0147,
-        #         0.0231,
-        #         0.0361,
-        #         0.0566,
-        #         0.0886,
-        #         0.1737,
-        #     ],
-        #     dtype=np.float32,
-        # )
+        self.mortality_probs = np.array(
+            [
+                0.00,
+                0.0001,
+                0.0001,
+                0.0002,
+                0.0003,
+                0.0004,
+                0.0006,
+                0.0010,
+                0.0016,
+                0.0024,
+                0.0038,
+                0.0060,
+                0.0094,
+                0.0147,
+                0.0231,
+                0.0361,
+                0.0566,
+                0.0886,
+                0.1737,
+            ],
+            dtype=np.float32,
+        )
 
-        #self.obesity_multipliers = np.array(obesity_multipliers, dtype=np.float32)
-        #self.symptomatic_probs = np.array(
-            #[0.21, 0.21, 0.45, 0.45, 0.45, 0.45, 0.45, 0.69, 0.69], dtype=np.float32
-        #)
+        self.obesity_multipliers = np.array(obesity_multipliers, dtype=np.float32)
+        self.symptomatic_probs = np.array(
+            [0.21, 0.21, 0.45, 0.45, 0.45, 0.45, 0.45, 0.69, 0.69], dtype=np.float32
+        )
         self.cvd_multiplier = cvd_multiplier
         self.diabetes_multiplier = diabetes_multiplier
         self.bloodpressure_multiplier = bloodpressure_multiplier
-        #self.overweight_sympt_mplier = overweight_sympt_mplier
+        self.overweight_sympt_mplier = overweight_sympt_mplier
         self.health_risk_multipliers = np.array(
             [
-                1, #morbidity 
-                1, #mortality
+                1,
+                1,
             ],
             dtype=np.float32,
         )
         self.bmi_multipliers = np.array(
             [
-                5.7, -0.3, 0.0061, 2.340, -0.13, 0.003, 9.407, -0.67, 0.014, 9.21, -0.646, 0.012
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
             ],
             dtype=np.float32,
         )
         self.sex_multipliers = np.array(
-            [1.19,1.34,1.0,1.0],dtype=np.float32,
+            [1,1,1,1],dtype=np.float32,
         )
         self.ethnicity_multipliers = np.array(
-            [1.0,1.74,2.55,2.97],dtype=np.float32,
+            [1,1,1,1],dtype=np.float32,
         )
         self.age_mortality_multipliers = np.array(
-            [0.0088,0.0219,0.0921,0.3245,1.0,2.8916,8.4749,24.4236,106.7409],dtype=np.float32,
+            [1,1,1,1,1,1,1,1,1],dtype=np.float32,
         )
         self.age_morbidity_multipliers = np.array(
-            [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],dtype=np.float32,
+            [1,1,1,1,1,1,1,1,1],dtype=np.float32,
         )
 
     def asarray(self):
@@ -169,15 +169,15 @@ class Params:
                 ),
                 self.place_hazard_multipliers,
                 self.individual_hazard_multipliers,
-                #self.mortality_probs,
-                #self.obesity_multipliers,
-                #self.symptomatic_probs,
+                self.mortality_probs,
+                self.obesity_multipliers,
+                self.symptomatic_probs,
                 np.array(
                     [
                         self.cvd_multiplier,
                         self.diabetes_multiplier,
                         self.bloodpressure_multiplier,
-                        #self.overweight_sympt_mplier,
+                        self.overweight_sympt_mplier,
                     ],
                     dtype=np.float32,
                 ),
@@ -213,23 +213,23 @@ class Params:
         p.infection_log_scale = params_array[5]
         p.infection_mode = params_array[6]
         p.lockdown_multiplier = params_array[7]
-        #p.mortality_probs = params_array[16:35]
-        #p.obesity_multipliers = params_array[35:39]
-        #p.symptomatic_probs = params_array[39:48]
-        p.cvd_multiplier = params_array[16]
-        p.diabetes_multiplier = params_array[17]
-        p.bloodpressure_multiplier = params_array[18]
-        #p.overweight_sympt_mplier = params_array[51]
-        p.health_morbidity_mutiplier = params_array[19]
-        p.health_mortality_multiplier = params_array[20]
-        p.bmi_multipliers = params_array[21:32]
-        p.male_mortality_multiplier = params_array[33]
-        p.male_symptomatic_multiplier = params_array[34]
-        p.female_mortality_multiplier = params_array[35]
-        p.female_symptomatic_multiplier = params_array[36]
-        p.ethnicity_multipliers = params_array[37:40]
-        p.age_mortality_multipliers=params_array[41:49]
-        p.age_morbidity_multipliers=params_array[50:58]
+        p.mortality_probs = params_array[16:35]
+        p.obesity_multipliers = params_array[35:39]
+        p.symptomatic_probs = params_array[39:48]
+        p.cvd_multiplier = params_array[48]
+        p.diabetes_multiplier = params_array[49]
+        p.bloodpressure_multiplier = params_array[50]
+        p.overweight_sympt_mplier = params_array[51]
+        p.health_morbidity_mutiplier = params_array[52]
+        p.health_mortality_multiplier = params_array[53]
+        p.bmi_multipliers = params_array[54:65]
+        p.male_mortality_multiplier = params_array[66]
+        p.male_symptomatic_multiplier = params_array[67]
+        p.female_mortality_multiplier = params_array[68]
+        p.female_symptomatic_multiplier = params_array[69]
+        p.ethnicity_multipliers = params_array[70:73]
+        p.age_mortality_multipliers=params_array[74:82]
+        p.age_morbidity_multipliers=params_array[83:91]
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):
