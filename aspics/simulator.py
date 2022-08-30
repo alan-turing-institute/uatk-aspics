@@ -293,11 +293,11 @@ class Simulator:
 
         for i in initial_case_ids:
             # define random statuses
-            symptomatic_prob = cov_params.symptomatic_probs[
+            symptomatic_prob = cov_params.age_morbidity_multipliers[ #TODO ask Hadrien, now we use "age_morbidity_multipliers", rather than symptomatic_probs
                 min(math.floor(people_ages[i] / 10), 8)
             ]
             if people_obesity[i] > 2:
-                symptomatic_prob = symptomatic_prob * cov_params.overweight_sympt_mplier
+                symptomatic_prob = symptomatic_prob * cov_params.symptomatic_multiplier #TODO here we will use symptomatic_multiplier, rather than overweight_sympt_mplier
             if random.random() < symptomatic_prob:
                 people_statuses[i] = 4
             # define random duration times
