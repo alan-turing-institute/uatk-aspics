@@ -132,8 +132,8 @@ typedef struct Params {
   float sex_multipliers[4];
   float ethnicity_multipliers[4];
   float age_multipliers[18];
-  float male_symptomatic; //Came from Health_Conditions-->Sex
-  float female_symptomatic; //Came from Health_Conditions-->Sex
+  float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
+  float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float morbidity; //Came from Health_Conditions-->global
   float age_morbidity_multipliers[9]; 
 
@@ -194,9 +194,9 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
 float odd_ratio_to_proba (float oddRatio, float knownProb){
   return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
 }
-
+//NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
-  float oddSex = (1 - sex) * params->female_symptomatic + sex * params->male_symptomatic;
+  float oddSex = (1 - sex) * params->female_symptomatic_multiplier + sex * params->male_symptomatic_multiplier;
   float probaSex = odd_ratio_to_proba(oddSex,params->morbidity);
   float oddAge = params->age_morbidity_multipliers[min(age/10,8)];
   float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
@@ -401,6 +401,8 @@ kernel void people_update_statuses(uint npeople,
           ushort person_obesity = people_obesity[person_id];
 
           //float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
+          //Calling FUNCTION No 3, as a replace of "get_symptomatic_prob_for_age", where now sex is a parameter.
+
           float symptomatic_prob = get_symptomatic_prob_for_age(person_age, person_sex, params);
           
           // being overweight increases chances of being symptomatic

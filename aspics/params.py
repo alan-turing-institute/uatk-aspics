@@ -222,10 +222,13 @@ class Params:
         p.overweight_sympt_mplier = params_array[51]
         p.health_risk_multipliers = params_array[52:53]
         p.bmi_multipliers = params_array[54:65]
-        p.sex_multipliers = params_array[66:70]
-        p.ethnicity_multipliers = params_array[71:74]
-        p.age_mortality_multipliers=params_array[75:84]
-        p.age_morbidity_multipliers=params_array[85:93]
+        p.male_mortality_multiplier = params_array[66]
+        p.male_symptomatic_multiplier = params_array[67]
+        p.female_mortality_multiplier = params_array[68]
+        p.female_symptomatic_multiplier = params_array[69]
+        p.ethnicity_multipliers = params_array[70:73]
+        p.age_mortality_multipliers=params_array[74:82]
+        p.age_morbidity_multipliers=params_array[83:91]
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):
