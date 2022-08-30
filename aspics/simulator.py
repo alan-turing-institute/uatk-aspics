@@ -1,3 +1,4 @@
+from logging import BufferingFormatter
 import numpy as np
 from numpy import random
 import pyopencl as cl
@@ -61,10 +62,9 @@ class Simulator:
             people_cvd=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_diabetes=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_blood_pressure=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
-            #people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
-            #people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople),
+            people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
+            people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 4),
             people_statuses=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
-            #people_personal_risk=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2),
             people_transition_times=cl.Buffer(
                 ctx, cl.mem_flags.READ_WRITE, npeople * 4
             ),
@@ -140,6 +140,8 @@ class Simulator:
             buffers.people_cvd,
             buffers.people_diabetes,
             buffers.people_blood_pressure,
+            buffers.people_sex,
+            buffers.people_origin,
             buffers.people_hazards,
             buffers.people_statuses,
             buffers.people_transition_times,
@@ -288,8 +290,6 @@ class Simulator:
         cov_params = Params.fromarray(self.start_snapshot.buffers.params)
         people_ages = self.start_snapshot.buffers.people_ages
         people_obesity = self.start_snapshot.buffers.people_obesity
-        #people_sex = self.start_snapshot.buffers.people_sex
-        #people_origin = self.start_snapshot.buffers.people_origin
 
         for i in initial_case_ids:
             # define random statuses

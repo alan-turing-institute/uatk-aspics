@@ -385,10 +385,8 @@ kernel void people_update_statuses(uint npeople,
                                    global const uchar* people_cvd,
                                    global const uchar* people_diabetes,
                                    global const uchar* people_bloodpressure,
-
                                    global const uchar* people_sex,
                                    global const uchar* people_origin,
-                                   
                                    global const float* people_hazards,
                                    global uint* people_statuses,
                                    global uint* people_transition_times,
