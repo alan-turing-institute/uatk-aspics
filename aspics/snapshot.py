@@ -78,7 +78,6 @@ class Snapshot:
             area_codes = file_data["area_codes"]
             not_home_probs = file_data["not_home_probs"]
             lockdown_multipliers = file_data["lockdown_multipliers"]
-
             buffers = Buffers(**{name: file_data[name] for name in Buffers._fields})
             return cls(
                 nplaces,
