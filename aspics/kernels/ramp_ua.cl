@@ -129,11 +129,9 @@ typedef struct Params {
   float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
   float health_morbidity_mutiplier;
   float health_mortality_multiplier;
-  //float health_risk_multipliers[2];
   float bmi_multipliers[12];
   float sex_multipliers[4];
   float ethnicity_multipliers[4];
-  //float age_multipliers[18];
   float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float male_mortality_multiplier;
@@ -473,13 +471,14 @@ kernel void people_update_statuses(uint npeople,
           //ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_obesity, params);
            
-          if (person_obesity >= 2){ // if person is obese then adjust mortality probability
-            mortality_prob *= get_obesity_multiplier(person_obesity, params);
-          }
+          //if (person_obesity >= 2){ // if person is obese then adjust mortality probability
+            //mortality_prob *= get_obesity_multiplier(person_obesity, params);
+          //}
           
+          // I REMOVED THE following Functions bcs are reduntant.
           // if person has cardiovascular disease then adjust mortality probability
           //ushort person_cvd = people_cvd[person_id];
-          if (person_cvd){
+          /* if (person_cvd){
             mortality_prob *= params->cvd_multiplier;
           }
 
@@ -493,7 +492,7 @@ kernel void people_update_statuses(uint npeople,
           //ushort person_bloodpressure = people_bloodpressure[person_id];
           if (person_bloodpressure){
             mortality_prob *= params->bloodpressure_multiplier;
-          }
+          } */
           
           // randomly select whether dead or recovered
           next_status = rand(rng) > mortality_prob ? Recovered : Dead;

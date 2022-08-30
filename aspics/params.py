@@ -222,7 +222,6 @@ class Params:
         p.overweight_sympt_mplier = params_array[51]
         p.health_morbidity_mutiplier = params_array[52]
         p.health_mortality_multiplier = params_array[53]
-        #p.health_risk_multipliers = params_array[52:53]
         p.bmi_multipliers = params_array[54:65]
         p.male_mortality_multiplier = params_array[66]
         p.male_symptomatic_multiplier = params_array[67]
