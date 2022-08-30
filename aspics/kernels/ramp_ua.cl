@@ -199,7 +199,6 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
   float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
-  //Maybe @dabreegster can find a better way to this comparison, I will do througth a nested if.  
   int originNew = min(origin, 4); //BMI data 4 and 5 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
   float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * obesity + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (obesity^2);
