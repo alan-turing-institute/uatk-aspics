@@ -133,11 +133,13 @@ typedef struct Params {
   float bmi_multipliers[12];
   float sex_multipliers[4];
   float ethnicity_multipliers[4];
-  float age_multipliers[18];
+  //float age_multipliers[18];
   float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
-  float morbidity_mutiplier; //Came from Health_Conditions-->global
-  float age_morbidity_multipliers[9]; 
+  float male_mortality_multiplier;
+  float female_mortality_multiplier;
+  float age_morbidity_multipliers[9];
+  float age_mortality_multipliers[9]; 
 
 } Params;
 
@@ -173,10 +175,38 @@ uint sample_infection_duration(global uint4* rng, global const Params* params){
   return (uint)lognormal(rng, meanlog, sdlog);
 }
 
+//NEW FUNCTION NO 1, from ratio to Prob.
+float odd_ratio_to_proba (float oddRatio, float knownProb){
+  return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
+}
+
+//OLD FUNCTION///
+/*
 float get_mortality_prob_for_age(ushort age, global const Params* params){
   uint bin_size = 5; // Years per bin
   uint max_bin_idx = 18; // Largest bin index covers 80+
   return params->mortality_probs[min(age/bin_size, max_bin_idx)];
+}*/
+
+// NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
+// Obesity should be replace by new_bmi but I was not able to reach that variable, ASK DUSTIN.
+float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params){
+  float oddSex = ((1 - sex) * params->female_mortality_multiplier) + sex * params->male_mortality_multiplier;
+  float probaSex = odd_ratio_to_proba(oddSex,params->health_mortality_multiplier);
+  float oddAge = params->age_mortality_multipliers[min(age/10,8)];
+  float probaAge = odd_ratio_to_proba(oddAge,probaSex);
+  float oddCVD = max(cvd * params->cvd_multiplier, float(1.0));
+  float probaCVD = odd_ratio_to_proba(oddCVD,probaAge);
+  float oddDiabetes = max(diabetes * params->diabetes_multiplier, float(1.0));
+  float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
+  float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
+  float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
+  //Maybe @dabreegster can find a better way to this comparison, I will do througth a nested if.  
+  int originNew = min(origin, 4); //BMI data 4 and 5 get merged
+  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * obesity + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (obesity^2);
+  float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  return personal_mortality_final;
 }
 
 float get_obesity_multiplier(ushort obesity, global const Params* params){
@@ -192,10 +222,7 @@ float get_obesity_multiplier(ushort obesity, global const Params* params){
   return params->symptomatic_probs[min(age/bin_size, max_bin_idx)];
 }*/
 
-//NEW FUNCTION NO 1, from ratio to Prob.
-float odd_ratio_to_proba (float oddRatio, float knownProb){
-  return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
-}
+
 //NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
   float oddSex = (1 - sex) * params->female_symptomatic_multiplier + sex * params->male_symptomatic_multiplier;
@@ -433,27 +460,37 @@ kernel void people_update_statuses(uint npeople,
         {
           // Calculate recovered prob based on age
           ushort person_age = people_ages[person_id];
-          float mortality_prob = get_mortality_prob_for_age(person_age, params);
+          ushort person_sex = people_sex[person_id];
+          ushort person_origin = people_origin[person_id];
+          ushort person_obesity = people_obesity[person_id];
+          ushort person_cvd = people_cvd[person_id];
+          ushort person_diabetes = people_diabetes[person_id];
+          ushort person_bloodpressure = people_bloodpressure[person_id];
 
-          ushort person_obesity = people_obesity[person_id]; 
+
+          //OLD CALL to the Function
+          //float mortality_prob = get_mortality_prob_for_age(person_age, params);
+          //ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params
+          float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_obesity, params);
+           
           if (person_obesity >= 2){ // if person is obese then adjust mortality probability
             mortality_prob *= get_obesity_multiplier(person_obesity, params);
           }
           
           // if person has cardiovascular disease then adjust mortality probability
-          ushort person_cvd = people_cvd[person_id];
+          //ushort person_cvd = people_cvd[person_id];
           if (person_cvd){
             mortality_prob *= params->cvd_multiplier;
           }
 
           // if person has diabetes then adjust mortality probability       
-          ushort person_diabetes = people_diabetes[person_id];
+          //ushort person_diabetes = people_diabetes[person_id];
           if (person_diabetes){
             mortality_prob *= params->diabetes_multiplier;
           }
 
           // if person has high bloodpressure then adjust mortality probability                    
-          ushort person_bloodpressure = people_bloodpressure[person_id];
+          //ushort person_bloodpressure = people_bloodpressure[person_id];
           if (person_bloodpressure){
             mortality_prob *= params->bloodpressure_multiplier;
           }
