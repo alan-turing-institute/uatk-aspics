@@ -112,7 +112,6 @@ def create_params(calibration_params, disease_params, health_conditions):
     )
 
     health_type_params = health_conditions["type"]
-    health_obesity = health_conditions["obesity"]
     health_global = health_conditions["global"]
     BMI_params = health_conditions["BMI"]
     sex_params = health_conditions["sex"]
@@ -177,14 +176,6 @@ def create_params(calibration_params, disease_params, health_conditions):
         BMI_params["other_Ethni_coef2"],
     ]
 
-    obesity_multipliers = [
-        health_obesity["overweight"],
-        health_obesity["obesity_30"],
-        health_obesity["obesity_35"],
-        health_obesity["obesity_40"],
-    ]
-
-
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
@@ -194,7 +185,6 @@ def create_params(calibration_params, disease_params, health_conditions):
         sex_multipliers = sex_multipliers,
         health_risk_multipliers = health_risk_multipliers,
         bmi_multipliers=bmi_multipliers,
-        obesity_multipliers=obesity_multipliers,
         cvd_multiplier=health_type_params["cvd"],
         diabetes_multiplier=health_type_params["diabetes"],
         bloodpressure_multiplier=health_type_params["bloodpressure"],
