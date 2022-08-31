@@ -99,10 +99,9 @@ bool is_infectious(DiseaseStatus status) {
 typedef enum Activity {
   Home = 0,
   Retail = 1,
-  Nightclubs = 2,
-  PrimarySchool = 3,
-  SecondarySchool = 4,
-  Work = 5,
+  PrimarySchool = 2,
+  SecondarySchool = 3,
+  Work = 4,
 } Activity;
 
 
@@ -187,7 +186,7 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 }*/
 
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
-float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort new_bmi,  global const Params* params){
+float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
   float oddSex = ((1 - sex) * params->female_mortality_multiplier) + sex * params->male_mortality_multiplier;
   float probaSex = odd_ratio_to_proba(oddSex,params->health_mortality_multiplier);
   float oddAge = params->age_mortality_multipliers[min(age/10,8)];
@@ -200,7 +199,21 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   int originNew = min(origin, 4); //BMI data 4 and 5 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
-  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (new_bmi^2);
+  //float scenario1_new_bmi = 25;
+  //float scenario2_new_bmi = 35;
+  float scenario3_new_bmi = new_bmi;
+  if (scenario3_new_bmi > 26){
+    float scenario3_new_bmi = 0.99 * scenario3_new_bmi;
+  };
+  /*
+  if (new_bmi > 26){
+    float new_bmi = new_bmi - 1.0;
+  };*/ 
+   
+  if (new_bmi>27){
+    float new_bmi5 = new_bmi5 - 2.0;
+  };
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * scenario3_new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pow(scenario3_new_bmi,2);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
 }
@@ -425,7 +438,7 @@ kernel void people_update_statuses(uint npeople,
         {
           ushort person_age = people_ages[person_id];
           ushort person_sex = people_sex[person_id];
-          ushort person_obesity = people_obesity[person_id];
+          //ushort person_obesity = people_obesity[person_id];
           ushort person_new_bmi = people_new_bmi[person_id];
           //float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
           //Calling FUNCTION No 3, as a replace of "get_symptomatic_prob_for_age", where now sex is a parameter.
@@ -433,12 +446,12 @@ kernel void people_update_statuses(uint npeople,
           float symptomatic_prob = get_symptomatic_prob_for_age(person_age, person_sex, params);
           
           // being overweight increases chances of being symptomatic
-          if (is_obese(people_obesity[person_id])){
+          /* if (is_obese(people_new_bmi[person_id])){
               symptomatic_prob *= params->overweight_sympt_mplier;
               if(symptomatic_prob > 1){
                   symptomatic_prob = 1;
               }
-          }
+          } */
 
           // randomly select whether to become asymptomatic or presymptomatic
           next_status = rand(rng) < symptomatic_prob ? Presymptomatic : Asymptomatic;
@@ -460,7 +473,7 @@ kernel void people_update_statuses(uint npeople,
           ushort person_age = people_ages[person_id];
           ushort person_sex = people_sex[person_id];
           ushort person_origin = people_origin[person_id];
-          ushort person_obesity = people_obesity[person_id];
+          // = people_obesity[person_id];
           ushort person_new_bmi = people_new_bmi[person_id];
           ushort person_cvd = people_cvd[person_id];
           ushort person_diabetes = people_diabetes[person_id];
@@ -471,7 +484,8 @@ kernel void people_update_statuses(uint npeople,
           //float mortality_prob = get_mortality_prob_for_age(person_age, params);
           //ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
-           
+          //float mortality_prob = 1;
+
           //if (person_obesity >= 2){ // if person is obese then adjust mortality probability
             //mortality_prob *= get_obesity_multiplier(person_obesity, params);
           //}
