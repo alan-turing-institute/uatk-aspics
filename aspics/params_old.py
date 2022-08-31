@@ -1,3 +1,5 @@
+## TODO REMOVE THIS ONE ONCE WE CHECK THE ESTIMATIONS ARE CONSISTENT.
+
 import numpy as np
 from collections import namedtuple
 

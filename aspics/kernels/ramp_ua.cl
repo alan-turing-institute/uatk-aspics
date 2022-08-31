@@ -121,8 +121,8 @@ typedef struct Params {
   float place_hazard_multipliers[6]; // Hazard multipliers by activity
   float individual_hazard_multipliers[3]; // Hazard multipliers by activity
   //float mortality_probs[19]; // mortality probabilities by age group
-  float obesity_multipliers[4]; // mortality multipliers for obesity levels
-  float symptomatic_probs[9]; // symptomatic probs by age group
+  //float obesity_multipliers[4]; // mortality multipliers for obesity levels
+  //float symptomatic_probs[9]; // symptomatic probs by age group
   float cvd_multiplier; // mortality multipliers for cardiovascular disease
   float diabetes_multiplier; // mortality multipliers for diabetes
   float bloodpressure_multiplier; // mortality multipliers for high blood pressure
@@ -187,8 +187,7 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 }*/
 
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
-// Obesity should be replace by new_bmi but I was not able to reach that variable, ASK DUSTIN.
-float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params){
+float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort new_bmi,  global const Params* params){
   float oddSex = ((1 - sex) * params->female_mortality_multiplier) + sex * params->male_mortality_multiplier;
   float probaSex = odd_ratio_to_proba(oddSex,params->health_mortality_multiplier);
   float oddAge = params->age_mortality_multipliers[min(age/10,8)];
@@ -201,16 +200,17 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   int originNew = min(origin, 4); //BMI data 4 and 5 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
-  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * obesity + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (obesity^2);
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * (new_bmi^2);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
 }
 
-float get_obesity_multiplier(ushort obesity, global const Params* params){
+//OLD FUNCTION THIS IS NOT NEED BCS THE WAY BMI IS CALCULATED.
+/*float get_obesity_multiplier(ushort new_bmi, global const Params* params){
     // obesity value of 0 corresponds to normal, so there is no multiplier for that
-    int multiplier_idx = (int)obesity - 1;
+    int multiplier_idx = (int)new_bmi - 1;
     return params->obesity_multipliers[multiplier_idx];
-}
+}*/
 
 // OLD FUNCTION///
 /*float get_symptomatic_prob_for_age(ushort age, global const Params* params){
@@ -382,6 +382,7 @@ kernel void people_recv_hazards(uint npeople,
 // state, and if so apply that transition.
 kernel void people_update_statuses(uint npeople,
                                    global const ushort* people_ages,
+                                   global const ushort* people_new_bmi,
                                    global const ushort* people_obesity,
                                    global const uchar* people_cvd,
                                    global const uchar* people_diabetes,
@@ -425,7 +426,7 @@ kernel void people_update_statuses(uint npeople,
           ushort person_age = people_ages[person_id];
           ushort person_sex = people_sex[person_id];
           ushort person_obesity = people_obesity[person_id];
-
+          ushort person_new_bmi = people_new_bmi[person_id];
           //float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
           //Calling FUNCTION No 3, as a replace of "get_symptomatic_prob_for_age", where now sex is a parameter.
 
@@ -460,6 +461,7 @@ kernel void people_update_statuses(uint npeople,
           ushort person_sex = people_sex[person_id];
           ushort person_origin = people_origin[person_id];
           ushort person_obesity = people_obesity[person_id];
+          ushort person_new_bmi = people_new_bmi[person_id];
           ushort person_cvd = people_cvd[person_id];
           ushort person_diabetes = people_diabetes[person_id];
           ushort person_bloodpressure = people_bloodpressure[person_id];
@@ -468,7 +470,7 @@ kernel void people_update_statuses(uint npeople,
           //OLD CALL to the Function
           //float mortality_prob = get_mortality_prob_for_age(person_age, params);
           //ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params
-          float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_obesity, params);
+          float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
            
           //if (person_obesity >= 2){ // if person is obese then adjust mortality probability
             //mortality_prob *= get_obesity_multiplier(person_obesity, params);

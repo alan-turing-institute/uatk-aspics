@@ -16,6 +16,7 @@ Buffers = namedtuple(
         "people_blood_pressure",
         "people_sex",
         "people_origin",
+        "people_new_bmi",
         "people_statuses",
         "people_transition_times",
         "people_place_ids",
