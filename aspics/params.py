@@ -31,29 +31,23 @@ class Params:
             ###########################################
             #####Health Conditions (Type, BMI) ########
             ###########################################
-            obesity_multipliers=[1, 1, 1, 1],
-            sex_multipliers = [1,1,1,1],
-
-            ethnicity_multipliers =[1,1,1,1],
-            age_morbidity_multipliers = [1,1,1,1,1,1,1,1,1],
-            age_mortality_multipliers = [1,1,1,1,1,1,1,1,1],
-            cvd_multiplier=1,
-            diabetes_multiplier=1,
-            bloodpressure_multiplier=1,
-            overweight_sympt_mplier=1.46,
-            health_risk_multipliers=[1, 1],
-            bmi_multipliers=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            sex_multipliers = [1.0,1.0,1.0,1.0],
+            ethnicity_multipliers =[1.0,1.0,1.0,1.0],
+            age_morbidity_multipliers = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+            age_mortality_multipliers = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
+            cvd_multiplier=1.0,
+            diabetes_multiplier=1.0,
+            bloodpressure_multiplier=1.0,
+            health_risk_multipliers=[1.0, 1.0],
+            bmi_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
 
     ):
         """Create a simulator with the default parameters."""
         if health_risk_multipliers is None:
-            health_risk_multipliers = [1, 1]
+            health_risk_multipliers = [1.0, 1.0]
 
         if bmi_multipliers is None:
-            bmi_multipliers = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-
-        #if obesity_multipliers is None:
-            #obesity_multipliers = [1, 1, 1, 1]
+            bmi_multipliers = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
         if sex_multipliers is None:
             sex_multipliers = [1,1.34,1,1.0]
@@ -70,6 +64,7 @@ class Params:
         self.infection_log_scale = 0.35
         self.infection_mode = 7.0
 
+        ### Paramaters for the Sumulation####
         self.lockdown_multiplier = 1.0
         self.place_hazard_multipliers = np.array(
             [
@@ -91,43 +86,13 @@ class Params:
             dtype=np.float32,
         )
 
-        # self.mortality_probs = np.array(
-        #     [
-        #         0.00,
-        #         0.0001,
-        #         0.0001,
-        #         0.0002,
-        #         0.0003,
-        #         0.0004,
-        #         0.0006,
-        #         0.0010,
-        #         0.0016,
-        #         0.0024,
-        #         0.0038,
-        #         0.0060,
-        #         0.0094,
-        #         0.0147,
-        #         0.0231,
-        #         0.0361,
-        #         0.0566,
-        #         0.0886,
-        #         0.1737,
-        #     ],
-        #     dtype=np.float32,
-        # )
-
-        #self.obesity_multipliers = np.array(obesity_multipliers, dtype=np.float32)
-        #self.symptomatic_probs = np.array(
-            #[0.21, 0.21, 0.45, 0.45, 0.45, 0.45, 0.45, 0.69, 0.69], dtype=np.float32
-        #)
         self.cvd_multiplier = cvd_multiplier
         self.diabetes_multiplier = diabetes_multiplier
         self.bloodpressure_multiplier = bloodpressure_multiplier
-        #self.overweight_sympt_mplier = overweight_sympt_mplier
         self.health_risk_multipliers = np.array(
             [
-                1, #morbidity 
-                1, #mortality
+                1.0, #morbidity 
+                1.0, #mortality
             ],
             dtype=np.float32,
         )
@@ -169,15 +134,11 @@ class Params:
                 ),
                 self.place_hazard_multipliers,
                 self.individual_hazard_multipliers,
-                #self.mortality_probs,
-                #self.obesity_multipliers,
-                #self.symptomatic_probs,
                 np.array(
                     [
                         self.cvd_multiplier,
                         self.diabetes_multiplier,
                         self.bloodpressure_multiplier,
-                        #self.overweight_sympt_mplier,
                     ],
                     dtype=np.float32,
                 ),
@@ -213,13 +174,9 @@ class Params:
         p.infection_log_scale = params_array[5]
         p.infection_mode = params_array[6]
         p.lockdown_multiplier = params_array[7]
-        #p.mortality_probs = params_array[16:35]
-        #p.obesity_multipliers = params_array[35:39]
-        #p.symptomatic_probs = params_array[39:48]
         p.cvd_multiplier = params_array[16]
         p.diabetes_multiplier = params_array[17]
         p.bloodpressure_multiplier = params_array[18]
-        #p.overweight_sympt_mplier = params_array[51]
         p.health_morbidity_mutiplier = params_array[19]
         p.health_mortality_multiplier = params_array[20]
         p.bmi_multipliers = params_array[21:32]
