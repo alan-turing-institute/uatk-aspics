@@ -135,7 +135,7 @@ typedef struct Params {
   float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
   float male_mortality_multiplier;
   float female_mortality_multiplier;
-  float age_morbidity_multipliers[9];
+  float age_morbidity_multipliers[9]; 
   float age_mortality_multipliers[9]; 
 
 } Params;
@@ -243,9 +243,10 @@ float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* 
   return personal_morbidity_final;
 }
 
+/*
 bool is_obese(ushort obesity){
   return obesity >= 2;
-}
+}*/
 
 /*
   Kernels

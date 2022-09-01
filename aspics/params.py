@@ -91,7 +91,7 @@ class Params:
         self.bloodpressure_multiplier = bloodpressure_multiplier
         self.health_risk_multipliers = np.array(
             [
-                0.072395714285714, #morbidity 
+                0.072395714285714, #morbidity  
                 0.009, #mortality
             ],
             dtype=np.float32,
