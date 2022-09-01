@@ -39,8 +39,8 @@ health_conditions:
 
 # Source: https://www.gov.uk/government/publications/covid-19-reported-sars-cov-2-deaths-in-england/covid-19-confirmed-deaths-in-england-report#age-and-sex-distribution
   global:
-    morbidity: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
-    mortality: 1.0 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    morbidity: 0.005 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    mortality: 0.002 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
 
   sex: # Not need to be calibrated, comes from the literature.
     male_mortality: 1.19
