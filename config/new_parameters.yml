@@ -4,7 +4,7 @@
 ########################################################
 microsim:
   study-area: "Manchester"
-  iterations: 100 # Number of model iterations (days)
+  iterations: 10 # Number of model iterations (days)
   use-lockdown: FALSE # Whether to preload the lockdown scenario
   start-date: 0 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not
@@ -79,7 +79,7 @@ health_conditions:
   type:
     cvd: 1.0 # unresolved debate: independent factor or a simple consequence of age
     diabetes: 1.47 # doi: 10.1002/edm2.338
-    bloodpressure: 1.0 # doi: 10.1038/s41440-022-00893-5
+    bloodpressure: 12.0 # doi: 10.1038/s41440-022-00893-5
     improve_health: FALSE # TODO (later): can be removed after BMI works
 
   BMI:
@@ -101,11 +101,11 @@ health_conditions:
   #  max_bin_idx: 18 #Largest bin index covers 80+
   # TODO symptomatic_probs
 
-  obesity: # TODO remove this category., now it is just a 1 values.
-    overweight: 1.0
-    obesity_40: 1.0
-    obesity_35: 1.0
-    obesity_30: 1.0
+  # obesity: # TODO remove this category., now it is just a 1 values.
+  #   overweight: 1.0
+  #   obesity_40: 1.0
+  #   obesity_35: 1.0
+  #   obesity_30: 1.0
 
 ###########################################
 ##### Vaccination Status and variants #####

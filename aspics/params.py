@@ -44,7 +44,7 @@ class Params:
     ):
         """Create a simulator with the default parameters."""
         if health_risk_multipliers is None:
-            health_risk_multipliers = [1.0, 1.0]
+             health_risk_multipliers = [1.0, 1.0]
 
         if bmi_multipliers is None:
             bmi_multipliers = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
@@ -91,8 +91,8 @@ class Params:
         self.bloodpressure_multiplier = bloodpressure_multiplier
         self.health_risk_multipliers = np.array(
             [
-                0.072395714285714, #morbidity  
-                0.09, #mortality
+                0.072, #morbidity  
+                0.080, #mortality
             ],
             dtype=np.float32,
         )
@@ -177,18 +177,19 @@ class Params:
         p.cvd_multiplier = params_array[16]
         p.diabetes_multiplier = params_array[17]
         p.bloodpressure_multiplier = params_array[18]
-        p.health_risk_multipliers = params_array[19:20]
+        p.health_risk_multipliers = params_array[19:21]
         #p.health_morbidity_mutiplier = params_array[19]
         #p.health_mortality_multiplier = params_array[20]
-        p.bmi_multipliers = params_array[21:32]
-        p.sex_multipliers = params_array[33:36]
+        p.bmi_multipliers = params_array[21:33]
+        p.sex_multipliers = params_array[33:37]
         #p.male_mortality_multiplier = params_array[33]
         #p.male_symptomatic_multiplier = params_array[34]
         #p.female_mortality_multiplier = params_array[35]
         #p.female_symptomatic_multiplier = params_array[36]
-        p.ethnicity_multipliers = params_array[37:40]
-        p.age_mortality_multipliers=params_array[41:49]
-        p.age_morbidity_multipliers=params_array[50:58]
+        p.ethnicity_multipliers = params_array[37:41]
+        p.age_morbidity_multipliers=params_array[41:50]
+        p.age_mortality_multipliers=params_array[50:60]
+        
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):

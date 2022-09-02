@@ -64,7 +64,7 @@ class Simulator:
             people_blood_pressure=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
             people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 4),
-            people_new_bmi=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 2),
+            people_new_bmi=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 4),
             people_statuses=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
             people_transition_times=cl.Buffer(
                 ctx, cl.mem_flags.READ_WRITE, npeople * 4

@@ -127,7 +127,7 @@ def convert_to_npz(pop, output_path):
                 [p.demographics.sex for p in pop.people], dtype=np.uint16
             ),
             people_new_bmi=np.array(
-                 [p.health.bmi_new for p in pop.people], dtype=np.uint16
+                 [p.health.bmi_new for p in pop.people], dtype=np.float32
             ),
             people_origin=np.array(
                 [p.demographics.origin for p in pop.people], dtype=np.uint16

@@ -110,82 +110,75 @@ def create_params(calibration_params, disease_params, health_conditions):
         ],
         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
     )
-
-    health_type_params = health_conditions["type"]
-    health_global = health_conditions["global"]
-    BMI_params = health_conditions["BMI"]
-    sex_params = health_conditions["sex"]
-    ethnicity_params = health_conditions["ethnicity"]
-    age_mortality_params = health_conditions["age_mortality"]
-    age_morbidity_params = health_conditions["age_morbidity"]
-
-    age_mortality_multipliers =[
-        age_mortality_params["a0-9_mortality"],
-        age_mortality_params["a10-19_mortality"],
-        age_mortality_params["a20-29_mortality"],
-        age_mortality_params["a30-39_mortality"],
-        age_mortality_params["a40-49_mortality"],
-        age_mortality_params["a50-59_mortality"],
-        age_mortality_params["a60-69_mortality"],
-        age_mortality_params["a70-79_mortality"],
-        age_mortality_params["a80plus_mortality"],
-        ]
-    age_morbidity_multipliers = [
-        age_morbidity_params["a0-9_morbidity"],
-        age_morbidity_params["a10-19_morbidity"],
-        age_morbidity_params["a20-29_morbidity"],
-        age_morbidity_params["a30-39_morbidity"],
-        age_morbidity_params["a40-49_morbidity"],
-        age_morbidity_params["a50-59_morbidity"],
-        age_morbidity_params["a60-69_morbidity"],
-        age_morbidity_params["a70-79_morbidity"],
-        age_morbidity_params["a80plus_morbidity"],
-    ]
-
-    ethnicity_multipliers =[
-        ethnicity_params["white_mortality"],
-        ethnicity_params["black_mortality"],
-        ethnicity_params["asian_mortality"],
-        ethnicity_params["other_mortality"],
-    ]
-
-    sex_multipliers =[
-        sex_params["male_mortality"],
-        sex_params["male_symptomatic"],
-        sex_params["female_mortality"],
-        sex_params["female_symptomatic"],
-    ]
-
+    
     health_risk_multipliers = [
-        health_global["morbidity"],
-        health_global["mortality"],
+        health_conditions["global"]["morbidity"],
+        health_conditions["global"]["mortality"],
     ]
 
     bmi_multipliers = [
-        BMI_params["white_Ethni_coef0"],
-        BMI_params["white_Ethni_coef1"],
-        BMI_params["white_Ethni_coef2"],
-        BMI_params["black_Ethni_coef0"],
-        BMI_params["black_Ethni_coef1"],
-        BMI_params["black_Ethni_coef2"],
-        BMI_params["asian_Ethni_coef0"],
-        BMI_params["asian_Ethni_coef1"],
-        BMI_params["asian_Ethni_coef2"],
-        BMI_params["other_Ethni_coef0"],
-        BMI_params["other_Ethni_coef1"],
-        BMI_params["other_Ethni_coef2"],
+        health_conditions["BMI"]["white_Ethni_coef0"],
+        health_conditions["BMI"]["white_Ethni_coef1"],
+        health_conditions["BMI"]["white_Ethni_coef2"],
+        health_conditions["BMI"]["black_Ethni_coef0"],
+        health_conditions["BMI"]["black_Ethni_coef1"],
+        health_conditions["BMI"]["black_Ethni_coef2"],
+        health_conditions["BMI"]["asian_Ethni_coef0"],
+        health_conditions["BMI"]["asian_Ethni_coef1"],
+        health_conditions["BMI"]["asian_Ethni_coef2"],
+        health_conditions["BMI"]["other_Ethni_coef0"],
+        health_conditions["BMI"]["other_Ethni_coef1"],
+        health_conditions["BMI"]["other_Ethni_coef2"],
     ]
+
+    sex_multipliers =[
+        health_conditions["sex"]["male_mortality"],
+        health_conditions["sex"]["male_symptomatic"],
+        health_conditions["sex"]["female_mortality"],
+        health_conditions["sex"]["female_symptomatic"],
+    ]
+
+    ethnicity_multipliers =[
+        health_conditions["ethnicity"]["white_mortality"],
+        health_conditions["ethnicity"]["black_mortality"],
+        health_conditions["ethnicity"]["asian_mortality"],
+        health_conditions["ethnicity"]["other_mortality"],
+    ]
+
+    age_morbidity_multipliers = [
+        health_conditions["age_morbidity"]["a0-9_morbidity"],
+        health_conditions["age_morbidity"]["a10-19_morbidity"],
+        health_conditions["age_morbidity"]["a20-29_morbidity"],
+        health_conditions["age_morbidity"]["a30-39_morbidity"],
+        health_conditions["age_morbidity"]["a40-49_morbidity"],
+        health_conditions["age_morbidity"]["a50-59_morbidity"],
+        health_conditions["age_morbidity"]["a60-69_morbidity"],
+        health_conditions["age_morbidity"]["a70-79_morbidity"],
+        health_conditions["age_morbidity"]["a80plus_morbidity"],
+    ]
+
+    age_mortality_multipliers =[
+        health_conditions["age_mortality"]["a0-9_mortality"],
+        health_conditions["age_mortality"]["a10-19_mortality"],
+        health_conditions["age_mortality"]["a20-29_mortality"],
+        health_conditions["age_mortality"]["a30-39_mortality"],
+        health_conditions["age_mortality"]["a40-49_mortality"],
+        health_conditions["age_mortality"]["a50-59_mortality"],
+        health_conditions["age_mortality"]["a60-69_mortality"],
+        health_conditions["age_mortality"]["a70-79_mortality"],
+        health_conditions["age_mortality"]["a80plus_mortality"],
+        ]
 
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
-        age_morbidity_multipliers = age_morbidity_multipliers,
-        age_mortality_multipliers = age_mortality_multipliers,
-        ethnicity_multipliers = ethnicity_multipliers,
-        sex_multipliers = sex_multipliers,
+        cvd_multiplier=health_conditions["type"]["cvd"],
+        diabetes_multiplier=health_conditions["type"]["diabetes"],
+        bloodpressure_multiplier=health_conditions["type"]["bloodpressure"],
         health_risk_multipliers = health_risk_multipliers,
         bmi_multipliers=bmi_multipliers,
-        cvd_multiplier=health_type_params["cvd"],
-        diabetes_multiplier=health_type_params["diabetes"],
-        bloodpressure_multiplier=health_type_params["bloodpressure"],
+        sex_multipliers = sex_multipliers,
+        ethnicity_multipliers = ethnicity_multipliers,
+        age_morbidity_multipliers = age_morbidity_multipliers,
+        age_mortality_multipliers = age_mortality_multipliers,
     )
