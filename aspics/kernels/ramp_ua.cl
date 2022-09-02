@@ -1,4 +1,9 @@
 /*
+OpenCL Specification for futher reading and documentation:
+https://registry.khronos.org/OpenCL/specs/2.2/pdf/OpenCL_C.pdf
+*/
+
+/*
   Random Number Generation
 */
 
@@ -117,7 +122,7 @@ typedef struct Params {
   float infection_log_scale; // The std dev of the underlying normal distribution of the lognormal infected duration distribution
   float infection_mode; // The mode of the lognormal distribution of infected durations
   float lockdown_multiplier; // Increase in time at home due to lockdown
-  float place_hazard_multipliers[6]; // Hazard multipliers by activity
+  float place_hazard_multipliers[5]; // Hazard multipliers by activity
   float individual_hazard_multipliers[3]; // Hazard multipliers by activity
   //float mortality_probs[19]; // mortality probabilities by age group
   //float obesity_multipliers[4]; // mortality multipliers for obesity levels
@@ -125,16 +130,17 @@ typedef struct Params {
   float cvd_multiplier; // mortality multipliers for cardiovascular disease
   float diabetes_multiplier; // mortality multipliers for diabetes
   float bloodpressure_multiplier; // mortality multipliers for high blood pressure
-  float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
-  float health_morbidity_mutiplier;
-  float health_mortality_multiplier;
+  //float overweight_sympt_mplier; // multiplier for probability of overweight people to become symptomatic
+  //float health_morbidity_mutiplier;
+  float health_risk_multipliers[2];
+  //float health_mortality_multiplier;
   float bmi_multipliers[12];
-  float sex_multipliers[4];
+  float sex_multipliers[4]; 
   float ethnicity_multipliers[4];
-  float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
-  float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
-  float male_mortality_multiplier;
-  float female_mortality_multiplier;
+  //float male_symptomatic_multiplier; //Came from Health_Conditions-->Sex
+  //float female_symptomatic_multiplier; //Came from Health_Conditions-->Sex
+  //float male_mortality_multiplier;
+  //float female_mortality_multiplier;
   float age_morbidity_multipliers[9]; 
   float age_mortality_multipliers[9]; 
 
@@ -187,18 +193,42 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
-  float oddSex = ((1 - sex) * params->female_mortality_multiplier) + sex * params->male_mortality_multiplier;
-  float probaSex = odd_ratio_to_proba(oddSex,params->health_mortality_multiplier);
+  printf("Age %f\n", age);
+  //printf("sex %f\n", sex);
+  //printf("origin %f\n", origin);
+  //printf("cvd %f\n", cvd);
+  //printf("diabetes %f\n", diabetes);
+  //printf("bloodpressure %f\n", bloodpressure);
+  //printf("new_bmi %f\n", new_bmi);
+  printf("bloodpressure_multiplier %f\n",  params->bloodpressure_multiplier);
+  printf("health risk multiplier mordibity %f\n",  params->health_risk_multipliers[0]);
+  printf("health risk multiplier mortality %f\n",  params->health_risk_multipliers[1]);
+  printf("female mortality %f\n", params->sex_multipliers[2]);
+  printf("male mortality %f\n", params->sex_multipliers[0]);
+  float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
+  //printf("oddSex %f\n", oddSex);
+  float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
+  //printf("probaSex = %f\n", probaSex);
   float oddAge = params->age_mortality_multipliers[min(age/10,8)];
+  //printf("oddAge = %f\n", oddAge);
   float probaAge = odd_ratio_to_proba(oddAge,probaSex);
+  //printf("probaAge = %f\n", probaAge);
   float oddCVD = max(cvd * params->cvd_multiplier, float(1.0));
+  //printf("oddCVD = %f\n", oddCVD);
   float probaCVD = odd_ratio_to_proba(oddCVD,probaAge);
+  //printf("probaCVD = %f\n", probaCVD);
   float oddDiabetes = max(diabetes * params->diabetes_multiplier, float(1.0));
+  //printf("oddDiabetes = %f\n", oddDiabetes);
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
+  //printf("probaDiabetes = %f\n", probaDiabetes);
   float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
+  //printf("oddHypertension = %f\n", oddHypertension);
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
+  //printf("probaHypertension = %f\n", probaHypertension);
   int originNew = min(origin, 4); //BMI data 4 and 5 get merged
+  //printf("originNew = %f\n", originNew);
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
+  //printf("probaOrigin = %f\n", probaOrigin);
   float scenario1_new_bmi = 25;
   float scenario2_new_bmi = 35;
   float scenario3_new_bmi = new_bmi;
@@ -214,8 +244,9 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   if (scenario5_new_bmi>27){
     float scenario5_new_bmi = scenario5_new_bmi - 2.0;
   };
-  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * scenario5_new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pow(scenario5_new_bmi,2);
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pow(new_bmi,2);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  //printf("personal_mortality_final = %f\n", personal_mortality_final);
   return personal_mortality_final;
 }
 
@@ -236,13 +267,18 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
 
 //NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
-  float oddSex = (1 - sex) * params->female_symptomatic_multiplier + sex * params->male_symptomatic_multiplier;
-  float probaSex = odd_ratio_to_proba(oddSex,params->health_morbidity_mutiplier);
+  float oddSex = (1 - sex) * params->sex_multipliers[3] + sex * params->sex_multipliers[1];
+  //printf("oddSex = %f\n", oddSex);
+  float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[0]);
+  //printf("probaSex = %f\n", probaSex);
   float oddAge = params->age_morbidity_multipliers[min(age/10,8)];
+  //printf("oddAge = %f\n", oddAge);
   float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
+  //printf("personal_morbidity_final = %f\n", personal_morbidity_final);
   return personal_morbidity_final;
-}
+} 
 
+//OLD FUNCTION, THIS IS NOT NEEDED BCS OF THE NEW MORDIBITY FUNCTION.
 /*
 bool is_obese(ushort obesity){
   return obesity >= 2;

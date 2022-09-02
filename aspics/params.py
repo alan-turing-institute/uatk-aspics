@@ -92,7 +92,7 @@ class Params:
         self.health_risk_multipliers = np.array(
             [
                 0.072395714285714, #morbidity  
-                0.009, #mortality
+                0.09, #mortality
             ],
             dtype=np.float32,
         )
@@ -177,13 +177,15 @@ class Params:
         p.cvd_multiplier = params_array[16]
         p.diabetes_multiplier = params_array[17]
         p.bloodpressure_multiplier = params_array[18]
-        p.health_morbidity_mutiplier = params_array[19]
-        p.health_mortality_multiplier = params_array[20]
+        p.health_risk_multipliers = params_array[19:20]
+        #p.health_morbidity_mutiplier = params_array[19]
+        #p.health_mortality_multiplier = params_array[20]
         p.bmi_multipliers = params_array[21:32]
-        p.male_mortality_multiplier = params_array[33]
-        p.male_symptomatic_multiplier = params_array[34]
-        p.female_mortality_multiplier = params_array[35]
-        p.female_symptomatic_multiplier = params_array[36]
+        p.sex_multipliers = params_array[33:36]
+        #p.male_mortality_multiplier = params_array[33]
+        #p.male_symptomatic_multiplier = params_array[34]
+        #p.female_mortality_multiplier = params_array[35]
+        #p.female_symptomatic_multiplier = params_array[36]
         p.ethnicity_multipliers = params_array[37:40]
         p.age_mortality_multipliers=params_array[41:49]
         p.age_morbidity_multipliers=params_array[50:58]
