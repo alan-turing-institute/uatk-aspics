@@ -194,12 +194,13 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
   printf("The defined New_BMI is %f\n", new_bmi);
+  printf ("The reurned vales ares %f\n", age, sex, origin, cvd, diabetes, bloodpressure);
   float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
   printf("oddSex %f\n", oddSex);
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
   printf("probaSex = %f\n", probaSex);
   float oddAge = params->age_mortality_multipliers[int(min(age/10,8))];
-  printf("oddAge = %f\n", oddAge);
+  //printf("oddAge = %f\n", oddAge);
   float probaAge = odd_ratio_to_proba(oddAge,probaSex);
   printf("probaAge = %f\n", probaAge);
   float oddCVD = max(cvd * params->cvd_multiplier, float(1.0));
