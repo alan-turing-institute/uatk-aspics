@@ -178,6 +178,14 @@ uint sample_infection_duration(global uint4* rng, global const Params* params){
   return (uint)lognormal(rng, meanlog, sdlog);
 }
 
+float transform_new_bmi (float new_bmi){
+  if (new_bmi < 0.0){
+    new_bmi *= -1;
+    }
+  else new_bmi;
+  return new_bmi;
+}
+
 //NEW FUNCTION NO 1, from ratio to Prob.
 float odd_ratio_to_proba (float oddRatio, float knownProb){
   return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
@@ -193,8 +201,9 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
-  printf("The defined New_BMI is %f\n", new_bmi);
-  printf ("The reurned vales ares %f\n", age, sex, origin, cvd, diabetes, bloodpressure);
+  printf("The defined BMI is %f\n", new_bmi);
+  float poss_new_bmi = transform_new_bmi (new_bmi);
+  printf("The positive BMI is %f\n", poss_new_bmi);
   float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
   printf("oddSex %f\n", oddSex);
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
@@ -237,7 +246,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
     float scenario5_new_bmi = scenario5_new_bmi - 2.0;
     //printf("scenario5_new_bmi = %f\n", scenario5_new_bmi);
   };
-  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * scenario5_new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pown(scenario5_new_bmi,2);
+  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * poss_new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pown(poss_new_bmi,2);
   printf("oddBMI = %f\n", oddBMI);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   printf("personal_mortality_final = %f\n", personal_mortality_final);
