@@ -61,23 +61,7 @@ def setup_sim(parameters):
     # set params
     if calibration_params is not None and disease_params is not None and health_conditions is not None:
         snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
-
-    print("testing min and max for new_bmi")
-    print(np.min(snapshot.buffers.people_new_bmi))
-    print(np.max(snapshot.buffers.people_new_bmi))
-    snapshot.change_neg_values_new_bmi()
-    print("testing new min and max for new_bmi")
-    print(np.min(snapshot.buffers.people_new_bmi))
-    print(np.max(snapshot.buffers.people_new_bmi))
-    
-        # health_type = health_conditions["type"]
-        # if health_type["improve_health"]:
-        #     print("Switching to healthier population")
-        #     snapshot.switch_to_healthier_population()
-
-    # Add the new function to compute individual risks
-    # new_params = NewParamsters( Old_paramaters_that_changed()) # The function
-
+        snapshot.change_neg_values_new_bmi()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
     simulator = Simulator(snapshot, study_area, gpu=True)
