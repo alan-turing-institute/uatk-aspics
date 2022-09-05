@@ -69,11 +69,11 @@ class Snapshot:
 
     def change_neg_values_new_bmi(self):
         """
-        Updates to a healthier population by reducing obesity. Any individuals that are overweight or obese are moved
-        to the level of obesity below their current one, by subtracting 1.
+        Replace the values lower than 10 to a min BMI values
+        There are also missing values from the synt pop with a -1, those are also replaced by 10.
         """
         people_new_bmi = self.buffers.people_new_bmi
-        people_new_bmi[people_new_bmi < 0] *= -1.0
+        people_new_bmi [people_new_bmi < 0.0] *= -10.0
         self.buffers.people_new_bmi[:] = people_new_bmi
 
     @classmethod

@@ -503,10 +503,9 @@ kernel void people_update_statuses(uint npeople,
 
           //OLD CALL to the Function
           //float mortality_prob = get_mortality_prob_for_age(person_age, params);
-          //ushort age, ushort sex, ushort origin, ushort cvd, ushort diabetes, ushort bloodpressure, ushort obesity,  global const Params* params
-          printf("The defined BMI is %f\n", people_new_bmi[person_id]);
+          printf("person_new_bmi is %f\n", person_new_bmi);
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
-          printf("The mortality_prob is %f\n", mortality_prob);
+          //printf("The mortality_prob is %f\n", mortality_prob);
 
           
           // randomly select whether dead or recovered
