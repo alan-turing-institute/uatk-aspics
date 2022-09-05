@@ -67,6 +67,15 @@ class Snapshot:
         people_obesity[people_obesity >= 2] -= 1
         self.buffers.people_obesity[:] = people_obesity
 
+    def change_neg_values_new_bmi(self):
+        """
+        Updates to a healthier population by reducing obesity. Any individuals that are overweight or obese are moved
+        to the level of obesity below their current one, by subtracting 1.
+        """
+        people_new_bmi = self.buffers.people_new_bmi
+        people_new_bmi[people_new_bmi < 0] *= -1.0
+        self.buffers.people_new_bmi[:] = people_new_bmi
+
     @classmethod
     def load_full_snapshot(cls, path):
         """Creates a snapshot by reading the .npz file from the provided path."""

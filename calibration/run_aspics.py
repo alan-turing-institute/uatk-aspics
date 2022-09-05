@@ -345,7 +345,6 @@ class OpenCLRunner:
         print(f"Loading snapshot from {snapshot_path}")
         snapshot = Snapshot.load_full_snapshot(path=snapshot_path)
         print(f"Snapshot is {int(snapshot.num_bytes() / 1000000)} MB")
-
         prev_obesity = np.copy(snapshot.buffers.people_obesity)
         if use_healthier_pop:
             snapshot.switch_to_healthier_population()
