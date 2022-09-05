@@ -180,10 +180,10 @@ uint sample_infection_duration(global uint4* rng, global const Params* params){
 
 float transform_new_bmi (float new_bmi){
   if (new_bmi < 0.0){
-    new_bmi *= -1;
-    }
-  else new_bmi;
-  return new_bmi;
+    return -1.0 * new_bmi;
+  } else {
+    return new_bmi;
+  }
 }
 
 //NEW FUNCTION NO 1, from ratio to Prob.
@@ -208,19 +208,19 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   printf("oddSex %f\n", oddSex);
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
   printf("probaSex = %f\n", probaSex);
-  float oddAge = params->age_mortality_multipliers[int(min(age/10,8))];
+  float oddAge = params->age_mortality_multipliers[convert_int(min(age/10,8))];
   //printf("oddAge = %f\n", oddAge);
   float probaAge = odd_ratio_to_proba(oddAge,probaSex);
   printf("probaAge = %f\n", probaAge);
-  float oddCVD = max(cvd * params->cvd_multiplier, float(1.0));
+  float oddCVD = max(cvd * params->cvd_multiplier, convert_float(1.0));
   printf("oddCVD = %f\n", oddCVD);
   float probaCVD = odd_ratio_to_proba(oddCVD,probaAge);
   printf("probaCVD = %f\n", probaCVD);
-  float oddDiabetes = max(diabetes * params->diabetes_multiplier, float(1.0));
+  float oddDiabetes = max(diabetes * params->diabetes_multiplier, convert_float(1.0));
   printf("oddDiabetes = %f\n", oddDiabetes);
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
   printf("probaDiabetes = %f\n", probaDiabetes);
-  float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
+  float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, convert_float(1.0));
   printf("oddHypertension = %f\n", oddHypertension);
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   printf("probaHypertension = %f\n", probaHypertension);
