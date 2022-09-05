@@ -193,7 +193,7 @@ float get_mortality_prob_for_age(ushort age, global const Params* params){
 
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
-  //printf("The defined BMI is %f\n", new_bmi);
+  printf("The defined BMI is %f\n", new_bmi);
   float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
   //printf("oddSex %f\n", oddSex);
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
@@ -218,6 +218,11 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   //printf("originNew = %f\n", originNew);
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
   //printf("probaOrigin = %f\n", probaOrigin);
+  float neg_new_bmi = 12;
+  if (new_bmi <= 10){
+    new_bmi = neg_new_bmi;
+  }
+  printf("The new BMI is %f\n", new_bmi);
   float scenario1_new_bmi = 25.0;
   float scenario2_new_bmi = 35.0;
   float scenario2A_new_bmi = 40.0;
@@ -236,8 +241,13 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
     float scenario5_new_bmi = scenario5_new_bmi - 2.0;
     //printf("scenario5_new_bmi = %f\n", scenario5_new_bmi);
   };
-  float oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pown(new_bmi,2);
-  //printf("oddBMI = %f\n", oddBMI);
+  float oddBMI = 0.0;
+  if (new_bmi < 0.0){
+    oddBMI = 1.0;
+  } else{
+    oddBMI = (params->age_mortality_multipliers[originNew]-1)*3 + ((params->age_mortality_multipliers[originNew]-1)*3)+1 * new_bmi + ((params->age_mortality_multipliers[originNew]-1)*3)+2 * pown(new_bmi,2);
+  }  
+  printf("oddBMI = %f\n", oddBMI);
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   //printf("personal_mortality_final = %f\n", personal_mortality_final);
   return personal_mortality_final;
@@ -260,6 +270,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
 
 //NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
+  printf("age = %f\n", age);
   float oddSex = (1 - sex) * params->sex_multipliers[3] + sex * params->sex_multipliers[1];
   //printf("oddSex = %f\n", oddSex);
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[0]);
@@ -503,7 +514,7 @@ kernel void people_update_statuses(uint npeople,
 
           //OLD CALL to the Function
           //float mortality_prob = get_mortality_prob_for_age(person_age, params);
-          printf("person_new_bmi is %f\n", person_new_bmi);
+          //printf("person_age is %f\n", person_age);
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
           //printf("The mortality_prob is %f\n", mortality_prob);
 

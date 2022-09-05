@@ -4,7 +4,7 @@
 ########################################################
 microsim:
   study-area: "Manchester"
-  iterations: 10 # Number of model iterations (days)
+  iterations: 1 # Number of model iterations (days)
   use-lockdown: FALSE # Whether to preload the lockdown scenario
   start-date: 0 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not

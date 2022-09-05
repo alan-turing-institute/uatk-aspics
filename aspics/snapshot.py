@@ -73,7 +73,7 @@ class Snapshot:
         There are also missing values from the synt pop with a -1, those are also replaced by 10.
         """
         people_new_bmi = self.buffers.people_new_bmi
-        people_new_bmi [people_new_bmi < 10] = 10
+        people_new_bmi [people_new_bmi < 10] = 12
         self.buffers.people_new_bmi[:] = people_new_bmi
 
     @classmethod
