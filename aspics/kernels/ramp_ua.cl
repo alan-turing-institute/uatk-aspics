@@ -218,12 +218,12 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
     float scenario6_new_bmi = scenario6_new_bmi - 2.0;
   };
   ///////////////
-  
+
   float oddBMI = 0.0;
   if (new_bmi <= 0.0){
     oddBMI = 1.0;
   } else{
-    oddBMI = (params->bmi_multipliers[originNew]-1*3) + ((params->bmi_multipliers[originNew]-1*3))+1 * new_bmi + ((params->bmi_multipliers[originNew]-1*3))+2 * pown(new_bmi,2);
+    oddBMI = (params->bmi_multipliers[originNew -1]*3) + (params->bmi_multipliers[originNew-1]*3+1) * new_bmi + (params->bmi_multipliers[originNew-1]*3+2) * pown(new_bmi,2);
   }  
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
