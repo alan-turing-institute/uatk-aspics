@@ -193,11 +193,11 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
   float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
-  int originNew = min(origin, 3); //BMI data 4 and 5 get merged
-  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
+  int originNew = min(origin, 3); //origin categories 3 and 4 get merged
+  float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew],probaHypertension);
   
   float lower_new_bmi = 10;
-  if (new_bmi < 10){
+  if (new_bmi < lower_new_bmi){
     new_bmi = lower_new_bmi;
   }
   //// Scenarios for BMI studies///
@@ -206,25 +206,26 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float scenario1_new_bmi = 25.0;
   float scenario2_new_bmi = 35.0;
   float scenario3_new_bmi = 40.0;
-  float scenario4_new_bmi = new_bmi;
-  float scenario5_new_bmi = new_bmi;
-  float scenario6_new_bmi = new_bmi;
-  if (scenario4_new_bmi > 25.0){
-    float scenario4_new_bmi = 0.99 * scenario4_new_bmi;
+  if (new_bmi > 25.0){
+    float scenario4_new_bmi = 0.99 * new_bmi;
+  } else {
+    float scenario4_new_bmi = new_bmi;
   };  
   if (scenario5_new_bmi > 26.0){
-    float scenario5_new_bmi = scenario5_new_bmi - 1.0;
+    float scenario5_new_bmi = new_bmi - 1.0;
+  } else {
+    float scenario5_new_bmi = new_bmi;
   };
   if (scenario6_new_bmi > 27.0){
-    float scenario6_new_bmi = scenario6_new_bmi - 2.0;
+    float scenario6_new_bmi = new_bmi - 2.0;
+  } else {
+    float scenario6_new_bmi = new_bmi;
   };
   ///////////////
-
-  float oddBMI = 0.0;
   if (new_bmi <= 0.0){
-    oddBMI = 1.0;
+    float oddBMI = 1.0;
   } else{
-    oddBMI = params->bmi_multipliers[(originNew -1)*3 + 1] + params->bmi_multipliers[(originNew-1)*3+1] * scenario6_new_bmi + params->bmi_multipliers[(originNew-1)*3+2] * pown(scenario6_new_bmi,2);
+    float oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario6_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario6_new_bmi,2);
   }  
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
