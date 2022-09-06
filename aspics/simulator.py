@@ -137,6 +137,7 @@ class Simulator:
         kernels.people_update_statuses.set_args(
             npeople,
             buffers.people_ages,
+            buffers.people_new_bmi,
             buffers.people_obesity,
             buffers.people_cvd,
             buffers.people_diabetes,
@@ -144,7 +145,6 @@ class Simulator:
             buffers.people_sex,
             buffers.people_origin,
             buffers.people_hazards,
-            buffers.people_new_bmi,
             buffers.people_statuses,
             buffers.people_transition_times,
             buffers.people_prngs,

@@ -61,7 +61,7 @@ def setup_sim(parameters):
     # set params
     if calibration_params is not None and disease_params is not None and health_conditions is not None:
         snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
-        snapshot.change_neg_values_new_bmi()
+        #snapshot.change_neg_values_new_bmi()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
     simulator = Simulator(snapshot, study_area, gpu=True)
