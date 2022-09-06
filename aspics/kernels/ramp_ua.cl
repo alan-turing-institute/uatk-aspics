@@ -195,6 +195,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   int originNew = min(origin, 3); //BMI data 4 and 5 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
+  
   float lower_new_bmi = 10;
   if (new_bmi < 10){
     new_bmi = lower_new_bmi;
@@ -223,7 +224,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   if (new_bmi <= 0.0){
     oddBMI = 1.0;
   } else{
-    oddBMI = (params->bmi_multipliers[originNew -1]*3) + (params->bmi_multipliers[originNew-1]*3+1) * new_bmi + (params->bmi_multipliers[originNew-1]*3+2) * pown(new_bmi,2);
+    oddBMI = params->bmi_multipliers[(originNew -1)*3 + 1] + params->bmi_multipliers[(originNew-1)*3+1] * scenario6_new_bmi + params->bmi_multipliers[(originNew-1)*3+2] * pown(scenario6_new_bmi,2);
   }  
   float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   return personal_mortality_final;
@@ -248,7 +249,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
   float oddSex = (1 - sex) * params->sex_multipliers[3] + sex * params->sex_multipliers[1];
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[0]);
-  float oddAge = params->age_morbidity_multipliers[min(age/10,8)];
+  float oddAge = params->age_morbidity_multipliers[int(min(age/10,8))];
   float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
   return personal_morbidity_final;
 } 
