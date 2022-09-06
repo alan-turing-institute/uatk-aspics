@@ -5,7 +5,7 @@
 microsim:
   study-area: "Manchester"
   iterations: 300 # Number of model iterations (days)
-  use-lockdown: FALSE # Whether to preload the lockdown scenario
+  use-lockdown: TRUE # Whether to preload the lockdown scenario
   start-date: 0 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not
   output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
@@ -100,12 +100,6 @@ health_conditions:
   #  bin_size: 5 #Years per bin
   #  max_bin_idx: 18 #Largest bin index covers 80+
   # TODO symptomatic_probs
-
-  # obesity: # TODO remove this category., now it is just a 1 values.
-  #   overweight: 1.0
-  #   obesity_40: 1.0
-  #   obesity_35: 1.0
-  #   obesity_30: 1.0
 
 ###########################################
 ##### Vaccination Status and variants #####

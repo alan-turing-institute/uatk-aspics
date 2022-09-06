@@ -193,7 +193,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
   float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
-  int originNew = min(origin, 4); //BMI data 4 and 5 get merged
+  int originNew = min(origin, 3); //BMI data 4 and 5 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[origin - 1],probaHypertension);
   float lower_new_bmi = 10;
   if (new_bmi < 10){
@@ -486,7 +486,6 @@ kernel void people_update_statuses(uint npeople,
           //float mortality_prob = get_mortality_prob_for_age(person_age, params);
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
 
-          
           // randomly select whether dead or recovered
           next_status = rand(rng) > mortality_prob ? Recovered : Dead;
           break;
