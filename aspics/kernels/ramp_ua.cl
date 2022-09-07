@@ -195,39 +195,47 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   int originNew = min(origin, 3); //origin categories 3 and 4 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew],probaHypertension);
-  
   float lower_new_bmi = 10;
-  if (new_bmi < lower_new_bmi){
-    new_bmi = lower_new_bmi;
-  }
-  //// Scenarios for BMI studies///
-  //// Only need it for Karyn Data, can be removed later
+
   ///////////////////////
-  float scenario1_new_bmi = 25.0;
-  float scenario2_new_bmi = 35.0;
-  float scenario3_new_bmi = 40.0;
-  if (new_bmi > 25.0){
-    float scenario4_new_bmi = 0.99 * new_bmi;
-  } else {
-    float scenario4_new_bmi = new_bmi;
-  };  
-  if (scenario5_new_bmi > 26.0){
-    float scenario5_new_bmi = new_bmi - 1.0;
-  } else {
-    float scenario5_new_bmi = new_bmi;
-  };
-  if (scenario6_new_bmi > 27.0){
-    float scenario6_new_bmi = new_bmi - 2.0;
-  } else {
-    float scenario6_new_bmi = new_bmi;
-  };
-  ///////////////
+  float personal_mortality_final;
+  float oddBMI;
+  // new_bmi as is it, current from the SPC//////////////////
+  ///// Negatives ( missing values in New_BMI from SPC)//////
   if (new_bmi <= 0.0){
-    float oddBMI = 1.0;
-  } else{
-    float oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario6_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario6_new_bmi,2);
-  }  
-  float personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+    oddBMI = 1.0;
+    personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  }
+  ///// if New_BMI is lower than 10.0, set to 10.0 then//////
+  if (new_bmi < lower_new_bmi){
+      new_bmi = lower_new_bmi;
+      oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
+      personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  }
+
+  /// if new_BMI is possitive and higher of 10.0, but also include new scenarios to manually test////
+  //// Scenarios for BMI studies//////////////////////////////////
+  //// Only need it for Karyn Data, can be removed later/////////
+  float scenario1_new_bmi = 25.0;
+  float scenario2_new_bmi = 40.0;
+  float scenario3_new_bmi;
+  float scenario4_new_bmi;
+  
+  // oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario2_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario2_new_bmi,2);
+  // personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  
+  // if (new_bmi > 25.0){
+  //     scenario3_new_bmi = 0.99 * new_bmi;
+  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario3_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario3_new_bmi,2);
+  //     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  // }
+
+  if (new_bmi > 26.0){
+      scenario4_new_bmi = new_bmi - 1.0;
+      oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario4_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario4_new_bmi,2);
+      personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  }
+
   return personal_mortality_final;
 }
 
