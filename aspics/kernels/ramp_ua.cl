@@ -173,14 +173,6 @@ float odd_ratio_to_proba (float oddRatio, float knownProb){
   return oddRatio * knownProb / (1 + oddRatio * knownProb - knownProb);
 }
 
-//OLD FUNCTION///
-/*
-float get_mortality_prob_for_age(ushort age, global const Params* params){
-  uint bin_size = 5; // Years per bin
-  uint max_bin_idx = 18; // Largest bin index covers 80+
-  return params->mortality_probs[min(age/bin_size, max_bin_idx)];
-}*/
-
 // NEW FUNCTION No 3, as replacement for "get_mortality_prob_for_age" including several new paramaters from SPC and the parameters file.
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
   float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
@@ -223,21 +215,6 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   return personal_mortality_final;
 }
 
-//OLD FUNCTION THIS IS NOT NEED BCS THE WAY BMI IS CALCULATED.
-/*float get_obesity_multiplier(ushort new_bmi, global const Params* params){
-    // obesity value of 0 corresponds to normal, so there is no multiplier for that
-    int multiplier_idx = (int)new_bmi - 1;
-    return params->obesity_multipliers[multiplier_idx];
-}*/
-
-// OLD FUNCTION///
-/*float get_symptomatic_prob_for_age(ushort age, global const Params* params){
-  uint bin_size = 10; // Years per bin
-  uint max_bin_idx = 8; // Largest bin index covers 80+
-  return params->symptomatic_probs[min(age/bin_size, max_bin_idx)];
-}*/
-
-
 //NEW FUNCTION No 2, as a replacement of "get_symptomatic_prob_for_age", where now sex is a parameter.
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
   float oddSex = (1 - sex) * params->sex_multipliers[3] + sex * params->sex_multipliers[1];
@@ -247,11 +224,6 @@ float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* 
   return personal_morbidity_final;
 } 
 
-// TODO OLD FUNCTION, THIS IS NOT NEEDED BCS OF THE NEW MORDIBITY FUNCTION. Validate with Hadrien
-/*
-bool is_obese(ushort obesity){
-  return obesity >= 2;
-}*/
 
 /*
   Kernels
@@ -446,8 +418,6 @@ kernel void people_update_statuses(uint npeople,
           ushort person_age = people_ages[person_id];
           ushort person_sex = people_sex[person_id];
 
-          
-          //float symptomatic_prob = get_symptomatic_prob_for_age(person_age, params);
           //Calling FUNCTION No 3, as a replace of "get_symptomatic_prob_for_age", where now sex is a parameter.
           float symptomatic_prob = get_symptomatic_prob_for_age(person_age, person_sex, params);
           
@@ -476,8 +446,6 @@ kernel void people_update_statuses(uint npeople,
           ushort person_diabetes = people_diabetes[person_id];
           ushort person_bloodpressure = people_bloodpressure[person_id];
 
-          //OLD CALL to the Function
-          //float mortality_prob = get_mortality_prob_for_age(person_age, params);
           float mortality_prob = get_mortality_prob_for_age(person_age, person_sex,person_origin, person_cvd, person_diabetes, person_bloodpressure, person_new_bmi, params);
 
           // randomly select whether dead or recovered

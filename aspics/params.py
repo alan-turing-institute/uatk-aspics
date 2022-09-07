@@ -17,6 +17,7 @@ class Params:
     def __init__(
             self,
             ### PLACES#######
+            ## TODO Ask Dustin why this is also hardcoded. 
             location_hazard_multipliers=LocationHazardMultipliers(
                 retail=0.0165,
                 primary_school=0.0165,
@@ -25,6 +26,7 @@ class Params:
                 work=0.0,
             ),
             ### DISEASE STATUS##########
+            ## TODO Ask Dustin why this is also hardcoded. 
             individual_hazard_multipliers=IndividualHazardMultipliers(
                 presymptomatic=1.0, asymptomatic=0.75, symptomatic=1.0
             ),
@@ -52,8 +54,10 @@ class Params:
         if sex_multipliers is None:
             sex_multipliers = [1,1.34,1,1.0]
 
+        ## TODO Ask Hadried/Dustin why this is needed. I guess with the new version can be removed.
         self.symptomatic_multiplier = 0.5
 
+        ## TODO Ask Dustin why this is also hardcoded. 
         ### Paramaters for the GUI####
         self.exposed_scale = 2.82
         self.exposed_shape = 3.99
@@ -89,42 +93,12 @@ class Params:
         self.cvd_multiplier = cvd_multiplier
         self.diabetes_multiplier = diabetes_multiplier
         self.bloodpressure_multiplier = bloodpressure_multiplier
-        self.health_risk_multipliers = np.array(
-            [
-                0.005, #morbidity  
-                0.02, #mortality
-            ],
-            dtype=np.float32,
-        )
-        self.bmi_multipliers = np.array(
-            [
-                5.74780886945662,
-                -0.34646046221112,
-                0.00617314178638354,
-                2.34094066208621,
-                -0.138082823235478,
-                0.00390081199250469,
-                9.40716926920683,
-                -0.674559525296695,
-                0.0142113678950657,
-                9.21864084946916,
-                -0.646585509056844,
-                0.0128312304809495
-            ],
-            dtype=np.float32,
-        )
-        self.sex_multipliers = np.array(
-            [1.19,1.34,1.0,1.0],dtype=np.float32,
-        )
-        self.ethnicity_multipliers = np.array(
-            [1.0,1.74,2.55,2.97],dtype=np.float32,
-        )
-        self.age_mortality_multipliers = np.array(
-            [0.0088,0.0219,0.0921,0.3245,1.0,2.8916,8.4749,24.4236,106.7409],dtype=np.float32,
-        )
-        self.age_morbidity_multipliers = np.array(
-            [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],dtype=np.float32,
-        )
+        self.health_risk_multipliers = health_risk_multipliers
+        self.bmi_multipliers = bmi_multipliers
+        self.sex_multipliers = sex_multipliers
+        self.ethnicity_multipliers = ethnicity_multipliers
+        self.age_mortality_multipliers = age_mortality_multipliers
+        self.age_morbidity_multipliers = age_morbidity_multipliers
 
     def asarray(self):
         """Pack the parameters into a flat array for uploading."""

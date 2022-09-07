@@ -280,6 +280,7 @@ class Simulator:
         self.step_kernel("people_update_statuses")
         self.time += np.uint32(1)
 
+    ## TODO needs to be revised/updated by Hadrien
     def seeding_base(self):
         """Different seeding: sets a number of people infected based on the MSOA cases data and decides their status
         (asymptomatic, symptomatic) according to the rules of the model."""
