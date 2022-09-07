@@ -4,7 +4,7 @@
 ########################################################
 microsim:
   study-area: "Manchester"
-  iterations: 10 # Number of model iterations (days)
+  iterations: 300 # Number of model iterations (days)
   use-lockdown: FALSE # Whether to preload the lockdown scenario
   start-date: 0 # Counted as number of days since 15/02/2020 (currently, max is 435)
   output: TRUE # Whether to generate output or not
@@ -40,7 +40,7 @@ health_conditions:
 # Source: https://www.gov.uk/government/publications/covid-19-reported-sars-cov-2-deaths-in-england/covid-19-confirmed-deaths-in-england-report#age-and-sex-distribution
   global:
     morbidity: 0.005 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
-    mortality: 0.002 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    mortality: 0.02 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
 
   sex: # Not need to be calibrated, comes from the literature.
     male_mortality: 1.19
@@ -83,18 +83,18 @@ health_conditions:
     improve_health: FALSE # TODO (later): can be removed after BMI works
 
   BMI:
-    white_Ethni_coef0: 5.7
-    white_Ethni_coef1: -0.3
-    white_Ethni_coef2: 0.0061
-    black_Ethni_coef0: 2.340
-    black_Ethni_coef1: -0.13
-    black_Ethni_coef2: 0.003
-    asian_Ethni_coef0: 9.407
-    asian_Ethni_coef1: -0.67
-    asian_Ethni_coef2: 0.014
-    other_Ethni_coef0: 9.21
-    other_Ethni_coef1: -0.646
-    other_Ethni_coef2: 0.012
+    white_Ethni_coef0: 5.74780886945662
+    white_Ethni_coef1: -0.34646046221112
+    white_Ethni_coef2: 0.00617314178638354
+    black_Ethni_coef0: 2.34094066208621
+    black_Ethni_coef1: -0.138082823235478
+    black_Ethni_coef2: 0.00390081199250469
+    asian_Ethni_coef0: 9.40716926920683
+    asian_Ethni_coef1: -0.674559525296695
+    asian_Ethni_coef2: 0.0142113678950657
+    other_Ethni_coef0: 9.21864084946916
+    other_Ethni_coef1: -0.646585509056844
+    other_Ethni_coef2: 0.0128312304809495
 
   # LEGACY: symptomatic_age:
   #  bin_size: 5 #Years per bin

@@ -131,8 +131,8 @@ typedef struct Params {
   float bmi_multipliers[12];
   float sex_multipliers[4]; 
   float ethnicity_multipliers[4];
-  float age_morbidity_multipliers[9]; 
-  float age_mortality_multipliers[9]; 
+  float age_morbidity_multipliers[9];
+  float age_mortality_multipliers[9];
 
 } Params;
 
@@ -201,25 +201,25 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float oddBMI;
   ///////////////////////
   
-  printf("Initial BMI: %f, Odds: %f,  Probability: %f\n", new_bmi, oddBMI, probaOrigin);
+  //printf("Age_ID: %d, Origin: %d, Initial BMI: %f, Odds: %f,  Probability: %f\n", age, originNew, new_bmi, oddBMI, probaOrigin);
   
-  //new_bmi = 25.0;
+  //new_bmi = 28.0;
   //new_bmi = 40.0;
   if (new_bmi <= 0.0){ // Negatives are missing values from SPC, treat as neutral case (odds of 1)
     oddBMI = 1.0;
   } else if (new_bmi < lower_new_bmi){   ///// if New_BMI is lower than threshold, then set to threshold //////
     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(lower_new_bmi,2);
-  //} else if (new_bmi > 25.0){
-  //  oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(0.99 * new_bmi,2);
-  //} else if (new_bmi > 26.0){
-  //  oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi - 1,2);
-  } else (){
+  //} else if (new_bmi > 28.0){
+  //    oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(0.99 * new_bmi,2);
+  //} else if (new_bmi > 29.0){
+  //   oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi - 1,2);
+  }else {
     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
   }
+  //printf("Age_ID: %d, Origin: %d, Final BMI: %f, bmi_multipliers: %f,%f,%f \n", age, originNew, new_bmi, params->bmi_multipliers[originNew * 3], params->bmi_multipliers[originNew * 3 + 1], params->bmi_multipliers[originNew * 3 + 2]);
+  
   personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
-  
-  printf("Final BMI: %f, Odds: %f,  Probability: %f\n", new_bmi, oddBMI, personal_mortality_final);
-  
+  //printf("Age_ID: %d, Origin: %d, Final BMI: %f, Odds: %f,  Probability: %f\n", age, originNew, new_bmi, oddBMI, personal_mortality_final);
   return personal_mortality_final;
 }
 
