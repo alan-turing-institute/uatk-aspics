@@ -196,7 +196,6 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   int originNew = min(origin, 3); //origin categories 3 and 4 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew],probaHypertension);
   float lower_new_bmi = 10;
-
   ///////////////////////
   float personal_mortality_final;
   float oddBMI;
@@ -221,8 +220,8 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   float scenario3_new_bmi;
   float scenario4_new_bmi;
   
-  // oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario2_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario2_new_bmi,2);
-  // personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario2_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario2_new_bmi,2);
+  personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   
   // if (new_bmi > 25.0){
   //     scenario3_new_bmi = 0.99 * new_bmi;
@@ -230,11 +229,11 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   //     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   // }
 
-  if (new_bmi > 26.0){
-      scenario4_new_bmi = new_bmi - 1.0;
-      oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario4_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario4_new_bmi,2);
-      personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
-  }
+  // if (new_bmi > 26.0){
+  //     scenario4_new_bmi = new_bmi - 1.0;
+  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario4_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario4_new_bmi,2);
+  //     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
+  // }
 
   return personal_mortality_final;
 }
