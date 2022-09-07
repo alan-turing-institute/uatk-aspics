@@ -95,12 +95,7 @@ health_conditions:
     other_Ethni_coef0: 9.21864084946916
     other_Ethni_coef1: -0.646585509056844
     other_Ethni_coef2: 0.0128312304809495
-
-  # LEGACY: symptomatic_age:
-  #  bin_size: 5 #Years per bin
-  #  max_bin_idx: 18 #Largest bin index covers 80+
-  # TODO symptomatic_probs
-
+    
 ###########################################
 ##### Vaccination Status and variants #####
 ###########################################
