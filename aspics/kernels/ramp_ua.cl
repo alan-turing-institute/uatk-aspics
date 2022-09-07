@@ -212,26 +212,24 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
       personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   }
 
-  /// if new_BMI is possitive and higher of 10.0, but also include new scenarios to manually test////
+  /// if new_BMI is possitive and higher of 10.0, also include new scenarios to manually test////
   //// Scenarios for BMI studies//////////////////////////////////
   //// Only need it for Karyn Data, can be removed later/////////
   float scenario1_new_bmi = 25.0;
   float scenario2_new_bmi = 40.0;
-  float scenario3_new_bmi;
-  float scenario4_new_bmi;
-  
+
   oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario2_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario2_new_bmi,2);
   personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   
   // if (new_bmi > 25.0){
-  //     scenario3_new_bmi = 0.99 * new_bmi;
-  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario3_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario3_new_bmi,2);
+  //     new_bmi = 0.99 * new_bmi;
+  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario3_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
   //     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   // }
 
   // if (new_bmi > 26.0){
-  //     scenario4_new_bmi = new_bmi - 1.0;
-  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * scenario4_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(scenario4_new_bmi,2);
+  //     new_bmi = new_bmi - 1.0;
+  //     oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
   //     personal_mortality_final = odd_ratio_to_proba(oddBMI,probaOrigin);
   // }
 
