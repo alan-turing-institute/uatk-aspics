@@ -19,8 +19,9 @@ interested in building off this work.
 - [x] initialisation produces a snapshot for any study area
 - [x] basic simulation with the snapshot
 - [x] home-to-work commuting
-- [ ] large-scale events
+- [x] Tune model for BMI studies 
 - [ ] calibration / validation
+- [ ] large-scale events
 
 ## Lineage
 
