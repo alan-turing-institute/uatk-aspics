@@ -58,13 +58,13 @@ class Simulator:
             place_hazards=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, nplaces * 4),
             place_counts=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, nplaces * 4),
             people_ages=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2),
-            people_obesity=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2), 
+            people_obesity=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2),
             people_cvd=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_diabetes=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
             people_blood_pressure=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople),
-            people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople *2),
-            people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 4),
-            people_new_bmi=cl.Buffer(ctx, cl.mem_flags.READ_WRITE,npeople * 4),
+            people_sex=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 2),
+            people_origin=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
+            people_new_bmi=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
             people_statuses=cl.Buffer(ctx, cl.mem_flags.READ_WRITE, npeople * 4),
             people_transition_times=cl.Buffer(
                 ctx, cl.mem_flags.READ_WRITE, npeople * 4
@@ -296,11 +296,13 @@ class Simulator:
 
         for i in initial_case_ids:
             # define random statuses
-            symptomatic_prob = cov_params.age_morbidity_multipliers[ #TODO ask Hadrien, now we use "age_morbidity_multipliers", rather than symptomatic_probs
+            symptomatic_prob = cov_params.age_morbidity_multipliers[  # TODO ask Hadrien, now we use "age_morbidity_multipliers", rather than symptomatic_probs
                 min(math.floor(people_ages[i] / 10), 8)
             ]
             if people_obesity[i] > 2:
-                symptomatic_prob = symptomatic_prob * cov_params.symptomatic_multiplier #TODO here we will use symptomatic_multiplier, rather than overweight_sympt_mplier
+                symptomatic_prob = (
+                    symptomatic_prob * cov_params.symptomatic_multiplier
+                )  # TODO here we will use symptomatic_multiplier, rather than overweight_sympt_mplier
             if random.random() < symptomatic_prob:
                 people_statuses[i] = 4
             # define random duration times

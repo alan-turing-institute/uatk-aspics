@@ -17,10 +17,12 @@ def setup_sim_from_file(parameters_file):
 def setup_sim(parameters):
     print(f"Running a manually added parameters simulation based on {parameters}")
 
-    sim_params = parameters["microsim"] ## Set of Parameters for the ASPCIS microsim
-    calibration_params = parameters["microsim_calibration"] ## Calibration paramaters
-    disease_params = parameters["disease"] # Disease paramaters for the moment only beta_risk included.
-    health_conditions = parameters["health_conditions"] # individual health conditions
+    sim_params = parameters["microsim"]  ## Set of Parameters for the ASPCIS microsim
+    calibration_params = parameters["microsim_calibration"]  ## Calibration paramaters
+    disease_params = parameters[
+        "disease"
+    ]  # Disease paramaters for the moment only beta_risk included.
+    health_conditions = parameters["health_conditions"]  # individual health conditions
     iterations = sim_params["iterations"]
     study_area = sim_params["study-area"]
     output = sim_params["output"]
@@ -59,9 +61,15 @@ def setup_sim(parameters):
     snapshot.seed_prngs(42)
 
     # set params
-    if calibration_params is not None and disease_params is not None and health_conditions is not None:
-        snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
-        #snapshot.change_neg_values_new_bmi()
+    if (
+        calibration_params is not None
+        and disease_params is not None
+        and health_conditions is not None
+    ):
+        snapshot.update_params(
+            create_params(calibration_params, disease_params, health_conditions)
+        )
+        # snapshot.change_neg_values_new_bmi()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
     simulator = Simulator(snapshot, study_area, gpu=True)
@@ -79,19 +87,19 @@ def create_params(calibration_params, disease_params, health_conditions):
     # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
     location_hazard_multipliers = LocationHazardMultipliers(
         retail=calibration_params["hazard_location_multipliers"]["Retail"]
-               * current_risk_beta,
+        * current_risk_beta,
         primary_school=calibration_params["hazard_location_multipliers"][
-                           "PrimarySchool"
-                       ]
-                       * current_risk_beta,
+            "PrimarySchool"
+        ]
+        * current_risk_beta,
         secondary_school=calibration_params["hazard_location_multipliers"][
-                             "SecondarySchool"
-                         ]
-                         * current_risk_beta,
+            "SecondarySchool"
+        ]
+        * current_risk_beta,
         home=calibration_params["hazard_location_multipliers"]["Home"]
-             * current_risk_beta,
+        * current_risk_beta,
         work=calibration_params["hazard_location_multipliers"]["Work"]
-             * current_risk_beta,
+        * current_risk_beta,
     )
 
     individual_hazard_multipliers = IndividualHazardMultipliers(
@@ -103,7 +111,7 @@ def create_params(calibration_params, disease_params, health_conditions):
         ],
         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
     )
-    
+
     health_risk_multipliers = [
         health_conditions["global"]["morbidity"],
         health_conditions["global"]["mortality"],
@@ -124,14 +132,14 @@ def create_params(calibration_params, disease_params, health_conditions):
         health_conditions["BMI"]["other_Ethni_coef2"],
     ]
 
-    sex_multipliers =[
+    sex_multipliers = [
         health_conditions["sex"]["male_mortality"],
         health_conditions["sex"]["male_symptomatic"],
         health_conditions["sex"]["female_mortality"],
         health_conditions["sex"]["female_symptomatic"],
     ]
 
-    ethnicity_multipliers =[
+    ethnicity_multipliers = [
         health_conditions["ethnicity"]["white_mortality"],
         health_conditions["ethnicity"]["black_mortality"],
         health_conditions["ethnicity"]["asian_mortality"],
@@ -150,7 +158,7 @@ def create_params(calibration_params, disease_params, health_conditions):
         health_conditions["age_morbidity"]["a80plus_morbidity"],
     ]
 
-    age_mortality_multipliers =[
+    age_mortality_multipliers = [
         health_conditions["age_mortality"]["a0-9_mortality"],
         health_conditions["age_mortality"]["a10-19_mortality"],
         health_conditions["age_mortality"]["a20-29_mortality"],
@@ -160,7 +168,7 @@ def create_params(calibration_params, disease_params, health_conditions):
         health_conditions["age_mortality"]["a60-69_mortality"],
         health_conditions["age_mortality"]["a70-79_mortality"],
         health_conditions["age_mortality"]["a80plus_mortality"],
-        ]
+    ]
 
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
@@ -168,10 +176,10 @@ def create_params(calibration_params, disease_params, health_conditions):
         cvd_multiplier=health_conditions["type"]["cvd"],
         diabetes_multiplier=health_conditions["type"]["diabetes"],
         bloodpressure_multiplier=health_conditions["type"]["bloodpressure"],
-        health_risk_multipliers = health_risk_multipliers,
+        health_risk_multipliers=health_risk_multipliers,
         bmi_multipliers=bmi_multipliers,
-        sex_multipliers = sex_multipliers,
-        ethnicity_multipliers = ethnicity_multipliers,
-        age_morbidity_multipliers = age_morbidity_multipliers,
-        age_mortality_multipliers = age_mortality_multipliers,
+        sex_multipliers=sex_multipliers,
+        ethnicity_multipliers=ethnicity_multipliers,
+        age_morbidity_multipliers=age_morbidity_multipliers,
+        age_mortality_multipliers=age_mortality_multipliers,
     )
