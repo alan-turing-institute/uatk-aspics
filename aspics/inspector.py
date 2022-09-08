@@ -41,7 +41,7 @@ class Inspector:
             window_name: The name to display on the application window.
             width: Initial width of the window in screen coordinates.
             height: Initial height of the window in screen coordinates.
-            font_path: Path the the .ttf file to use for text in imgui.
+            font_path: Path the .ttf file to use for text in imgui.
         """
         nplaces = simulator.nplaces
         npeople = simulator.npeople

@@ -1,0 +1,110 @@
+#########################################################
+### ASPICS SIMULATION Parameter#########################
+### Use to run the model and calibration process #######
+########################################################
+microsim:
+  study-area: "Manchester"
+  iterations: 100 # Number of model iterations (days)
+  use-lockdown: FALSE # Whether to preload the lockdown scenario
+  start-date: 0 # Counted as number of days since 15/02/2020 (currently, max is 435)
+  output: TRUE # Whether to generate output or not
+  output-every-iteration: FALSE # Can optionally write output at every iteration, not just at the end
+  repetitions: 1 # How many times to run the model
+
+# Parameters that are used to calibrate the model.
+
+microsim_calibration:
+  # These multiply the amount of hazard that individuals pass on to shops etc:
+  hazard_individual_multipliers:
+    presymptomatic: 1.0
+    asymptomatic: 0.75 # TODO (optional): Lookup testing/stay-at-home compliance
+    symptomatic: 1.0
+
+  ### PLACES ###
+  # Different locations can also have their own multipliers.
+  hazard_location_multipliers:
+    Retail: 1.0
+    PrimarySchool: 1.0
+    SecondarySchool: 1.0
+    Home: 1.0
+    Work: 1.0 # TODO (later): implement parameter inside model
+
+disease:
+  #### DISEASE Parameter #########
+  # This multiplies the risk received as individuals visit shops, etc.
+  current_risk_beta: 0.003 
+  
+#### INDIVIDUAL Health Conditions Parameters #########
+health_conditions:
+
+# Source: https://www.gov.uk/government/publications/covid-19-reported-sars-cov-2-deaths-in-england/covid-19-confirmed-deaths-in-england-report#age-and-sex-distribution
+  global:
+    morbidity: 0.005 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+    mortality: 0.02 # <--------  * CALIBRATE 2 * CALIBRATE 2 * CALIBRAT 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 * CALIBRATE 2 *
+
+  sex: # Not need to be calibrated, comes from the literature.
+    male_mortality: 1.19
+    male_symptomatic: 1.34 # doi: 10.1136/bmjopen-2020-040129
+    female_mortality: 1.0
+    female_symptomatic: 1.0 # doi: 10.1136/bmjopen-2020-040129
+
+  ethnicity:
+    white_mortality: 1.0
+    black_mortality: 1.74
+    asian_mortality: 2.55
+    other_mortality: 2.97
+
+  age_mortality:
+    a0-9_mortality: 0.0088
+    a10-19_mortality: 0.0219
+    a20-29_mortality: 0.0921
+    a30-39_mortality: 0.3245
+    a40-49_mortality: 1.0
+    a50-59_mortality: 2.8916
+    a60-69_mortality: 8.4749
+    a70-79_mortality: 24.4236
+    a80plus_mortality: 106.7409
+
+  age_morbidity:
+    a0-9_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a10-19_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a20-29_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a30-39_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a40-49_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a50-59_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a60-69_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a70-79_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+    a80plus_morbidity: 1.0 # <--------  * CALIBRATE 1 * CALIBRATE 1 * CALIBRAT 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 * CALIBRATE 1 *
+
+  type:
+    cvd: 1.0 # unresolved debate: independent factor or a simple consequence of age
+    diabetes: 1.47 # doi: 10.1002/edm2.338
+    bloodpressure: 12.0 # doi: 10.1038/s41440-022-00893-5
+    improve_health: FALSE # TODO (later): can be removed after BMI works
+
+  BMI:
+    white_Ethni_coef0: 5.74780886945662
+    white_Ethni_coef1: -0.34646046221112
+    white_Ethni_coef2: 0.00617314178638354
+    black_Ethni_coef0: 2.34094066208621
+    black_Ethni_coef1: -0.138082823235478
+    black_Ethni_coef2: 0.00390081199250469
+    asian_Ethni_coef0: 9.40716926920683
+    asian_Ethni_coef1: -0.674559525296695
+    asian_Ethni_coef2: 0.0142113678950657
+    other_Ethni_coef0: 9.21864084946916
+    other_Ethni_coef1: -0.646585509056844
+    other_Ethni_coef2: 0.0128312304809495
+    
+###########################################
+##### Vaccination Status and variants #####
+###########################################
+
+#vaccine_status:
+#  not_vaccinated: 0.9
+#  first_shot: 0.8
+#  second_shot: 0.6
+#  third_shot: 0.32
+
+#variant delta etc.
+

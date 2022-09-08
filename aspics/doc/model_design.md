@@ -125,12 +125,13 @@ Buffers = namedtuple(
         "place_coords",
         "place_hazards",
         "place_counts",
-
         "people_ages",
         "people_obesity",
         "people_cvd",
         "people_diabetes",
         "people_blood_pressure",
+        "people_sex",
+        "people_origin",
         "people_statuses",
         "people_transition_times",
         "people_place_ids",
@@ -138,6 +139,7 @@ Buffers = namedtuple(
         "people_flows",
         "people_hazards",
         "people_prngs",
+        
 
         "params",
     ]

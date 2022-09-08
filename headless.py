@@ -9,7 +9,7 @@ import os
 from aspics.params import Params
 from aspics.summary import Summary
 from aspics.disease_statuses import DiseaseStatus
-from aspics.loader import setup_sim
+from aspics.loader import setup_sim_from_file
 
 
 @click.command()
@@ -20,7 +20,7 @@ from aspics.loader import setup_sim
     help="Parameters file to use to configure the model. This must be located in the working directory.",
 )
 def main(parameters_file):
-    simulator, snapshot, study_area, iterations = setup_sim(parameters_file)
+    simulator, snapshot, study_area, iterations = setup_sim_from_file(parameters_file)
 
     summary, final_state = run_headless(simulator, snapshot, iterations)
     store_summary_data(
@@ -37,6 +37,7 @@ def run_headless(
     be set to True to output the required data for the dashboard, however the model runs faster with this set to False.
     """
     params = Params.fromarray(snapshot.buffers.params)
+    
     summary = Summary(
         snapshot, store_detailed_counts=store_detailed_counts, max_time=iterations
     )
