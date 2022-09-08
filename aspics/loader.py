@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from yaml import load, SafeLoader
 
 from aspics.simulator import Simulator
@@ -6,24 +7,26 @@ from aspics.snapshot import Snapshot
 from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 
 
-def setup_sim(parameters_file):
+def setup_sim_from_file(parameters_file):
     print(f"Running a simulation based on {parameters_file}")
+    with open(parameters_file, "r") as f:
+        parameters = load(f, Loader=SafeLoader)
+        return setup_sim(parameters)
 
-    try:
-        with open(parameters_file, "r") as f:
-            parameters = load(f, Loader=SafeLoader)
-            sim_params = parameters["microsim"]
-            calibration_params = parameters["microsim_calibration"]
-            disease_params = parameters["disease"]
-            iterations = sim_params["iterations"]
-            study_area = sim_params["study-area"]
-            output = sim_params["output"]
-            output_every_iteration = sim_params["output-every-iteration"]
-            use_lockdown = sim_params["use-lockdown"]
-            start_date = sim_params["start-date"]
-    except Exception as error:
-        print("Error in parameters file format")
-        raise error
+
+def setup_sim(parameters):
+    print(f"Running a manually added parameters simulation based on {parameters}")
+
+    sim_params = parameters["microsim"] ## Set of Parameters for the ASPCIS microsim
+    calibration_params = parameters["microsim_calibration"] ## Calibration paramaters
+    disease_params = parameters["disease"] # Disease paramaters for the moment only beta_risk included.
+    health_conditions = parameters["health_conditions"] # individual health conditions
+    iterations = sim_params["iterations"]
+    study_area = sim_params["study-area"]
+    output = sim_params["output"]
+    output_every_iteration = sim_params["output-every-iteration"]
+    use_lockdown = sim_params["use-lockdown"]
+    start_date = sim_params["start-date"]
 
     # Check the parameters are sensible
     if iterations < 1:
@@ -52,19 +55,16 @@ def setup_sim(parameters_file):
         # No lockdown
         snapshot.lockdown_multipliers = np.ones(iterations + 1)
 
-    # set the random seed of the model
+    # TODO set the random seed of the model. Why do we still have this very random number
     snapshot.seed_prngs(42)
 
     # set params
-    if calibration_params is not None and disease_params is not None:
-        snapshot.update_params(create_params(calibration_params, disease_params))
-
-        if disease_params["improve_health"]:
-            print("Switching to healthier population")
-            snapshot.switch_to_healthier_population()
+    if calibration_params is not None and disease_params is not None and health_conditions is not None:
+        snapshot.update_params(create_params(calibration_params, disease_params, health_conditions))
+        #snapshot.change_neg_values_new_bmi()
 
     # Create a simulator and upload the snapshot data to the OpenCL device
-    simulator = Simulator(snapshot, parameters_file, gpu=True)
+    simulator = Simulator(snapshot, study_area, gpu=True)
     [people_statuses, people_transition_times] = simulator.seeding_base()
     simulator.upload_all(snapshot.buffers)
     simulator.upload("people_statuses", people_statuses)
@@ -73,27 +73,25 @@ def setup_sim(parameters_file):
     return simulator, snapshot, study_area, iterations
 
 
-def create_params(calibration_params, disease_params):
-    current_risk_beta = disease_params["current_risk_beta"]
+def create_params(calibration_params, disease_params, health_conditions):
 
+    current_risk_beta = disease_params["current_risk_beta"]
     # NB: OpenCL model incorporates the current risk beta by pre-multiplying the hazard multipliers with it
     location_hazard_multipliers = LocationHazardMultipliers(
         retail=calibration_params["hazard_location_multipliers"]["Retail"]
-        * current_risk_beta,
-        nightclubs=calibration_params["hazard_location_multipliers"]["Nightclubs"]
-        * current_risk_beta,
+               * current_risk_beta,
         primary_school=calibration_params["hazard_location_multipliers"][
-            "PrimarySchool"
-        ]
-        * current_risk_beta,
+                           "PrimarySchool"
+                       ]
+                       * current_risk_beta,
         secondary_school=calibration_params["hazard_location_multipliers"][
-            "SecondarySchool"
-        ]
-        * current_risk_beta,
+                             "SecondarySchool"
+                         ]
+                         * current_risk_beta,
         home=calibration_params["hazard_location_multipliers"]["Home"]
-        * current_risk_beta,
+             * current_risk_beta,
         work=calibration_params["hazard_location_multipliers"]["Work"]
-        * current_risk_beta,
+             * current_risk_beta,
     )
 
     individual_hazard_multipliers = IndividualHazardMultipliers(
@@ -105,19 +103,75 @@ def create_params(calibration_params, disease_params):
         ],
         symptomatic=calibration_params["hazard_individual_multipliers"]["symptomatic"],
     )
-
-    obesity_multipliers = [
-        disease_params["overweight"],
-        disease_params["obesity_30"],
-        disease_params["obesity_35"],
-        disease_params["obesity_40"],
+    
+    health_risk_multipliers = [
+        health_conditions["global"]["morbidity"],
+        health_conditions["global"]["mortality"],
     ]
+
+    bmi_multipliers = [
+        health_conditions["BMI"]["white_Ethni_coef0"],
+        health_conditions["BMI"]["white_Ethni_coef1"],
+        health_conditions["BMI"]["white_Ethni_coef2"],
+        health_conditions["BMI"]["black_Ethni_coef0"],
+        health_conditions["BMI"]["black_Ethni_coef1"],
+        health_conditions["BMI"]["black_Ethni_coef2"],
+        health_conditions["BMI"]["asian_Ethni_coef0"],
+        health_conditions["BMI"]["asian_Ethni_coef1"],
+        health_conditions["BMI"]["asian_Ethni_coef2"],
+        health_conditions["BMI"]["other_Ethni_coef0"],
+        health_conditions["BMI"]["other_Ethni_coef1"],
+        health_conditions["BMI"]["other_Ethni_coef2"],
+    ]
+
+    sex_multipliers =[
+        health_conditions["sex"]["male_mortality"],
+        health_conditions["sex"]["male_symptomatic"],
+        health_conditions["sex"]["female_mortality"],
+        health_conditions["sex"]["female_symptomatic"],
+    ]
+
+    ethnicity_multipliers =[
+        health_conditions["ethnicity"]["white_mortality"],
+        health_conditions["ethnicity"]["black_mortality"],
+        health_conditions["ethnicity"]["asian_mortality"],
+        health_conditions["ethnicity"]["other_mortality"],
+    ]
+
+    age_morbidity_multipliers = [
+        health_conditions["age_morbidity"]["a0-9_morbidity"],
+        health_conditions["age_morbidity"]["a10-19_morbidity"],
+        health_conditions["age_morbidity"]["a20-29_morbidity"],
+        health_conditions["age_morbidity"]["a30-39_morbidity"],
+        health_conditions["age_morbidity"]["a40-49_morbidity"],
+        health_conditions["age_morbidity"]["a50-59_morbidity"],
+        health_conditions["age_morbidity"]["a60-69_morbidity"],
+        health_conditions["age_morbidity"]["a70-79_morbidity"],
+        health_conditions["age_morbidity"]["a80plus_morbidity"],
+    ]
+
+    age_mortality_multipliers =[
+        health_conditions["age_mortality"]["a0-9_mortality"],
+        health_conditions["age_mortality"]["a10-19_mortality"],
+        health_conditions["age_mortality"]["a20-29_mortality"],
+        health_conditions["age_mortality"]["a30-39_mortality"],
+        health_conditions["age_mortality"]["a40-49_mortality"],
+        health_conditions["age_mortality"]["a50-59_mortality"],
+        health_conditions["age_mortality"]["a60-69_mortality"],
+        health_conditions["age_mortality"]["a70-79_mortality"],
+        health_conditions["age_mortality"]["a80plus_mortality"],
+        ]
 
     return Params(
         location_hazard_multipliers=location_hazard_multipliers,
         individual_hazard_multipliers=individual_hazard_multipliers,
-        obesity_multipliers=obesity_multipliers,
-        cvd_multiplier=disease_params["cvd"],
-        diabetes_multiplier=disease_params["diabetes"],
-        bloodpressure_multiplier=disease_params["bloodpressure"],
+        cvd_multiplier=health_conditions["type"]["cvd"],
+        diabetes_multiplier=health_conditions["type"]["diabetes"],
+        bloodpressure_multiplier=health_conditions["type"]["bloodpressure"],
+        health_risk_multipliers = health_risk_multipliers,
+        bmi_multipliers=bmi_multipliers,
+        sex_multipliers = sex_multipliers,
+        ethnicity_multipliers = ethnicity_multipliers,
+        age_morbidity_multipliers = age_morbidity_multipliers,
+        age_mortality_multipliers = age_mortality_multipliers,
     )

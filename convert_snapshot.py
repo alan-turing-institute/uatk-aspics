@@ -11,6 +11,7 @@ import random
 import synthpop_pb2
 from collections import namedtuple
 
+
 # Things to keep in mind:
 # - This script isn't deterministic, because it doesn't fix a random number
 #   generator seed. We'd need to set one both from random.choice and numpy.
@@ -122,6 +123,15 @@ def convert_to_npz(pop, output_path):
                 [bool_to_int(p.health.has_high_blood_pressure) for p in pop.people],
                 dtype=np.uint8,
             ),
+            people_sex=np.array(
+                [p.demographics.sex for p in pop.people], dtype=np.uint16
+            ),
+            people_new_bmi=np.array(
+                 [p.health.bmi_new for p in pop.people], dtype=np.float32
+            ),
+            people_origin=np.array(
+                [p.demographics.origin for p in pop.people], dtype=np.uint16
+            ),
             people_statuses=np.zeros(num_people, dtype=np.uint32),
             people_transition_times=np.zeros(num_people, dtype=np.uint32),
             people_place_ids=people_place_ids,
@@ -156,7 +166,7 @@ def get_baseline_flows(pop, id_mapping):
         idx = person.id * places_to_keep_per_person
         # Per person, flatten all the flows, regardless of activity
         for (activity, venue, weight) in get_baseline_flows_per_person(
-            pop, person, places_to_keep_per_person
+                pop, person, places_to_keep_per_person
         ):
             people_place_ids[idx] = id_mapping.to_place(activity, venue)
             people_baseline_flows[idx] = weight
@@ -170,7 +180,7 @@ def get_baseline_flows_per_person(pop, person, places_to_keep_per_person):
 
     # Home and work are per-person
     result.append((synthpop_pb2.Activity.HOME, person.household, 1.0))
-    if person.workplace != 2**64 - 1:
+    if person.workplace != 2 ** 64 - 1:
         result.append((synthpop_pb2.Activity.WORK, person.workplace, 1.0))
 
     # Build a map from activity to duration

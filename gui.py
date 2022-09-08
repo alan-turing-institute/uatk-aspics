@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import click
-from aspics.loader import setup_sim
+from aspics.loader import setup_sim_from_file
 from aspics.inspector import Inspector
 
 
@@ -13,7 +13,7 @@ from aspics.inspector import Inspector
     help="Parameters file to use to configure the model. This must be located in the working directory.",
 )
 def main(parameters_file):
-    simulator, snapshot, study_area, _ = setup_sim(parameters_file)
+    simulator, snapshot, study_area, _ = setup_sim_from_file(parameters_file)
 
     inspector = Inspector(
         simulator,

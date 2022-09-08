@@ -5,18 +5,13 @@ from yaml import load, SafeLoader
 
 
 class InitialCases:
-    def __init__(self, area_codes, not_home_probs, parameters_file):
+    def __init__(self, area_codes, not_home_probs, study_area):
         """
         This class loads the initial cases data for seeding infections in the model.
         Once the data is loaded, it selects people at higher risk who
         spend more time outside of their home.
         """
 
-        # load initial case data
-        with open(parameters_file, "r") as f:
-            parameters = load(f, Loader=SafeLoader)
-            sim_params = parameters["microsim"]
-        study_area = sim_params["study-area"]
         self.initial_cases = pd.read_csv(f"config/Input_{study_area}.csv")
 
         self.people_df = pd.DataFrame(
