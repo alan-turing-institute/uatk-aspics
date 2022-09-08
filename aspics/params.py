@@ -15,49 +15,61 @@ class Params:
     """Convenience class for setting simulator parameters. Also holds the default values."""
 
     def __init__(
-            self,
-            ### PLACES#######
-            ## TODO Ask Dustin why this is also hardcoded. 
-            location_hazard_multipliers=LocationHazardMultipliers(
-                retail=0.0165,
-                primary_school=0.0165,
-                secondary_school=0.0165,
-                home=0.0165,
-                work=0.0,
-            ),
-            ### DISEASE STATUS##########
-            ## TODO Ask Dustin why this is also hardcoded. 
-            individual_hazard_multipliers=IndividualHazardMultipliers(
-                presymptomatic=1.0, asymptomatic=0.75, symptomatic=1.0
-            ),
-            ###########################################
-            #####Health Conditions (Type, BMI) ########
-            ###########################################
-            sex_multipliers = [1.0,1.0,1.0,1.0],
-            ethnicity_multipliers =[1.0,1.0,1.0,1.0],
-            age_morbidity_multipliers = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
-            age_mortality_multipliers = [1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],
-            cvd_multiplier=1.0,
-            diabetes_multiplier=1.0,
-            bloodpressure_multiplier=1.0,
-            health_risk_multipliers=[1.0, 1.0],
-            bmi_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
-
+        self,
+        ### PLACES#######
+        ## TODO Ask Dustin why this is also hardcoded.
+        location_hazard_multipliers=LocationHazardMultipliers(
+            retail=0.0165,
+            primary_school=0.0165,
+            secondary_school=0.0165,
+            home=0.0165,
+            work=0.0,
+        ),
+        ### DISEASE STATUS##########
+        ## TODO Ask Dustin why this is also hardcoded.
+        individual_hazard_multipliers=IndividualHazardMultipliers(
+            presymptomatic=1.0, asymptomatic=0.75, symptomatic=1.0
+        ),
+        ###########################################
+        #####Health Conditions (Type, BMI) ########
+        ###########################################
+        sex_multipliers=[1.0, 1.0, 1.0, 1.0],
+        ethnicity_multipliers=[1.0, 1.0, 1.0, 1.0],
+        age_morbidity_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        age_mortality_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        cvd_multiplier=1.0,
+        diabetes_multiplier=1.0,
+        bloodpressure_multiplier=1.0,
+        health_risk_multipliers=[1.0, 1.0],
+        bmi_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
     ):
         """Create a simulator with the default parameters."""
         if health_risk_multipliers is None:
-             health_risk_multipliers = [1.0, 1.0]
+            health_risk_multipliers = [1.0, 1.0]
 
         if bmi_multipliers is None:
-            bmi_multipliers = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            bmi_multipliers = [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+            ]
 
         if sex_multipliers is None:
-            sex_multipliers = [1,1.34,1,1.0]
+            sex_multipliers = [1, 1.34, 1, 1.0]
 
         ## TODO Ask Hadried/Dustin why this is needed. I guess with the new version can be removed.
         self.symptomatic_multiplier = 0.5
 
-        ## TODO Ask Dustin why this is also hardcoded. 
+        ## TODO Ask Dustin why this is also hardcoded.
         ### Paramaters for the GUI####
         self.exposed_scale = 2.82
         self.exposed_shape = 3.99
@@ -132,7 +144,7 @@ class Params:
                 self.sex_multipliers,
                 self.ethnicity_multipliers,
                 self.age_morbidity_multipliers,
-                self.age_mortality_multipliers
+                self.age_mortality_multipliers,
             ]
         )
 
@@ -166,9 +178,9 @@ class Params:
         p.bmi_multipliers = params_array[21:33]
         p.sex_multipliers = params_array[33:37]
         p.ethnicity_multipliers = params_array[37:41]
-        p.age_morbidity_multipliers=params_array[41:50]
-        p.age_mortality_multipliers=params_array[50:60]
-        
+        p.age_morbidity_multipliers = params_array[41:50]
+        p.age_mortality_multipliers = params_array[50:60]
+
         return p
 
     def set_lockdown_multiplier(self, lockdown_multipliers, timestep):
