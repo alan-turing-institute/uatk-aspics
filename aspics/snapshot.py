@@ -57,18 +57,6 @@ class Snapshot:
             np.uint32((1 << 32) - 1), size=self.npeople * 4, dtype=np.uint32
         )
 
-    # TODO validate with Hadried that now we dont need this function.
-
-    #  def switch_to_healthier_population(self):
-    #     """
-    #     #Updates to a healthier population by reducing obesity. Any individuals that are overweight or obese are moved
-    #     #to the level of obesity below their current one, by subtracting 1.
-    #     """
-    #     people_obesity = self.buffers.people_obesity
-    #     # only change people with obesity 2 and above, 2 corresponds to "Obese I"
-    #     people_obesity[people_obesity >= 2] -= 1
-    #     self.buffers.people_obesity[:] = people_obesity
-
     @classmethod
     def load_full_snapshot(cls, path):
         """Creates a snapshot by reading the .npz file from the provided path."""
