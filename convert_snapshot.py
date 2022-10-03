@@ -2,6 +2,7 @@
 
 import click
 import numpy as np
+from aspics.activity import Activity
 from aspics.params import Params
 from tqdm import tqdm
 from linetimer import CodeTimer
@@ -71,7 +72,17 @@ class IDMapping:
 
             start = offset
             offset = offset + num_venues
-            self.place_activities[start:offset] = activity
+
+            # SPC and ASPICS use different enum values for activities. It's
+            # important to do the mapping here.
+            mapping = {
+                synthpop_pb2.Activity.RETAIL: Activity.Retail,
+                synthpop_pb2.Activity.PRIMARY_SCHOOL: Activity.PrimarySchool,
+                synthpop_pb2.Activity.SECONDARY_SCHOOL: Activity.SecondarySchool,
+                synthpop_pb2.Activity.HOME: Activity.Home,
+                synthpop_pb2.Activity.WORK: Activity.Work,
+            }
+            self.place_activities[start:offset] = mapping[activity].value
         assert offset == self.total_places, f"{offset} vs {self.total_places}"
 
     def to_place(self, activity, venue):
