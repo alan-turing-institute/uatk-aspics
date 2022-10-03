@@ -177,13 +177,13 @@ float odd_ratio_to_proba (float oddRatio, float knownProb){
 float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd, ushort diabetes, ushort bloodpressure, float new_bmi,  global const Params* params){
   float oddSex = ((1 - sex) * params->sex_multipliers[2]) + sex * params->sex_multipliers[0];
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[1]);
-  float oddAge = params->age_mortality_multipliers[int(min(age/10,8))];
+  float oddAge = params->age_mortality_multipliers[(int) min(age/10,8)];
   float probaAge = odd_ratio_to_proba(oddAge,probaSex);
-  float oddCVD = max(cvd * params->cvd_multiplier, float(1.0));
+  float oddCVD = max(cvd * params->cvd_multiplier, (float) 1.0);
   float probaCVD = odd_ratio_to_proba(oddCVD,probaAge);
-  float oddDiabetes = max(diabetes * params->diabetes_multiplier, float(1.0));
+  float oddDiabetes = max(diabetes * params->diabetes_multiplier, (float) 1.0);
   float probaDiabetes = odd_ratio_to_proba(oddDiabetes,probaCVD);
-  float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, float(1.0));
+  float oddHypertension = max(bloodpressure * params->bloodpressure_multiplier, (float) 1.0);
   float probaHypertension = odd_ratio_to_proba(oddHypertension,probaDiabetes);
   int originNew = min(origin, 3); //origin categories 3 and 4 get merged
   float probaOrigin = odd_ratio_to_proba(params->ethnicity_multipliers[originNew],probaHypertension);
@@ -219,7 +219,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
 float get_symptomatic_prob_for_age(ushort age, ushort sex, global const Params* params){
   float oddSex = (1 - sex) * params->sex_multipliers[3] + sex * params->sex_multipliers[1];
   float probaSex = odd_ratio_to_proba(oddSex,params->health_risk_multipliers[0]);
-  float oddAge = params->age_morbidity_multipliers[int(min(age/10,8))];
+  float oddAge = params->age_morbidity_multipliers[(int) min(age/10,8)];
   float personal_morbidity_final = odd_ratio_to_proba(oddAge,probaSex);
   return personal_morbidity_final;
 } 
