@@ -1,5 +1,10 @@
 # Usage guide
 
+WARNING: The simulation currently only runs in Manchester, and you must use
+`config/new_parameters.yml`. All other config files are broken. You can revert
+the git repository to September 2022 (commit
+`03949aab8e72b384928439f6df9013073e11be96`) to restore behavior in other areas.
+
 ## One-time installation
 
 - [Poetry](https://python-poetry.org), for running a fork of the Python model
