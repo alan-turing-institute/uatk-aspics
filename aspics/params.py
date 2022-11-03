@@ -41,7 +41,7 @@ class Params:
         diabetes_multiplier=1.0,
         bloodpressure_multiplier=1.0,
         health_risk_multipliers=[1.0, 1.0],
-        bmi_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        bmi_multipliers=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
     ):
         """Create a simulator with the default parameters."""
         if health_risk_multipliers is None:
@@ -61,6 +61,10 @@ class Params:
                 1.0,
                 1.0,
                 1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
             ]
 
         if sex_multipliers is None:
@@ -175,11 +179,11 @@ class Params:
         p.diabetes_multiplier = params_array[17]
         p.bloodpressure_multiplier = params_array[18]
         p.health_risk_multipliers = params_array[19:21]
-        p.bmi_multipliers = params_array[21:33]
-        p.sex_multipliers = params_array[33:37]
-        p.ethnicity_multipliers = params_array[37:41]
-        p.age_morbidity_multipliers = params_array[41:50]
-        p.age_mortality_multipliers = params_array[50:60]
+        p.bmi_multipliers = params_array[21:37]
+        p.sex_multipliers = params_array[37:41]
+        p.ethnicity_multipliers = params_array[41:45]
+        p.age_morbidity_multipliers = params_array[45:54]
+        p.age_mortality_multipliers = params_array[54:64]
 
         return p
 

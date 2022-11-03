@@ -121,15 +121,19 @@ def create_params(calibration_params, disease_params, health_conditions):
         health_conditions["BMI"]["white_Ethni_coef0"],
         health_conditions["BMI"]["white_Ethni_coef1"],
         health_conditions["BMI"]["white_Ethni_coef2"],
+        health_conditions["BMI"]["white_Ethni_coef3"],
         health_conditions["BMI"]["black_Ethni_coef0"],
         health_conditions["BMI"]["black_Ethni_coef1"],
         health_conditions["BMI"]["black_Ethni_coef2"],
+        health_conditions["BMI"]["black_Ethni_coef3"],
         health_conditions["BMI"]["asian_Ethni_coef0"],
         health_conditions["BMI"]["asian_Ethni_coef1"],
         health_conditions["BMI"]["asian_Ethni_coef2"],
+        health_conditions["BMI"]["asian_Ethni_coef3"],
         health_conditions["BMI"]["other_Ethni_coef0"],
         health_conditions["BMI"]["other_Ethni_coef1"],
         health_conditions["BMI"]["other_Ethni_coef2"],
+        health_conditions["BMI"]["other_Ethni_coef3"],
     ]
 
     sex_multipliers = [

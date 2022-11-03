@@ -83,18 +83,23 @@ health_conditions:
     improve_health: FALSE # TODO (later): can be removed after BMI works
 
   BMI:
-    white_Ethni_coef0: 5.74780886945662
-    white_Ethni_coef1: -0.34646046221112
-    white_Ethni_coef2: 0.00617314178638354
-    black_Ethni_coef0: 2.34094066208621
-    black_Ethni_coef1: -0.138082823235478
-    black_Ethni_coef2: 0.00390081199250469
-    asian_Ethni_coef0: 9.40716926920683
-    asian_Ethni_coef1: -0.674559525296695
-    asian_Ethni_coef2: 0.0142113678950657
-    other_Ethni_coef0: 9.21864084946916
-    other_Ethni_coef1: -0.646585509056844
-    other_Ethni_coef2: 0.0128312304809495
+    white_Ethni_coef0: 10.096072859282
+    white_Ethni_coef1: -0.833655335196302
+    white_Ethni_coef2: 0.023558207829047
+    white_Ethni_coef3: -0.0001987054543
+    black_Ethni_coef0: 10.7453949715242
+    black_Ethni_coef1: -1.02161693520131
+    black_Ethni_coef2: 0.033839246871668
+    black_Ethni_coef3: -0.000328260679022
+    asian_Ethni_coef0: -2.67028367608363
+    asian_Ethni_coef1: 0.597539642563592
+    asian_Ethni_coef2: -0.029027748590772
+    asian_Ethni_coef3: 0.000475709454333
+    other_Ethni_coef0: 9.27741265834176
+    other_Ethni_coef1: -0.651876064649631
+    other_Ethni_coef2: 0.012970019756479
+    other_Ethni_coef3: -0.00000105920962282659
+
     
 ###########################################
 ##### Vaccination Status and variants #####
