@@ -200,14 +200,16 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   if (new_bmi <= 0.0){ // Negatives are missing values from SPC, treat as neutral case (odds of 1)
     oddBMI = 1.0;
   } else if (new_bmi < lower_new_bmi){   ///// if New_BMI is lower than threshold, then set to threshold //////
-    oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(lower_new_bmi,2);
-    //oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * [new_bmi] + params->bmi_multipliers[originNew * 4 + 2] * pown([new_bmi],2) + params->bmi_multipliers[originNew * 4 + 3] * pown([new_bmi],3);
+    //oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(lower_new_bmi,2);
+    oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(lower_new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(lower_new_bmi,3);
   //} else if (new_bmi > 28.0){
   //    oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(0.99 * new_bmi,2);
   //} else if (new_bmi > 29.0){
   //   oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi - 1,2);
   }else {
-    oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
+    //oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
+    oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(new_bmi,3);
+
   }
   //printf("Age_ID: %d, Origin: %d, Final BMI: %f, bmi_multipliers: %f,%f,%f \n", age, originNew, new_bmi, params->bmi_multipliers[originNew * 3], params->bmi_multipliers[originNew * 3 + 1], params->bmi_multipliers[originNew * 3 + 2]);
   
