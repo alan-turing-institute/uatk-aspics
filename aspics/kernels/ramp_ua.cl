@@ -196,7 +196,7 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   //printf("Age_ID: %d, Origin: %d, Initial BMI: %f, Odds: %f,  Probability: %f\n", age, originNew, new_bmi, oddBMI, probaOrigin);
   
   //new_bmi = 26.7; //Scenario 2 
-  //new_bmi = 40.0; //Scenario 3
+  new_bmi = 40.0; //Scenario 3
   if (new_bmi <= 0.0){ // Negatives are missing values from SPC, treat as neutral case (odds of 1)
     oddBMI = 1.0;
   } else if (new_bmi < lower_new_bmi){   ///// if New_BMI is lower than threshold, then set to threshold //////
