@@ -1,10 +1,12 @@
 import os
-import numpy as np
-from yaml import load, SafeLoader
 
+import numpy as np
+from yaml import SafeLoader, load
+
+from aspics.params import (IndividualHazardMultipliers,
+                           LocationHazardMultipliers, Params)
 from aspics.simulator import Simulator
 from aspics.snapshot import Snapshot
-from aspics.params import Params, IndividualHazardMultipliers, LocationHazardMultipliers
 
 
 def setup_sim_from_file(parameters_file):
