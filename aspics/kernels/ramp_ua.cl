@@ -205,11 +205,10 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   //    oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(0.99 * new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(0.99 * new_bmi,3);
   //} else if (new_bmi > 27.7){ //Scenario 5
   //   oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 4 + 2] * pown(new_bmi -1,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(new_bmi - 1,3); 
-  } else if (new_bmi > 50){ //oddBMI is calculated using 50 for [!!! BMI VARIABLE !!!]} //Scenario 6
-  //   oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * 50 + params->bmi_multipliers[originNew * 4 + 2] * pown(50,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(50,3);
+  } else if (new_bmi > 50){ //oddBMI is calculated using 50 for [!!! BMI VARIABLE !!!]
+    oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * 50.0 + params->bmi_multipliers[originNew * 4 + 2] * pown(50.0,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(50.0,3);
   }else {
     oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(new_bmi,3);
-
   }
   //printf("Age_ID: %d, Origin: %d, Final BMI: %f, bmi_multipliers: %f,%f,%f \n", age, originNew, new_bmi, params->bmi_multipliers[originNew * 3], params->bmi_multipliers[originNew * 3 + 1], params->bmi_multipliers[originNew * 3 + 2]);
   

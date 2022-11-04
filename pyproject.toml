@@ -19,10 +19,13 @@ pyopencl = "^2022.1"
 numpy = "^1.22.3"
 protobuf = "^3.20.0"
 linetimer = "^0.1.5"
+matplotlib = "^3.6.2"
+seaborn = "^0.12.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 black = "^22.1.0"
+jupyter = "^1.0.0"
 
 [build-system]
 requires = [
