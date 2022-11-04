@@ -195,19 +195,19 @@ float get_mortality_prob_for_age(ushort age, ushort sex, int origin, ushort cvd,
   
   //printf("Age_ID: %d, Origin: %d, Initial BMI: %f, Odds: %f,  Probability: %f\n", age, originNew, new_bmi, oddBMI, probaOrigin);
   
-  //new_bmi = 28.0;
+  //new_bmi = 26.7;
   //new_bmi = 40.0;
   if (new_bmi <= 0.0){ // Negatives are missing values from SPC, treat as neutral case (odds of 1)
     oddBMI = 1.0;
   } else if (new_bmi < lower_new_bmi){   ///// if New_BMI is lower than threshold, then set to threshold //////
-    //oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(lower_new_bmi,2);
     oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * lower_new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(lower_new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(lower_new_bmi,3);
-  //} else if (new_bmi > 28.0){
-  //    oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(0.99 * new_bmi,2);
-  //} else if (new_bmi > 29.0){
-  //   oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi - 1,2);
+  //} else if (new_bmi > 26.7){
+  //    oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * 0.99 * new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(0.99 * new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(0.99 * new_bmi,3);
+  //} else if (new_bmi > 27.7){
+  //   oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * (new_bmi - 1) + params->bmi_multipliers[originNew * 4 + 2] * pown(new_bmi -1,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(new_bmi - 1,3); 
+  //} else if (new_bmi > 50){ //oddBMI is calculated using 50 for [!!! BMI VARIABLE !!!]}
+  //   oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * 50 + params->bmi_multipliers[originNew * 4 + 2] * pown(50,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(50,3);
   }else {
-    //oddBMI = params->bmi_multipliers[originNew * 3] + params->bmi_multipliers[originNew * 3 + 1] * new_bmi + params->bmi_multipliers[originNew * 3 + 2] * pown(new_bmi,2);
     oddBMI = params->bmi_multipliers[originNew * 4] + params->bmi_multipliers[originNew * 4 + 1] * new_bmi + params->bmi_multipliers[originNew * 4 + 2] * pown(new_bmi,2) + params->bmi_multipliers[originNew * 4 + 3] * pown(new_bmi,3);
 
   }
