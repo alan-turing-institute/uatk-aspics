@@ -137,6 +137,8 @@ def convert_to_npz(pop, output_path):
             people_sex=np.array(
                 [p.demographics.sex for p in pop.people], dtype=np.uint16
             ),
+            # TODO Some people don't have this field, so this will default to
+            # 0. What happens downstream?
             people_new_bmi=np.array(
                 [p.health.bmi_new for p in pop.people], dtype=np.float32
             ),
@@ -191,7 +193,7 @@ def get_baseline_flows_per_person(pop, person, places_to_keep_per_person):
 
     # Home and work are per-person
     result.append((synthpop_pb2.Activity.HOME, person.household, 1.0))
-    if person.workplace != 2**64 - 1:
+    if person.HasField("workplace"):
         result.append((synthpop_pb2.Activity.WORK, person.workplace, 1.0))
 
     # Build a map from activity to duration
